@@ -2,4 +2,14 @@
     <h1>Bonjour à tous. Voici le message qui nous est parvenu : </h1>
     <p>{{ response }}</p>
 
+
+
+    <button (click)="fetchSteamData()">Go</button>
+
+    
+
+    <p *ngIf="steamData">{{steamData}}</p>
+
+
+
 </div>
