@@ -10,9 +10,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
 
 @RestController
 @RequestMapping("/api")
@@ -35,6 +37,24 @@ public class SteamController {
 	}
 	
 	
-	
+	@GetMapping("/kaamelot")
+	public ResponseEntity<String> getKaamelotData() throws MalformedURLException, IOException{
+		String url = "https://kaamelott.chaudie.re/api/all";
+		
+		RestClient defaultClient = RestClient.create();
+
+		String response = defaultClient.get()
+			
+			.uri(url)
+			
+			.retrieve()
+			.body(String.class);
+			
+			
+		
+		return ResponseEntity.ok(response);
+		
+		
+	}
 	
 }
