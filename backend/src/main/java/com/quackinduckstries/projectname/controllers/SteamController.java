@@ -37,7 +37,7 @@ public class SteamController {
 	}
 	
 	
-	@GetMapping("/kaamelot")
+	@GetMapping("/kaamelott")
 	public ResponseEntity<String> getKaamelotData() throws MalformedURLException, IOException{
 		String url = "https://kaamelott.chaudie.re/api/all";
 		
