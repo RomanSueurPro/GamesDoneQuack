@@ -1,4 +1,4 @@
-package com.quackinduckstries.projectname.config;
+package com.quackinduckstries.gamesdonequack.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

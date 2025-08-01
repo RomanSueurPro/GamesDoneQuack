@@ -1,4 +1,4 @@
-package com.quackinduckstries.projectname.controllers;
+package com.quackinduckstries.gamesdonequack.controllers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
