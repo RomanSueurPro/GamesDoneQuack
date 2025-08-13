@@ -1,7 +1,7 @@
 import { HttpClient, HttpClientModule} from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SteamService } from './steam.service';
+import { KaamelottService } from './kaamelott.service';
 import { NgIf } from '@angular/common';
 import { BackendService } from './backend-service';
 
@@ -20,10 +20,10 @@ export class AppComponent {
   response: string = 'empty';
 
   messages: string[] = [];
-  steamData: string | undefined;
+  kaamelottData: string | undefined;
 
 
-  constructor(private http: HttpClient, private steamService: SteamService, private backendService: BackendService){}
+  constructor(private http: HttpClient, private kaamelottService: KaamelottService, private backendService: BackendService){}
 
     ngOnInit(): void{
       this.http.get('http://localhost:8080/home', { responseType: 'text'}).subscribe(
@@ -35,10 +35,10 @@ export class AppComponent {
     }
 
 
-    fetchSteamData(){
-      this.steamService.getSteamData().subscribe({
-        next: (data) => this.steamData = JSON.stringify(data),
-        error: (err) => this.steamData = 'Error fetching steam data'
+    fetchKaamelottData(){
+      this.kaamelottService.getKaamelottData().subscribe({
+        next: (data) => this.kaamelottData = JSON.stringify(data),
+        error: (err) => this.kaamelottData = 'Error fetching kaamelott data'
       });
     }
 

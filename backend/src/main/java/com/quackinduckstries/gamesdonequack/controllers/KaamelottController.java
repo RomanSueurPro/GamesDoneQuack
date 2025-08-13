@@ -10,29 +10,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 
 @RestController
-@RequestMapping("/api")
-public class SteamController {
+@RequestMapping("/api/kaamelott")
+public class KaamelottController {
 
-	
-	
-	@GetMapping("/kaamelott")
+	@GetMapping("/")
 	public ResponseEntity<String> getKaamelotData() throws MalformedURLException, IOException{
-		String url = "https://kaamelott.chaudie.re/api/all";
+		String url = "https://kaamelott.chaudie.re/api/random";
 		
 		RestClient defaultClient = RestClient.create();
 
 		String response = defaultClient.get()
-			
 			.uri(url)
-			
 			.retrieve()
 			.body(String.class);
-			
-			
 		
 		return ResponseEntity.ok(response);
-		
-		
 	}
 	
 }

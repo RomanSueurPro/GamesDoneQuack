@@ -15,12 +15,10 @@ public class HomeController {
 		return ResponseEntity.ok("coucou");
 	}
 	
-	
 	@GetMapping("/coincoin")
 	public ResponseEntity<String> coin(){
 		return ResponseEntity.ok("coincoin");
 	}
-	
 	
 	@GetMapping("/csrf")
 	public CsrfToken csrf(CsrfToken token) {

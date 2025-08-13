@@ -45,10 +45,8 @@ public class SecurityConfig {
                 )
                 .formLogin(l -> l.defaultSuccessUrl("/coincoin"))
                 .logout(l -> l.logoutSuccessUrl("/"))
-                .build();
-                                
+                .build();              
         }
-        
         
         @Bean
         UrlBasedCorsConfigurationSource corsConfigurationSource() {
@@ -61,12 +59,10 @@ public class SecurityConfig {
             source.registerCorsConfiguration("/**", configuration);
             return source;
         }
-        
 
         @Bean
         public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user").password("{noop}usertest@12345").authorities("read").build();
-        return new InMemoryUserDetailsManager(user);
-    }
-              
+        	UserDetails user = User.withUsername("user").password("{noop}usertest@12345").authorities("read").build();
+        	return new InMemoryUserDetailsManager(user);
+        }
 }
