@@ -1,10 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule} from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { SteamService } from './steam.service';
 import { NgIf } from '@angular/common';
-
+import { BackendService } from './backend-service';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +23,7 @@ export class AppComponent {
   steamData: string | undefined;
 
 
-  constructor(private http: HttpClient, private steamService: SteamService){}
+  constructor(private http: HttpClient, private steamService: SteamService, private backendService: BackendService){}
 
     ngOnInit(): void{
       this.http.get('http://localhost:8080/home', { responseType: 'text'}).subscribe(
@@ -32,6 +31,7 @@ export class AppComponent {
           this.response = data;
         }
       );
+      this.refreshCsrf();
     }
 
 
@@ -40,6 +40,22 @@ export class AppComponent {
         next: (data) => this.steamData = JSON.stringify(data),
         error: (err) => this.steamData = 'Error fetching steam data'
       });
+    }
+
+
+
+    autoLogin(){
+      this.backendService.autologinService();
+    }
+
+
+    refreshCsrf(){
+      this.backendService.getRequest();
+    }
+
+
+    visitLogin(){
+      this.backendService.visitLogin();
     }
 
 }

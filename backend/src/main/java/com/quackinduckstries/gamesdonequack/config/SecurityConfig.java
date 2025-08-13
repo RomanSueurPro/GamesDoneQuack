@@ -29,22 +29,23 @@ public class SecurityConfig {
 
         @Bean
         SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                return http
-                                .csrf(csrf -> csrf
-                                                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                                                  .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                                .authorizeHttpRequests(
-                                                authorizeHttp -> {
-                                                        authorizeHttp.requestMatchers("/home").permitAll();
-                                                        authorizeHttp.requestMatchers("/favicon.svg").permitAll();
-                                                        authorizeHttp.requestMatchers("/error").permitAll();
-                                                        authorizeHttp.anyRequest().authenticated();
-                                                }
-                                )
-                                .formLogin(l -> l.defaultSuccessUrl("/greeting"))
-                                .logout(l -> l.logoutSuccessUrl("/"))
-                                .build();
+            return http
+                .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(
+                    authorizeHttp -> {
+                            authorizeHttp.requestMatchers("/home").permitAll();
+                            authorizeHttp.requestMatchers("/csrf").permitAll();
+                            authorizeHttp.requestMatchers("/favicon.svg").permitAll();
+                            authorizeHttp.requestMatchers("/error").permitAll();
+                            authorizeHttp.anyRequest().authenticated();
+                    }
+                )
+                .formLogin(l -> l.defaultSuccessUrl("/coincoin"))
+                .logout(l -> l.logoutSuccessUrl("/"))
+                .build();
                                 
         }
         
@@ -63,7 +64,7 @@ public class SecurityConfig {
         
 
         @Bean
-    public UserDetailsService userDetailsService() {
+        public UserDetailsService userDetailsService() {
         UserDetails user = User.withUsername("user").password("{noop}usertest@12345").authorities("read").build();
         return new InMemoryUserDetailsManager(user);
     }

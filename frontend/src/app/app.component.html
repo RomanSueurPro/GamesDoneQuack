@@ -2,12 +2,16 @@
     <h1>Bonjour à tous. Voici le message qui nous est parvenu : </h1>
     <p>{{ response }}</p>
 
+    <button (click)="autoLogin()">AutologinTest</button>
 
-
+    <hr>
     <button (click)="fetchSteamData()">Go</button>
+    <hr>
 
-    
-
+    <button (click)="refreshCsrf()">get request</button>
+    <hr>
+    <button (click)="visitLogin()">visit login page</button>
+    <hr>
     <p *ngIf="steamData">{{steamData}}</p>
 
 
