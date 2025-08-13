@@ -3,17 +3,17 @@
     <p>{{ response }}</p>
 
     <button (click)="autoLogin()">AutologinTest</button>
-
     <hr>
+
     <button (click)="fetchKaamelottData()">Go</button>
     <hr>
 
-    <button (click)="refreshCsrf()">get request</button>
+    <button (click)="fetchSteamData()">Steam</button>
     <hr>
+
     <button (click)="visitLogin()">visit login page</button>
     <hr>
+
     <p *ngIf="kaamelottData">{{kaamelottData}}</p>
-
-
-
+    <p *ngIf="steamData">{{steamData}}</p>
 </div>

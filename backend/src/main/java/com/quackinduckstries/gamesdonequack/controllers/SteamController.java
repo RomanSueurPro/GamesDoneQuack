@@ -1,0 +1,28 @@
+package com.quackinduckstries.gamesdonequack.controllers;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
+
+@RestController
+@RequestMapping("/api/steam")
+public class SteamController {
+	@GetMapping("/")
+	public ResponseEntity<String> getKaamelotData() throws MalformedURLException, IOException{
+		String url = "https://store.steampowered.com/api/appdetails?appids=374320";
+		
+		RestClient defaultClient = RestClient.create();
+
+		String response = defaultClient.get()
+			.uri(url)
+			.retrieve()
+			.body(String.class);
+		
+		return ResponseEntity.ok(response);
+	}
+}

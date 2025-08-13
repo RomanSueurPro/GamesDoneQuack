@@ -24,9 +24,4 @@ public class HomeController {
 	public CsrfToken csrf(CsrfToken token) {
 	    return token;  // Spring will automatically resolve the CsrfToken from the request attributes and serialize it as JSON
 	}
-	
-	@GetMapping("/")
-	public CsrfToken cheating(CsrfToken token) {
-	    return token;  // Spring will automatically resolve the CsrfToken from the request attributes and serialize it as JSON
-	}
 }

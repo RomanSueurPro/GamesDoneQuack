@@ -6,11 +6,11 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 
-export class KaamelottService {
+export class SteamService {
     constructor(private http: HttpClient){}
 
-    getKaamelottData(): Observable<any> {
-        return this.http.get('http://localhost:8080/api/kaamelott/', {
+    getSteamData(): Observable<any> {
+        return this.http.get('http://localhost:8080/api/steam/', {
             withCredentials: true,
         });
     }
