@@ -14,6 +14,8 @@ export class SteamService {
 
 
     getSteamData(): Observable<any> {
-        return this.http.get('http://localhost:8080/api/kaamelott');
+        return this.http.get('http://localhost:8080/api/kaamelott', {
+            withCredentials: true,
+        });
     }
 }
