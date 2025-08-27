@@ -1,0 +1,26 @@
+#header{
+    min-width: 100%;
+    min-height: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+ }
+
+#logo{
+    
+    max-height: 14vh;
+}
+
+#session-standin{
+    min-height: 45px;
+    min-width: 320px;
+    background-color: rgb(144, 167, 176);
+}
+
+.banner{
+    width: 50vw;
+    background-image: url('/../assets/temp_banner.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
