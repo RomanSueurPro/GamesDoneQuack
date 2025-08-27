@@ -4,11 +4,12 @@ import { SteamService } from './steam.service';
 import { KaamelottService } from './kaamelott.service';
 import { NgIf } from '@angular/common';
 import { BackendService } from './backend-service';
+import { HeaderComponent } from "./header/header.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HttpClientModule, NgIf],
+  imports: [HttpClientModule, NgIf, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
