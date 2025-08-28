@@ -40,8 +40,8 @@ export class BackendService {
 
     getRequest(){
         this.http.get('http://localhost:8080/csrf', {withCredentials: true}).subscribe({
-            next: () => console.log('oui'),
-            error: () => console.log('error. error. red alert')  
+            next: () => console.log('Csrf load OK'),
+            error: () => console.log('Csrf load did not work as intended (it is not OK)')  
         });
     }
 

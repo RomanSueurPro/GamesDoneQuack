@@ -1,4 +1,26 @@
 *{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+}
+
+
+a {
+    text-decoration: none;
+    color: black;
+    
+}
+
+a:hover{
+    color: rgb(119, 119, 119);
+    // background-color: red;
+}
+
+#img-holder{
+    border-radius: 50%;
+    height: 1.5em;
+    width: 1.5em;
+    background-image: url("../../../assets/session-assets/default-pic-facing.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
