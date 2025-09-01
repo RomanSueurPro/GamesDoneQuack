@@ -1,12 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {
   MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialogTitle,
-  MatDialogContent,
-  MatDialogActions,
-  MatDialogClose,
+  
 } from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
 import {FormsModule} from '@angular/forms';
@@ -17,22 +12,21 @@ import { ConnectionPopUpComponent } from '../connection-pop-up/connection-pop-up
 @Component({
   selector: 'app-session',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
+  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule, ConnectionPopUpComponent],
   templateUrl: './session.component.html',
-  styleUrl: './session.component.scss'
+  styleUrls: ['./session.component.scss']
 })
 export class SessionComponent {
 
 constructor(public dialog: MatDialog){}
-
-
 
   showPopup(): void{
     let dialogRef = this.dialog.open(ConnectionPopUpComponent, {
       data: {name: 'Arthur'},
       height: '400px',
       width: '600px',
-      
+      disableClose: false,
+      hasBackdrop: true,
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -40,9 +34,6 @@ constructor(public dialog: MatDialog){}
       console.log(result);
     });
   }
-  
-
-
 }
 
 

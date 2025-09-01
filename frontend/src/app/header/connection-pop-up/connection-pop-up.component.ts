@@ -15,7 +15,7 @@ import {MAT_DIALOG_DATA,
     MatDialogActions,
     MatDialogClose,],
   templateUrl: './connection-pop-up.component.html',
-  styleUrl: './connection-pop-up.component.scss'
+  styleUrls: ['./connection-pop-up.component.scss']
 })
 export class ConnectionPopUpComponent {
   constructor(
@@ -23,9 +23,7 @@ export class ConnectionPopUpComponent {
   // @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {}
 
-onNoClick(): void {
-  this.dialogRef.close();
-}
-
-  
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
 }
