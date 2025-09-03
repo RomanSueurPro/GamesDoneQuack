@@ -3,7 +3,9 @@
     <h1>Bonjour à tous. Voici le message qui nous est parvenu : </h1>
     <p>{{ response }}</p>
 
-    <button (click)="autoLogin()">AutologinTest</button>
+    <button *ngIf="!isLoggedIn()" (click)="autoLogin()">AutologinTest</button>
+    <button *ngIf="isLoggedIn()" (click)="logout()">Log out</button>
+    <p>{{isLoggedIn()}}</p>
     <hr>
 
     <button (click)="fetchKaamelottData()">Go</button>

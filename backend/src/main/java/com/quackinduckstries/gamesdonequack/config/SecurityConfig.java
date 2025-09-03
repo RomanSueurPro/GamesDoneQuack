@@ -44,7 +44,7 @@ public class SecurityConfig {
                     }
                 )
                 .formLogin(l -> l.defaultSuccessUrl("/coincoin"))
-                .logout(l -> l.logoutSuccessUrl("/"))
+                .logout(l -> l.logoutSuccessUrl("/home"))
                 .build();              
         }
         
