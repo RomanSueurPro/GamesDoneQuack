@@ -24,46 +24,45 @@ export class AppComponent {
 
   constructor(private http: HttpClient, private kaamelottService: KaamelottService, private steamService: SteamService, private backendService: BackendService, private authService: AuthService){}
 
-    isLoggedIn = this.authService.isLoggedIn;
+  isLoggedIn = this.authService.isLoggedIn;
 
-    ngOnInit(): void{
-      this.http.get('http://localhost:8080/home', { responseType: 'text'}).subscribe(
-        data => {
-          this.response = data;
-        }
-      );
-      this.refreshCsrf();
-      this.authService.checkLogin();
-    }
+  ngOnInit(): void{
+    this.http.get('http://localhost:8080/home', { responseType: 'text'}).subscribe(
+      data => {
+        this.response = data;
+      }
+    );
+    this.refreshCsrf();
+    this.authService.checkLogin();
+  }
 
-    fetchKaamelottData(){
-      this.kaamelottService.getKaamelottData().subscribe({
-        next: (data) => this.kaamelottData = JSON.stringify(data),
-        error: (err) => this.kaamelottData = 'Error fetching kaamelott data'
-      });
-    }
+  fetchKaamelottData(){
+    this.kaamelottService.getKaamelottData().subscribe({
+      next: (data) => this.kaamelottData = JSON.stringify(data),
+      error: (err) => this.kaamelottData = 'Error fetching kaamelott data'
+    });
+  }
 
-    fetchSteamData(){
-      this.steamService.getSteamData().subscribe({
-        next: (data) => this.kaamelottData = JSON.stringify(data),
-        error: (err) => this.kaamelottData = 'Error fetching steam data'
-      });
-    }
+  fetchSteamData(){
+    this.steamService.getSteamData().subscribe({
+      next: (data) => this.kaamelottData = JSON.stringify(data),
+      error: (err) => this.kaamelottData = 'Error fetching steam data'
+    });
+  }
 
-    autoLogin(){
-      this.backendService.autologinService();
-      this.authService.checkLogin();
-    }
+  autoLogin(){
+    this.backendService.autologinService();
+  }
 
-    logout(){
-      this.authService.logout();
-    }
+  logout(){
+    this.authService.logout();
+  }
 
-    refreshCsrf(){
-      this.backendService.getRequest();
-    }
+  refreshCsrf(){
+    this.backendService.getRequest();
+  }
 
-    visitLogin(){
-      this.backendService.visitLogin();
-    }
+  visitLogin(){
+    this.backendService.visitLogin();
+  }
 }

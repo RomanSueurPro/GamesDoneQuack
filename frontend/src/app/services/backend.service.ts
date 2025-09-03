@@ -1,5 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { AuthService } from "./auth.service";
+import { CsrfService } from "./csrf.service";
 
 @Injectable({
     providedIn : 'root'
@@ -7,7 +9,7 @@ import { Injectable } from "@angular/core";
 
 export class BackendService {
 
-    constructor(private http: HttpClient){}
+    constructor(private http: HttpClient, private auth: AuthService, private csrfService: CsrfService){}
 
     autologinService(){
         const loginUrl = 'http://localhost:8080/login';
@@ -26,8 +28,15 @@ export class BackendService {
             }),
             withCredentials: true,
         }).subscribe({
-            next: () => console.log('yes'),
-            error: () => console.log('no'),
+            next: () => {
+                console.log('yes')
+                this.auth.checkLogin();
+                this.csrfService.loadUp();
+            },
+            error: (error) => {
+                console.log('no');
+                console.log(error);
+            },
         });
     }
 
@@ -38,11 +47,9 @@ export class BackendService {
         return match ? decodeURIComponent(match[2]) : null;
     }
 
+    //load csrf
     getRequest(){
-        this.http.get('http://localhost:8080/csrf', {withCredentials: true}).subscribe({
-            next: () => console.log('Csrf load OK'),
-            error: () => console.log('Csrf load did not work as intended (it is not OK)')  
-        });
+        this.csrfService.loadUp();
     }
 
     visitLogin(){

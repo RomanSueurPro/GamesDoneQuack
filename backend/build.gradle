@@ -38,6 +38,9 @@ dependencies {
 	
 	
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	
+	//Json library
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.2'
 }
 
 tasks.named('test') {

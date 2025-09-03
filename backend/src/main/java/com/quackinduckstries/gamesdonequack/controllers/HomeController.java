@@ -6,19 +6,37 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 //todo supprimer cette ligne superflue
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class HomeController {
 	@GetMapping("/home")
-	public ResponseEntity<String> message(){
-		return ResponseEntity.ok("coucou");
+	public ResponseEntity<ObjectNode> message(){
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode json = mapper.createObjectNode();
+		String message = "coucou";
+		json.put("message", message);
+		
+		
+		
+		return ResponseEntity.ok(json);
 	}
 	
 	@GetMapping("/coincoin")
-	public ResponseEntity<String> coin(){
-		return ResponseEntity.ok("coincoin");
+	public ResponseEntity<ObjectNode> coin(){
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode json = mapper.createObjectNode();
+		String message = "coincoin";
+		json.put("message", message);
+		
+		
+		return ResponseEntity.ok(json);
 	}
 	
 	@GetMapping("/csrf")

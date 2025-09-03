@@ -5,7 +5,11 @@
 
     <button *ngIf="!isLoggedIn()" (click)="autoLogin()">AutologinTest</button>
     <button *ngIf="isLoggedIn()" (click)="logout()">Log out</button>
-    <p>{{isLoggedIn()}}</p>
+    <p>Signal value: {{ isLoggedIn() }}</p>
+
+
+
+    
     <hr>
 
     <button (click)="fetchKaamelottData()">Go</button>
