@@ -59,4 +59,22 @@ export class BackendService {
         });
     }
 
+    sendRegisterRequest(username: string, pass: string){
+        const registerUrl: string = 'http://localhost:8080/register';
+        let requestBody: URLSearchParams = new URLSearchParams();
+        const csrfToken = this.getCSRFTokenFromCookies('XSRF-TOKEN');
+
+        requestBody.set('username', username);
+        requestBody.set('password', pass);
+        requestBody.set('_csrf', csrfToken || '');
+        this.http.post(registerUrl, requestBody,
+            {withCredentials: true, headers: new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }),}
+         ).subscribe({
+            next: () => console.log('request was sent'),
+            error: () => console.log('error was occured yes')
+        });
+    }
+
 }

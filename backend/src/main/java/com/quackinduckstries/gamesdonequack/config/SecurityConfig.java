@@ -17,52 +17,54 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final GamesDoneQuackApplication gamesDoneQuackApplication;
+    
 
-    SecurityConfig(GamesDoneQuackApplication gamesDoneQuackApplication) {
-        this.gamesDoneQuackApplication = gamesDoneQuackApplication;
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+            .csrf(csrf -> csrf
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests(
+                authorizeHttp -> {
+                        authorizeHttp.requestMatchers("/home").permitAll();
+                        authorizeHttp.requestMatchers("/register").permitAll();
+                        authorizeHttp.requestMatchers("/csrf").permitAll();
+                        authorizeHttp.requestMatchers("/favicon.svg").permitAll();
+                        authorizeHttp.requestMatchers("/error").permitAll();
+                        authorizeHttp.anyRequest().authenticated();
+                }
+            )
+            .formLogin(l -> l.defaultSuccessUrl("/coincoin"))
+            .logout(l -> l.logoutSuccessUrl("/home")
+            		.deleteCookies("JSESSIONID"))
+            .build();              
+    }
+    
+    @Bean
+    UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
-        @Bean
-        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            return http
-                .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(
-                    authorizeHttp -> {
-                            authorizeHttp.requestMatchers("/home").permitAll();
-                            authorizeHttp.requestMatchers("/csrf").permitAll();
-                            authorizeHttp.requestMatchers("/favicon.svg").permitAll();
-                            authorizeHttp.requestMatchers("/error").permitAll();
-                            authorizeHttp.anyRequest().authenticated();
-                    }
-                )
-                .formLogin(l -> l.defaultSuccessUrl("/coincoin"))
-                .logout(l -> l.logoutSuccessUrl("/home"))
-                .build();              
-        }
-        
-        @Bean
-        UrlBasedCorsConfigurationSource corsConfigurationSource() {
-            CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-            configuration.setAllowedMethods(Arrays.asList("GET","POST"));
-            configuration.setAllowedHeaders(List.of("*"));
-            configuration.setAllowCredentials(true);
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", configuration);
-            return source;
-        }
-
-        @Bean
-        public UserDetailsService userDetailsService() {
-        	UserDetails user = User.withUsername("user").password("{noop}usertest@12345").authorities("read").build();
-        	return new InMemoryUserDetailsManager(user);
-        }
+    @Bean
+    public UserDetailsService userDetailsService() {
+    	UserDetails user = User.withUsername("user")
+    			.password("{noop}usertest@12345")
+    			.authorities("read")
+    			.build();
+    	return new InMemoryUserDetailsManager(user);
+    }
 }
