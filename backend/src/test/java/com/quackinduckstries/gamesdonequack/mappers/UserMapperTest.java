@@ -20,14 +20,12 @@ class UserMapperTest {
     void testUserToDto() {
         User user = new User();
         user.setUsername("vince");
-        user.setEmail("vince@example.com");
-        
-        
+        user.setPassword("plaintext123");
 
         UserDto dto = userMapper.userToUserDto(user);
 
         assertEquals("vince", dto.getUsername());
-        assertEquals("vince@example.com", dto.getEmail());
+        assertEquals("plaintext123", dto.getPassword());
     }
 
 }

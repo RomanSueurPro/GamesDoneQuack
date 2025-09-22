@@ -12,7 +12,7 @@ import { ConnectionPopUpComponent } from '../connection-pop-up/connection-pop-up
 @Component({
   selector: 'app-session',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule, ConnectionPopUpComponent],
+  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
   templateUrl: './session.component.html',
   styleUrls: ['./session.component.scss']
 })

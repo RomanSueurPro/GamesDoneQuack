@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
 import {MAT_DIALOG_DATA,
   MatDialogRef,
   MatDialogTitle,
@@ -6,6 +6,9 @@ import {MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogClose,} from '@angular/material/dialog';
 import { BackendService } from '../../services/backend.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from "@angular/forms";
+
 
 
 @Component({
@@ -15,7 +18,11 @@ import { BackendService } from '../../services/backend.service';
     MatDialogTitle,
     MatDialogContent,
     MatDialogActions,
-    MatDialogClose,],
+    MatDialogClose,
+    CommonModule,
+    FormsModule,
+    
+],
   templateUrl: './connection-pop-up.component.html',
   styleUrls: ['./connection-pop-up.component.scss']
 })
@@ -26,11 +33,32 @@ export class ConnectionPopUpComponent {
   private backendService: BackendService,
   ) {}
 
+  public isModeLogin: boolean = true;
+
   onNoClick(): void {
     this.dialogRef.close();
   }
 
   sendNameToBack(): void {
-    this.backendService.sendRegisterRequest('Jean', 'putois');
+    this.backendService.sendRegisterRequest('JeanDeux', 'putois');
+  }
+
+  enterAccountCreationMode(): void {
+    console.log("not implemented ");
+  }
+
+  @ViewChild('toggleButton') toggleButton!: ElementRef<HTMLButtonElement>;
+
+  toggleModeLogin(): void{
+    this.isModeLogin = (this.isModeLogin === true) ? false : true;
+    this.toggleButton.nativeElement.innerText = this.isModeLogin ? 'Créer un compte' : 'Se connecter';
+  }
+
+  registerUsername:string = '';
+  passwordUsername:string = '';
+  registerNewAndApprovedUser(): void{
+    const username = this.registerUsername;
+    const password = this.passwordUsername;
+    this.backendService.sendRegisterRequest(username, password);
   }
 }

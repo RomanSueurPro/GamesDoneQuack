@@ -3,7 +3,7 @@ package com.quackinduckstries.gamesdonequack.config;
 import java.util.Arrays;
 import java.util.List;
 
-import com.quackinduckstries.gamesdonequack.GamesDoneQuackApplication;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
