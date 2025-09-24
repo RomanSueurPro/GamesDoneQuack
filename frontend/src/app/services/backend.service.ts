@@ -40,6 +40,36 @@ export class BackendService {
         });
     }
 
+    sendLoginRequest(): void{
+        const loginUrl = 'http://localhost:8080/login';
+        const testUserName = 'user';
+        const testUserPassword = 'usertest@12345';
+        const csrfToken = this.getCSRFTokenFromCookies('XSRF-TOKEN');
+
+        const body = new URLSearchParams();
+        body.set('username', testUserName);
+        body.set('password', testUserPassword);
+        body.set('_csrf', csrfToken || '');
+
+        this.http.post(loginUrl, body.toString(), {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }),
+            withCredentials: true,
+        }).subscribe({
+            next: () => {
+                console.log('yes')
+                this.auth.checkLogin();
+                this.csrfService.loadUp();
+            },
+            error: (error) => {
+                console.log('no');
+                console.log(error);
+            },
+        });
+    }
+
+
     getCSRFTokenFromCookies(name: string): string | null{
         const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
         //match returns an array
@@ -59,7 +89,7 @@ export class BackendService {
         });
     }
 
-    sendRegisterRequest(username: string, pass: string){
+    sendRegisterRequest(username: string, pass: string): void{
         const registerUrl: string = 'http://localhost:8080/register';
         let requestBody: URLSearchParams = new URLSearchParams();
         const csrfToken = this.getCSRFTokenFromCookies('XSRF-TOKEN');
