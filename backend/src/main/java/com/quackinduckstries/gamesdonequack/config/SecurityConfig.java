@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -19,6 +21,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.quackinduckstries.gamesdonequack.services.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
@@ -62,11 +66,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-    	UserDetails user = User.withUsername("user")
-    			.password("{noop}usertest@12345")
-    			.authorities("read")
-    			.build();
-    	return new InMemoryUserDetailsManager(user);
+    public AuthenticationManager authManager(HttpSecurity http, 
+    		PasswordEncoder passwordEncoder,
+    		CustomUserDetailsService userDetailsService)
+    throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder)
+            .and()
+            .build();
     }
 }

@@ -3,12 +3,12 @@
     <h1>Bonjour à tous. Voici le message qui nous est parvenu : </h1>
     <p>{{ response }}</p>
 
-    <button *ngIf="!isLoggedIn()" (click)="autoLogin()">AutologinTest</button>
-    <button *ngIf="isLoggedIn()" (click)="logout()">Log out</button>
-    <p>Signal value: {{ isLoggedIn() }}</p>
-
-
-
+    @if (authState.isLoggedIn()){
+        <button (click)="logout()">Log out</button>
+    }@else {
+        <button (click)="autoLogin()">AutologinTest</button>
+    }
+    <!-- <p>Signal value: {{ auth.isLoggedIn() }}</p> -->
     
     <hr>
 
@@ -19,6 +19,10 @@
     <hr>
 
     <button (click)="visitLogin()">visit login page</button>
+    <hr>
+
+    <button (click)="updateLoginStatus()">isLoggin</button>
+    <p>{{authState.isLoggedIn()}}</p>
     <hr>
 
     <p *ngIf="kaamelottData">{{kaamelottData}}</p>

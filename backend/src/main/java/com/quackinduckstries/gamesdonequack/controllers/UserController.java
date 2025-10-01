@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDTO;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.entities.User;
@@ -29,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(
+    public ResponseEntity<ObjectNode> registerUser(
     		@RequestParam("username") String username,
             @RequestParam("password") String password) {
 
@@ -38,7 +40,12 @@ public class UserController {
 
         RegisterRequestDTO request = new RegisterRequestDTO(username, password);
         userService.registerNewUser(request);
-               
-        return ResponseEntity.ok("User new user insertion procedure completed");
+        
+        ObjectMapper mapper = new ObjectMapper();
+		ObjectNode json = mapper.createObjectNode();
+		String message = "User new user insertion procedure completed";
+		json.put("message", "User new user insertion procedure completed");
+        
+        return ResponseEntity.ok(json);
     }	
 }

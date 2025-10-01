@@ -6,6 +6,7 @@ import { NgIf } from '@angular/common';
 import { BackendService } from './services/backend.service';
 import { HeaderComponent } from "./header/header.component";
 import { AuthService } from './services/auth.service';
+import { AuthStateService } from './services/auth-state.service';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +23,8 @@ export class AppComponent {
   kaamelottData: string | undefined;
   steamData: string | undefined;
 
-  constructor(private http: HttpClient, private kaamelottService: KaamelottService, private steamService: SteamService, private backendService: BackendService, private authService: AuthService){}
+  constructor(private http: HttpClient, private kaamelottService: KaamelottService, private steamService: SteamService, private backendService: BackendService, private authService: AuthService, public authState: AuthStateService){}
 
-  isLoggedIn = this.authService.isLoggedIn;
 
   ngOnInit(): void{
     this.http.get('http://localhost:8080/home', { responseType: 'text'}).subscribe(
@@ -64,5 +64,9 @@ export class AppComponent {
 
   visitLogin(){
     this.backendService.visitLogin();
+  }
+
+  updateLoginStatus(){
+    this.authState.isLoggedIn();
   }
 }

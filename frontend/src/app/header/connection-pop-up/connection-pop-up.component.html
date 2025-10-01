@@ -1,24 +1,25 @@
 <div>
-    <div *ngTemplateOutlet="isModeLogin ? layoutA : layoutB"></div>
-
-        <ng-template #layoutA>
-            <form action="" target="" method="post">
-            <label for="login-field">login</label>
-            <input type="text" name="login-field" id="login-field">
-            
-            <label for="password-field">password</label>
-            <input type="text" name="password-field" id="password-field">
-
-            
-        </form>
-        <div>
-            
-
-            <button (click) = "sendNameToBack()">Log in</button>
+    @if (isModeLogin){
+        <div @modeSwitch>
+            <ng-container *ngTemplateOutlet="layoutA"></ng-container>
         </div>
-        
-        
-        </ng-template>
+    }@else {
+        <div @modeSwitch>
+            <ng-container *ngTemplateOutlet="layoutB"></ng-container>
+        </div>
+    }
+
+    <ng-template #layoutA>
+        <label for="login-field">login</label>
+        <input type="text" id="login-field" [(ngModel)]="loginUsername">
+        <label for="password-field">password</label>
+        <input type="text" id="password-field" [(ngModel)]="loginPassword">
+    <div>
+        <button (click)="tryLogin2()">Log in</button>
+    </div>
+    
+    
+    </ng-template>
 
     <ng-template #layoutB>
         <div>
@@ -28,7 +29,7 @@
             <input type="text" id="registerUserPassword" [(ngModel)]="passwordUsername">
         </div>
         <div>
-            <button (click)="registerNewAndApprovedUser()">Register</button>
+            <button (click)="tryRegister2()">Register</button>
         </div>
     </ng-template>
 
@@ -36,5 +37,7 @@
         <div>
             <p (click)="toggleModeLogin()" #toggleButton>Créer un compte</p>
         </div>
+        <app-loading-dots [isLoading]="isLoading"/>
+        <button (click)="toggleLoading()">{{ buttonText }}</button>
         <button mat-button (click)="onNoClick()">No Thanks</button>
 </div>

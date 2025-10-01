@@ -1,11 +1,27 @@
 <div>
-    
+
+    @if (authState.isLoggedIn()){
+        <div>
+            <ng-container *ngTemplateOutlet="layoutLoggedIn"></ng-container>
+        </div>
+    }@else {
+        <div>
+            <ng-container *ngTemplateOutlet="layoutNotLoggedIn"></ng-container>
+        </div>
+    }
 
     
-    
-    <div (click)="showPopup()">
-        <div id="img-holder"></div>
-        Connexion
-    </div>
+    <ng-template #layoutNotLoggedIn>
+        <div (click)="showPopup()">
+            <div id="img-holder"></div>
+            Connexion
+        </div>
+    </ng-template>
 
+    <ng-template #layoutLoggedIn>
+        <div (click)="showPopup()">
+            <div id="img-holder"></div>
+            Put username here
+        </div>
+    </ng-template>
 </div>
