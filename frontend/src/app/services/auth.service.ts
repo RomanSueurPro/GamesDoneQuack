@@ -4,6 +4,7 @@ import { map, switchMap, concatMap, catchError } from 'rxjs/operators';
 import { CsrfService } from './csrf.service';
 import { Observable, of } from 'rxjs';
 import { AuthStateService } from './auth-state.service';
+import { UserInfo } from '../interfaces/models'
 
 @Injectable({
   providedIn: 'root'
@@ -13,37 +14,43 @@ export class AuthService {
   constructor(private http: HttpClient, private csrfService: CsrfService, private authState: AuthStateService) { }
 
 
+  
+
   checkLogin(){
-    this.http.get('http://localhost:8080/api/me', {withCredentials: true}).subscribe({
-      next: () => {
+    this.http.get<UserInfo>('http://localhost:8080/api/me', {withCredentials: true}).subscribe({
+      next: (user) => {
         console.log(" /api/me says logged in");
         this.authState.login();
+        this.authState.user.set(user);
         console.log("Signal value now:", this.authState.isLoggedIn());
       },
       error: () => {
         console.log(" /api/me says not logged in");
         this.authState.logout();
+        this.authState.user.set(null);
         console.log("Signal value now:", this.authState.isLoggedIn());
       }
     });
   }
 
   checkLoginObservable(): Observable<boolean> {
-    return this.http.get('http://localhost:8080/api/me', { withCredentials: true }).pipe(
+    return this.http.get<UserInfo>('http://localhost:8080/api/me', { withCredentials: true }).pipe(
       // map to true/false for signal
-      map(() => {
+      map((user) => {
         this.authState.login();
+        this.authState.user.set(user);
         console.log("Signal value now:", this.authState.isLoggedIn());
         return true;
       }),
       // catch errors and set false
       catchError(err => {
         this.authState.logout();
+        this.authState.user.set(null);
         console.log("Signal value now:", this.authState.isLoggedIn());
         return of(false);
       })
     );
-}
+  }
 
   logout(){
     of(null).pipe(

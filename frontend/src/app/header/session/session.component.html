@@ -21,7 +21,7 @@
     <ng-template #layoutLoggedIn>
         <div (click)="showPopup()">
             <div id="img-holder"></div>
-            Put username here
+            {{this.authState.user()?.username}}
         </div>
     </ng-template>
 </div>
