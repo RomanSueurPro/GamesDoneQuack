@@ -25,3 +25,11 @@ a:hover{
     background-repeat: no-repeat;
     background-position: center;
 }
+
+
+::ng-deep .small-menu .mat-mdc-menu-item { //deprecated :D Would also work to cut paste into global styles
+  min-height: 0.5em;
+  font-size: 2em;
+  padding: 0 12px;
+  background-color: red;
+}

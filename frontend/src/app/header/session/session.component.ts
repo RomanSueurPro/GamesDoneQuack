@@ -7,19 +7,21 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { ConnectionPopUpComponent } from '../connection-pop-up/connection-pop-up.component';
 import { AuthStateService } from '../../services/auth-state.service';
 import { NgTemplateOutlet } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import {MatMenuModule} from '@angular/material/menu';
+
 
 @Component({
   selector: 'app-session',
   standalone: true,
   imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule,
-    NgTemplateOutlet
-  ],
+    NgTemplateOutlet, MatMenuModule],
   templateUrl: './session.component.html',
   styleUrls: ['./session.component.scss']
 })
 export class SessionComponent {
 
-constructor(public dialog: MatDialog, public authState: AuthStateService){}
+constructor(public dialog: MatDialog, public authState: AuthStateService, public authService: AuthService){}
 
   showPopup(): void{
     let dialogRef = this.dialog.open(ConnectionPopUpComponent, {
@@ -36,6 +38,11 @@ constructor(public dialog: MatDialog, public authState: AuthStateService){}
       console.log(result);
     });
   }
+
+  logout(){
+    this.authService.logout();
+  }
+
 }
 
 

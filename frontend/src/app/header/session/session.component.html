@@ -19,9 +19,17 @@
     </ng-template>
 
     <ng-template #layoutLoggedIn>
-        <div (click)="showPopup()">
-            <div id="img-holder"></div>
-            {{this.authState.user()?.username}}
+        <div>
+             <div matButton [matMenuTriggerFor]="menu">
+                <div id="img-holder"></div>
+                {{this.authState.user()?.username}}
+            </div>
+            <mat-menu #menu="matMenu" class="small-menu">
+                <button mat-menu-item>My profile</button>
+                <button mat-menu-item (click)="authService.logout()">Logout</button>
+            </mat-menu>
+            
         </div>
     </ng-template>
+    
 </div>
