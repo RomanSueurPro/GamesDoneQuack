@@ -14,21 +14,16 @@ export class AuthService {
   constructor(private http: HttpClient, private csrfService: CsrfService, private authState: AuthStateService) { }
 
 
-  
 
   checkLogin(){
     this.http.get<UserInfo>('http://localhost:8080/api/me', {withCredentials: true}).subscribe({
       next: (user) => {
-        console.log(" /api/me says logged in");
         this.authState.login();
         this.authState.user.set(user);
-        console.log("Signal value now:", this.authState.isLoggedIn());
       },
       error: () => {
-        console.log(" /api/me says not logged in");
         this.authState.logout();
         this.authState.user.set(null);
-        console.log("Signal value now:", this.authState.isLoggedIn());
       }
     });
   }
@@ -39,14 +34,12 @@ export class AuthService {
       map((user) => {
         this.authState.login();
         this.authState.user.set(user);
-        console.log("Signal value now:", this.authState.isLoggedIn());
         return true;
       }),
       // catch errors and set false
       catchError(err => {
         this.authState.logout();
         this.authState.user.set(null);
-        console.log("Signal value now:", this.authState.isLoggedIn());
         return of(false);
       })
     );

@@ -1,0 +1,25 @@
+<div class="main">
+    <app-header/>
+    <h1>Bonjour à tous. Voici le message qui nous est parvenu : </h1>
+    <p>{{ response }}</p>
+
+    <!-- <p>Signal value: {{ auth.isLoggedIn() }}</p> -->
+    
+    <hr>
+
+    <button (click)="fetchKaamelottData()">Go</button>
+    <hr>
+
+    <button (click)="fetchSteamData()">Steam</button>
+    <hr>
+
+    <button (click)="visitLogin()">visit login page</button>
+    <hr>
+
+    <button (click)="updateLoginStatus()">isLoggin</button>
+    <p>{{authState.isLoggedIn()}}</p>
+    <hr>
+
+    <p *ngIf="kaamelottData">{{kaamelottData}}</p>
+    <p *ngIf="steamData">{{steamData}}</p>
+</div>

@@ -10,12 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -27,15 +22,14 @@ import com.quackinduckstries.gamesdonequack.services.CustomUserDetailsService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> csrf
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+            		.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            		.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(
                 authorizeHttp -> {
@@ -66,14 +60,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http, 
+    AuthenticationManager authManager(HttpSecurity http, 
     		PasswordEncoder passwordEncoder,
     		CustomUserDetailsService userDetailsService)
     throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-            .userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder)
-            .and()
-            .build();
+    	
+    	AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+    	authBuilder
+    		.userDetailsService(userDetailsService)
+    		.passwordEncoder(passwordEncoder);
+    	
+    	return authBuilder.build();
     }
 }

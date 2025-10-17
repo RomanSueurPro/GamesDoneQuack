@@ -27,7 +27,7 @@ a:hover{
 }
 
 
-::ng-deep .small-menu .mat-mdc-menu-item { //deprecated :D Would also work to cut paste into global styles
+::ng-deep .small-menu .mat-mdc-menu-item { //deprecated :D Would also work to cut paste into global styles without the ::ng-deep
   min-height: 0.5em;
   font-size: 2em;
   padding: 0 12px;

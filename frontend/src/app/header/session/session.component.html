@@ -25,7 +25,7 @@
                 {{this.authState.user()?.username}}
             </div>
             <mat-menu #menu="matMenu" class="small-menu">
-                <button mat-menu-item>My profile</button>
+                <button mat-menu-item routerLink="profile">My profile</button>
                 <button mat-menu-item (click)="authService.logout()">Logout</button>
             </mat-menu>
             
