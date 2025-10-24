@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.3'
+	id 'org.springframework.boot' version '3.5.6'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'eclipse'
 }
@@ -49,6 +49,7 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
     options.incremental = true
     options.encoding = 'UTF-8'
+    options.compilerArgs << "-parameters"
 }
 
 //tasks.withType(JavaCompile).configureEach {

@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDTO;
+import com.quackinduckstries.gamesdonequack.config.SetupDataLoader;
 import com.quackinduckstries.gamesdonequack.entities.User;
 import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
@@ -21,6 +22,9 @@ public class UserService {
 		User newUser = new User();
 		newUser.setUsername(request.getRequestedUsername());
 		newUser.setPassword(passwordEncoder.encode(request.getRequestedPassword()));
+		newUser.setRole(SetupDataLoader.defaultUserRole);
+		
+		
 		userRepository.save(newUser);
 		
 		
