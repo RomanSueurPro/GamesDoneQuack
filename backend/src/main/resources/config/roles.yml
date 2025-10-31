@@ -1,0 +1,21 @@
+roles:
+  defaultRole: "ROLE_USER"
+  definitions:
+    - name: "ROLE_USER"
+      description: "Standard user role"
+      permissions:
+        - "READ_PERMISSION"
+    - name: "ROLE_ADMIN"
+      description: "Administrator role"
+      permissions:
+        - "READ_PERMISSION"
+        - "WRITE_PERMISSION"
+        - "DELETE_PERMISSION"
+
+permissions:
+  - name: "READ_PERMISSION"
+    description: "Allows read access"
+  - name: "WRITE_PERMISSION"
+    description: "Allows write access"
+  - name: "DELETE_PERMISSION"
+    description: "Allows delete access"

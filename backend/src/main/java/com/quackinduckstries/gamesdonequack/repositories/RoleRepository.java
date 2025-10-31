@@ -1,5 +1,7 @@
 package com.quackinduckstries.gamesdonequack.repositories;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.quackinduckstries.gamesdonequack.entities.Role;
@@ -8,5 +10,5 @@ import com.quackinduckstries.gamesdonequack.entities.Role;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
 	Role findById(long id);
-	Role findByName(String name);
+	Optional<Role> findByName(String name);
 }

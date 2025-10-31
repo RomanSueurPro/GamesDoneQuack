@@ -1,10 +1,8 @@
 package com.quackinduckstries.gamesdonequack.config;
 
-
-
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+//import java.util.Optional;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -20,19 +18,22 @@ import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent>{
 
+
 	boolean alreadySetup = false;
 	
 	private final RoleRepository roleRepository;
 	
 	private final PermissionRepository permissionRepository;
 	
-	public static Role defaultUserRole;
 	
-	SetupDataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository){
+	private final RoleConfig roleConfig;
+	
+	
+	SetupDataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository, RoleConfig roleConfig){
 		this.roleRepository = roleRepository;
 		this.permissionRepository = permissionRepository;
+		this.roleConfig = roleConfig;
 	}
-	
 	
 	@Override
 	@Transactional
@@ -40,38 +41,53 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 		if(alreadySetup) {
 			return;
 		}
-		Permission readPermission = createPermissionIfNotFound("READ_PERMISSION");
-		Permission writePermission = createPermissionIfNotFound("WRITE_PERMISSION");
 		
-		List<Permission> adminPermissions = Arrays.asList(
-				readPermission, writePermission);
-		createRoleIfNotFound("ROLE_ADMIN", adminPermissions);
-		defaultUserRole = createRoleIfNotFound("ROLE_USER", Arrays.asList(readPermission));
+		for(var p : roleConfig.getDefinitions()) {
+			for(var perm : p.getPermissions()) {
+				createPermissionIfNotFound(perm);
+			}
+		}
+		
+		for(var def : roleConfig.getDefinitions()) {
+			List<Permission> permissions = def.getPermissions()
+					.stream()
+					.map(this::createPermissionIfNotFound)
+					.toList();
+			createRoleIfNotFound(def.getName(), permissions);
+		}
+			
 		
 		alreadySetup = true;
 	}
 	
 	@Transactional
 	Permission createPermissionIfNotFound(String name) {
-		Permission permission = permissionRepository.findByName(name);
-		if(permission == null) {
-			permission = new Permission();
+		return permissionRepository.findByName(name).orElseGet(() -> {
+			Permission permission = new Permission();
 			permission.setName(name);
-			permissionRepository.save(permission);
-		}
-		return permission;
+			return permissionRepository.save(permission);
+		});
 	}
 	
 	@Transactional
 	Role createRoleIfNotFound(String name, Collection<Permission> permissions) {
-		Role role = roleRepository.findByName(name);
-		if(role == null) {
-			role = new Role();
-			role.setName(name);
-			role.setPermissions(permissions);
-			roleRepository.save(role);
-		}
-		return role;
+//		Optional<Role> existingRole = roleRepository.findByName(name);
+//		if(existingRole.isPresent()) {
+//			return existingRole.get();
+//		}
+//		Role role = new Role();
+//		role.setName(name);
+//		role.setPermissions(permissions);
+//		roleRepository.save(role);
+//		return role;
+		
+		return roleRepository.findByName(name)
+				.orElseGet(() -> {
+					Role role = new Role();
+					role.setName(name);
+					role.setPermissions(permissions);
+					return roleRepository.save(role);
+				});
 	}
 	
 }
