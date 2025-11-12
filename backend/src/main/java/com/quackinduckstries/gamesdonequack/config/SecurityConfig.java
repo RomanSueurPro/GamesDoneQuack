@@ -3,11 +3,12 @@ package com.quackinduckstries.gamesdonequack.config;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,11 +20,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.quackinduckstries.gamesdonequack.services.CustomUserDetailsService;
 
+@EnableMethodSecurity
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     
-
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -33,6 +34,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(
                 authorizeHttp -> {
+//                		authorizeHttp.requestMatchers("/admin").hasRole("ROLE_ADMIN");
                         authorizeHttp.requestMatchers("/home").permitAll();
                         authorizeHttp.requestMatchers("/register").permitAll();
                         authorizeHttp.requestMatchers("/csrf").permitAll();
@@ -42,6 +44,7 @@ public class SecurityConfig {
                 }
             )
             .formLogin(l -> l.defaultSuccessUrl("/coincoin"))
+            .httpBasic(Customizer.withDefaults())
             .logout(l -> l.logoutSuccessUrl("/home")
             		.deleteCookies("JSESSIONID"))
             .build();              

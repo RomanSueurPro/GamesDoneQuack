@@ -33,6 +33,7 @@ public class UserController {
         RegisterRequestDTO request = new RegisterRequestDTO(username, password);
         userService.registerNewUser(request);
         
+        //JSON message code
         ObjectMapper mapper = new ObjectMapper();
 		ObjectNode json = mapper.createObjectNode();
 		String message = "User new user insertion procedure completed";

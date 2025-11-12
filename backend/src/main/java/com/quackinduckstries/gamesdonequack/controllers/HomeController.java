@@ -18,8 +18,6 @@ public class HomeController {
 		String message = "coucou";
 		json.put("message", message);
 		
-		
-		
 		return ResponseEntity.ok(json);
 	}
 	
@@ -30,7 +28,6 @@ public class HomeController {
 		ObjectNode json = mapper.createObjectNode();
 		String message = "coincoin";
 		json.put("message", message);
-		
 		
 		return ResponseEntity.ok(json);
 	}

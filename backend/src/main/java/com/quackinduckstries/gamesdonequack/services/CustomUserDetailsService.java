@@ -4,6 +4,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.quackinduckstries.gamesdonequack.entities.CustomUserDetails;
 import com.quackinduckstries.gamesdonequack.entities.User;
 import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
@@ -11,11 +13,9 @@ import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
 
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -23,10 +23,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        return org.springframework.security.core.userdetails.User
-            .withUsername(user.getUsername())
-            .password(user.getPassword()) // already encoded
-            .authorities("ROLE_USER") // default for now
-            .build();
+//        return org.springframework.security.core.userdetails.User
+//            .withUsername(user.getUsername())
+//            .password(user.getPassword()) // already encoded
+//            .authorities() 
+//            .build();
+        return new CustomUserDetails(user);
     }
 }

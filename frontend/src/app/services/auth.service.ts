@@ -99,23 +99,23 @@ export class AuthService {
   }
 
   sendLoginRequest(username: string, password: string){
-        const loginUrl = 'http://localhost:8080/login';
-        const testUserName = username;
-        const testUserPassword = password;
-        const csrfToken = this.getCSRFTokenFromCookies();
+    const loginUrl = 'http://localhost:8080/login';
+    const testUserName = username;
+    const testUserPassword = password;
+    const csrfToken = this.getCSRFTokenFromCookies();
 
-        const body = new URLSearchParams();
-        body.set('username', testUserName);
-        body.set('password', testUserPassword);
-        body.set('_csrf', csrfToken || '');
+    const body = new URLSearchParams();
+    body.set('username', testUserName);
+    body.set('password', testUserPassword);
+    body.set('_csrf', csrfToken || '');
 
-        return this.http.post(loginUrl, body.toString(), {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }),
-            withCredentials: true,
-        });
-    }
+    return this.http.post(loginUrl, body.toString(), {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }),
+        withCredentials: true,
+    });
+  }
 
 
 
