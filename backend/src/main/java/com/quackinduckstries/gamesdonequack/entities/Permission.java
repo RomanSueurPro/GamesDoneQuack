@@ -26,4 +26,10 @@ public class Permission {
 	@ManyToMany(mappedBy = "permissions")
 	private Collection<Role> roles;
 	
+	public Permission(String name) {
+		this.name = name;
+	}
+	
+	protected Permission() {}
+	
 }

@@ -100,13 +100,11 @@ export class AuthService {
 
   sendLoginRequest(username: string, password: string){
     const loginUrl = 'http://localhost:8080/login';
-    const testUserName = username;
-    const testUserPassword = password;
     const csrfToken = this.getCSRFTokenFromCookies();
 
     const body = new URLSearchParams();
-    body.set('username', testUserName);
-    body.set('password', testUserPassword);
+    body.set('username', username);
+    body.set('password', password);
     body.set('_csrf', csrfToken || '');
 
     return this.http.post(loginUrl, body.toString(), {
@@ -116,10 +114,4 @@ export class AuthService {
         withCredentials: true,
     });
   }
-
-
-
-
-
-
 }

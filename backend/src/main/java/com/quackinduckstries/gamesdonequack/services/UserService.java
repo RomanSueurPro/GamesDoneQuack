@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDTO;
+import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.entities.User;
+import com.quackinduckstries.gamesdonequack.mappers.UserMapper;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
@@ -19,12 +21,14 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
 	private final RoleConfig roleConfig;
+	private final UserMapper userMapper;
 	
-	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RoleConfig roleConfig) {
+	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RoleConfig roleConfig, UserMapper userMapper) {
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.roleConfig = roleConfig;
+		this.userMapper = userMapper;
 	}
 	
 	
@@ -42,5 +46,26 @@ public class UserService {
 		userRepository.save(newUser);
 		return newUser;
 	}
+	
+	@Transactional
+	public UserDto deleteUserById(long id) {
+		User userToBeDeleted = userRepository.findById(id);
+		userRepository.deleteById(id);
+		return userMapper.userToUserDto(userToBeDeleted);
+	}
+	
+	@Transactional
+	public UserDto updateUserRole(long idUser, long idRole) {
+		User userToUpdate = userRepository.findById(idUser);
+		Role role = roleRepository.findById(idRole);
+		
+		userToUpdate.setRole(role);
+		userRepository.flush();
+		
+		UserDto dto = userMapper.userToUserDto(userToUpdate);
+		
+		return dto;
+	}
+	
 	
 }

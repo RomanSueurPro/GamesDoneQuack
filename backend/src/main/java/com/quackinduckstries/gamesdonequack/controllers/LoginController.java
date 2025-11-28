@@ -10,10 +10,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.quackinduckstries.gamesdonequack.services.LoginRequestPojo;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -27,10 +25,11 @@ public class LoginController {
 		this.authManager = authManager;
 	}
 	
-//	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequestPojo loginRequest, HttpServletRequest request) {
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestParam("username") String username,
+            @RequestParam("password") String password, HttpServletRequest request) {
 		
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
 		
 		Authentication authentication = authManager.authenticate(authToken);
 		SecurityContext securityContext = SecurityContextHolder.getContext();

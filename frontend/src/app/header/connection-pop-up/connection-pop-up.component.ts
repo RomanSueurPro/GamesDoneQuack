@@ -53,7 +53,7 @@ export class ConnectionPopUpComponent {
 
   loginUsername:string = '';
   loginPassword:string = '';
-  tryLogin(){
+  sendLoginForm(){
     const username = this.loginUsername;
     const password = this.loginPassword;
     return this.backendService.sendLoginRequestFromAuth(username, password);
@@ -73,10 +73,10 @@ export class ConnectionPopUpComponent {
     this.buttonText = this.isLoading ? 'Stop Loading' : 'Start Loading'; 
   }
 
-  tryLogin2() {
+  login() {
     of(null).pipe(
           tap(() => this.setLoading(true)),
-          concatMap(() => this.tryLogin()),
+          concatMap(() => this.sendLoginForm()),
           tap(() => this.setLoading(false)),
           concatMap( () => this.backendService.checkLoginBackendObservable())
     ).subscribe({

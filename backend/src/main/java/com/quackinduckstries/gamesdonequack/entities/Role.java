@@ -2,6 +2,7 @@ package com.quackinduckstries.gamesdonequack.entities;
 
 import java.util.Collection;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,7 +29,7 @@ public class Role {
 	@OneToMany(mappedBy = "role")
 	private Collection<User> users;
 	
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.REMOVE) //TODO MUST TEST WAS NOT TESTED
 	@JoinTable(
 			name = "roles_permissions",
 			joinColumns = @JoinColumn(
@@ -37,5 +38,12 @@ public class Role {
 					name = "id_permission")
 			)
 	private Collection<Permission> permissions;
+	
+	protected Role() {}
+	
+	public Role(String name, Collection<Permission> permissions) {
+		this.name = name;
+		this.permissions = permissions;
+	}
 	
 }

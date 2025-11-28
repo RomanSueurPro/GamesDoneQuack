@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -28,14 +29,15 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf
-            		.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            		.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+            .csrf(csrf -> csrf.disable())
+//            		.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//            		.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(
                 authorizeHttp -> {
 //                		authorizeHttp.requestMatchers("/admin").hasRole("ROLE_ADMIN");
                         authorizeHttp.requestMatchers("/home").permitAll();
+                        authorizeHttp.requestMatchers("/login").permitAll();
                         authorizeHttp.requestMatchers("/register").permitAll();
                         authorizeHttp.requestMatchers("/csrf").permitAll();
                         authorizeHttp.requestMatchers("/favicon.svg").permitAll();
@@ -43,8 +45,8 @@ public class SecurityConfig {
                         authorizeHttp.anyRequest().authenticated();
                 }
             )
-            .formLogin(l -> l.defaultSuccessUrl("/coincoin"))
-            .httpBasic(Customizer.withDefaults())
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(Customizer.withDefaults()) //TODO maybe remove for production
             .logout(l -> l.logoutSuccessUrl("/home")
             		.deleteCookies("JSESSIONID"))
             .build();              

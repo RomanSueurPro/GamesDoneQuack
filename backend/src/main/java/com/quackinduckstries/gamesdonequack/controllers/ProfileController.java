@@ -11,15 +11,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RestController
 public class ProfileController {
 
-	@PreAuthorize("hasRole('USER')")
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/profile")
 	public ResponseEntity<ObjectNode> testRoleUser(){
-		
 		
 		//JSON message code
         ObjectMapper mapper = new ObjectMapper();
 		ObjectNode json = mapper.createObjectNode();
-		String message = "You were able to access";
+		String message = "You were able to access your profile";
 		json.put("message", message);
 		
 		return ResponseEntity.ok(json);

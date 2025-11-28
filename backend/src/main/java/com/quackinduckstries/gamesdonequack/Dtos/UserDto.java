@@ -1,5 +1,7 @@
 package com.quackinduckstries.gamesdonequack.Dtos;
 
+import com.quackinduckstries.gamesdonequack.entities.Role;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -14,5 +16,9 @@ public class UserDto {
 	
 	@NonNull
 	private String username;
+	
+	private String password;
+	
+	private Role role;
 	
 }

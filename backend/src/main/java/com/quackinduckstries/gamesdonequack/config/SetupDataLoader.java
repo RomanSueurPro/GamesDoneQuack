@@ -63,8 +63,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 	@Transactional
 	Permission createPermissionIfNotFound(String name) {
 		return permissionRepository.findByName(name).orElseGet(() -> {
-			Permission permission = new Permission();
-			permission.setName(name);
+			Permission permission = new Permission(name);
 			return permissionRepository.save(permission);
 		});
 	}
@@ -83,9 +82,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 		
 		return roleRepository.findByName(name)
 				.orElseGet(() -> {
-					Role role = new Role();
-					role.setName(name);
-					role.setPermissions(permissions);
+					Role role = new Role(name, permissions);
 					return roleRepository.save(role);
 				});
 	}

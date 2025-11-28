@@ -36,7 +36,7 @@ public class UserController {
         //JSON message code
         ObjectMapper mapper = new ObjectMapper();
 		ObjectNode json = mapper.createObjectNode();
-		String message = "User new user insertion procedure completed";
+		String message = "New user insertion procedure completed";
 		json.put("message", message);
         
         return ResponseEntity.ok(json);
