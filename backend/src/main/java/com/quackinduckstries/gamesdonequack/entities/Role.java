@@ -29,7 +29,7 @@ public class Role {
 	@OneToMany(mappedBy = "role")
 	private Collection<User> users;
 	
-	@ManyToMany(cascade = CascadeType.REMOVE) //TODO MUST TEST WAS NOT TESTED
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(
 			name = "roles_permissions",
 			joinColumns = @JoinColumn(

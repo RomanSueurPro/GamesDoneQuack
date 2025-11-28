@@ -2,8 +2,7 @@ package com.quackinduckstries.gamesdonequack.entities;
 
 import java.util.Collection;
 
-
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

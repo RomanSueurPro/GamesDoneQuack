@@ -70,21 +70,10 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 	
 	@Transactional
 	Role createRoleIfNotFound(String name, Collection<Permission> permissions) {
-//		Optional<Role> existingRole = roleRepository.findByName(name);
-//		if(existingRole.isPresent()) {
-//			return existingRole.get();
-//		}
-//		Role role = new Role();
-//		role.setName(name);
-//		role.setPermissions(permissions);
-//		roleRepository.save(role);
-//		return role;
-		
 		return roleRepository.findByName(name)
 				.orElseGet(() -> {
 					Role role = new Role(name, permissions);
 					return roleRepository.save(role);
 				});
 	}
-	
 }

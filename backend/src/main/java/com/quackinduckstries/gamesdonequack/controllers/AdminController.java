@@ -99,4 +99,19 @@ public class AdminController {
 		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
 	}
 	
+	@PostMapping("/deletepermission")
+	public ResponseEntity<?> deletePermission(@RequestParam("id") Long id) {
+		
+		Permission permission = adminPermissionService.deletePermission(id);
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("Permission ")
+			.append(permission.getName())
+			.append(" was successfully deleted.");
+			
+		String message = builder.toString();
+		
+		return ResponseEntity.ok(Map.of("message", message));
+	}
+	
 }
