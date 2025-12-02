@@ -15,4 +15,6 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
 	Optional<Permission> findById(Long id);
 	
 	void deleteById(Long id);
+
+	boolean existsByName(String name);
 }

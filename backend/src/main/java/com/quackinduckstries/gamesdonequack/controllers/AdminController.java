@@ -6,21 +6,17 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
-import com.quackinduckstries.gamesdonequack.entities.User;
-import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
-import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
-import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
 import com.quackinduckstries.gamesdonequack.services.UserService;
@@ -81,12 +77,20 @@ public class AdminController {
 	
 	
 	@PostMapping("/createRole")
+	@Transactional
 	public ResponseEntity<?> createRole(@RequestParam("name") String name, @RequestParam("existingPermissions") List<String> existingPermissions, @RequestParam("newPermissions") List<String> newPermissions) {
 		
 		List<Permission> allPermissions = new ArrayList<Permission>();
+		List<String> errorMessages = new ArrayList<String>(); 
+		boolean errorFlag = false;
 		for(String newPermission : newPermissions) {
-			Permission permission = adminPermissionService.createPermission(newPermission);
-			allPermissions.add(permission);
+			try {
+				Permission permission = adminPermissionService.createPermission(newPermission);
+				allPermissions.add(permission);
+			}catch(Exception e) {
+				errorFlag = true;
+				errorMessages.add(e.getMessage());
+			}
 		}
 		
 		for(String existingPermission : existingPermissions) {
@@ -95,6 +99,10 @@ public class AdminController {
 		}
 		Role role = new Role(name, allPermissions);
 		adminRoleService.save(role);
+		
+		if(errorFlag) {
+			return ResponseEntity.ok(Map.of("error", errorMessages));
+		}
 		
 		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
 	}
@@ -113,5 +121,21 @@ public class AdminController {
 		
 		return ResponseEntity.ok(Map.of("message", message));
 	}
+	
+	@PostMapping("/createpermission")
+	public ResponseEntity<?> createPermission(@RequestParam("name") String name){
+		Permission permission = adminPermissionService.createPermission(name);
+		
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("Permission ")
+			.append(permission.getName())
+			.append(" was successfully created.");
+			
+		String message = builder.toString();
+		
+		return ResponseEntity.ok(Map.of("message", message));
+	}
+	
 	
 }

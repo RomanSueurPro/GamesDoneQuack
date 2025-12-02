@@ -1,8 +1,9 @@
 package com.quackinduckstries.gamesdonequack.entities;
 
 import java.util.Collection;
+import java.util.HashSet;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,18 +18,24 @@ import lombok.Data;
 public class Permission {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(nullable = false, unique = true)
 	private String name;
 	
 	@ManyToMany(mappedBy = "permissions")
-	private Collection<Role> roles;
+	private Collection<Role> roles = new HashSet<>();
 	
 	public Permission(String name) {
 		this.name = name;
 	}
 	
 	protected Permission() {}
+	
+	public void addRole(Role role) {
+		this.roles.add(role);
+		role.getPermissions().add(this);
+	}
 	
 }

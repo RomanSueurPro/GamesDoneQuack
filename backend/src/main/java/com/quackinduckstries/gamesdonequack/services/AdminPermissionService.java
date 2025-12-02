@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.entities.Permission;
+import com.quackinduckstries.gamesdonequack.exceptions.PermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 
 @Service
@@ -18,11 +19,14 @@ public class AdminPermissionService {
 	}
 	
 	@Transactional
-	public Permission createPermission(String name) {
-		Permission permission = new Permission(name);
-		permissionRepository.save(permission);
+	public synchronized Permission createPermission(String name) {
 		
-		return permission;
+		if (permissionRepository.existsByName(name)) {
+	        throw new PermissionAlreadyExistsException("Permission \"" + name + "\" already exists");
+	    }
+
+	    Permission permission = new Permission(name);
+	    return permissionRepository.save(permission);
 	}
 
 	public Permission getPermissionByName(String existingPermission) throws IllegalArgumentException{
