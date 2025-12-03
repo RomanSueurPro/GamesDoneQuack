@@ -1,5 +1,6 @@
 package com.quackinduckstries.gamesdonequack.services;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,20 +19,22 @@ public class AdminPermissionService {
 		this.roleRepository = roleRepository;
 	}
 	
+	
 	@Transactional
 	public synchronized Permission createPermission(String name) {
-		
+
 		if (permissionRepository.existsByName(name)) {
-	        throw new NewPermissionAlreadyExistsException("Permission \"" + name + "\" already exists");
+	        throw new NewPermissionAlreadyExistsException("New permission " + name + " already exists");
 	    }
 
-	    Permission permission = new Permission(name);
-	    return permissionRepository.save(permission);
+	    return new Permission(name);
 	}
 
+	
 	public Permission getPermissionByName(String existingPermission) throws IllegalArgumentException{
 		return permissionRepository.findByName(existingPermission).orElseThrow(() -> new IllegalArgumentException("Permission not found: " + existingPermission));
 	}
+	
 	
 	@Transactional
 	public synchronized Permission deletePermission(Long id) {
@@ -40,6 +43,7 @@ public class AdminPermissionService {
 		for(var role : roles) {
 			role.getPermissions().remove(toDelete);
 		}
+		
 		roles.clear();
 		permissionRepository.flush();
 		roleRepository.flush();
@@ -48,6 +52,7 @@ public class AdminPermissionService {
 		return toDelete;
 	}
 
+	
 	public boolean existsByName(String name) {
 		return permissionRepository.existsByName(name);
 	}

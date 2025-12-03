@@ -168,15 +168,17 @@ public class AdminController {
 	
 	@PostMapping("/createpermission")
 	public ResponseEntity<?> createPermission(@RequestParam("name") String name){
-		Permission permission = adminPermissionService.createPermission(name);
 		
-		StringBuilder builder = new StringBuilder();
-		builder.append("Permission ")
-			.append(permission.getName())
-			.append(" was successfully created.");
-			
-		String message = builder.toString();
-		
-		return ResponseEntity.ok(Map.of("message", message));
+		try {
+	        Permission permission = adminPermissionService.createPermission(name);
+
+	        return ResponseEntity.ok(
+	            Map.of("message", "Permission " + permission.getName() + " was successfully created.")
+	        );
+
+	    } catch (NewPermissionAlreadyExistsException e) {
+
+	        return ResponseEntity.ok(Map.of("error", e.getMessage()));
+	    }
 	}	
 }
