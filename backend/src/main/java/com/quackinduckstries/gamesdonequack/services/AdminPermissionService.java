@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.entities.Permission;
-import com.quackinduckstries.gamesdonequack.exceptions.PermissionAlreadyExistsException;
+import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 
 @Service
@@ -22,7 +22,7 @@ public class AdminPermissionService {
 	public synchronized Permission createPermission(String name) {
 		
 		if (permissionRepository.existsByName(name)) {
-	        throw new PermissionAlreadyExistsException("Permission \"" + name + "\" already exists");
+	        throw new NewPermissionAlreadyExistsException("Permission \"" + name + "\" already exists");
 	    }
 
 	    Permission permission = new Permission(name);
@@ -46,5 +46,9 @@ public class AdminPermissionService {
 		permissionRepository.deleteById(id);
 		
 		return toDelete;
+	}
+
+	public boolean existsByName(String name) {
+		return permissionRepository.existsByName(name);
 	}
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
+import com.quackinduckstries.gamesdonequack.exceptions.AlreadyExistingRoleNameException;
+import com.quackinduckstries.gamesdonequack.exceptions.ExistingPermissionDoesNotExistException;
+import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
 import com.quackinduckstries.gamesdonequack.services.UserService;
@@ -43,6 +45,7 @@ public class AdminController {
 		
 		return ResponseEntity.ok(Map.of("message", "You are an admin congratz"));
 	}
+	
 	
 	@PostMapping("/deleteuser")
 	public ResponseEntity<?> deleteUser(@RequestParam("id")long id) {
@@ -77,35 +80,75 @@ public class AdminController {
 	
 	
 	@PostMapping("/createRole")
-	@Transactional
 	public ResponseEntity<?> createRole(@RequestParam("name") String name, @RequestParam("existingPermissions") List<String> existingPermissions, @RequestParam("newPermissions") List<String> newPermissions) {
 		
 		List<Permission> allPermissions = new ArrayList<Permission>();
+		List<String> toAddPermissionsName = new ArrayList<String>();
 		List<String> errorMessages = new ArrayList<String>(); 
 		boolean errorFlag = false;
+		
 		for(String newPermission : newPermissions) {
 			try {
-				Permission permission = adminPermissionService.createPermission(newPermission);
-				allPermissions.add(permission);
-			}catch(Exception e) {
+				if(!adminPermissionService.existsByName(newPermission)) {
+					toAddPermissionsName.add(newPermission);
+				}
+				else {
+					throw new NewPermissionAlreadyExistsException("New permission " + newPermission + " already exists");
+				}
+				
+			}catch(NewPermissionAlreadyExistsException e) {
+				e.printStackTrace();
 				errorFlag = true;
 				errorMessages.add(e.getMessage());
 			}
 		}
 		
 		for(String existingPermission : existingPermissions) {
-			Permission permission = adminPermissionService.getPermissionByName(existingPermission);
-			allPermissions.add(permission);
+			try {
+				if(adminPermissionService.existsByName(existingPermission)) {
+					toAddPermissionsName.add(existingPermission);
+				}
+				else {
+					throw new ExistingPermissionDoesNotExistException("Existing permission " + existingPermission + " does not exist");
+				}
+				
+			}catch(ExistingPermissionDoesNotExistException e) {
+				e.printStackTrace();
+				errorFlag = true;
+				errorMessages.add(e.getMessage());
+			}
 		}
-		Role role = new Role(name, allPermissions);
-		adminRoleService.save(role);
+		
+		try {
+			if(adminRoleService.existsByName(name)) {
+				throw new AlreadyExistingRoleNameException("Role " + name + " already exists");
+			}
+			
+		}catch(AlreadyExistingRoleNameException e) {
+			e.printStackTrace();
+			errorFlag = true;
+			errorMessages.add(e.getMessage());
+		}
 		
 		if(errorFlag) {
 			return ResponseEntity.ok(Map.of("error", errorMessages));
 		}
-		
-		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
+		else {
+			for (var permissionName : newPermissions) {
+				allPermissions.add(adminPermissionService.createPermission(permissionName));
+			}
+
+			for (var permissionName : existingPermissions) {
+				allPermissions.add(adminPermissionService.getPermissionByName(permissionName));
+			}
+
+			Role role = new Role(name, allPermissions);
+			adminRoleService.save(role);
+			
+			return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
+		}
 	}
+	
 	
 	@PostMapping("/deletepermission")
 	public ResponseEntity<?> deletePermission(@RequestParam("id") Long id) {
@@ -122,10 +165,10 @@ public class AdminController {
 		return ResponseEntity.ok(Map.of("message", message));
 	}
 	
+	
 	@PostMapping("/createpermission")
 	public ResponseEntity<?> createPermission(@RequestParam("name") String name){
 		Permission permission = adminPermissionService.createPermission(name);
-		
 		
 		StringBuilder builder = new StringBuilder();
 		builder.append("Permission ")
@@ -135,7 +178,5 @@ public class AdminController {
 		String message = builder.toString();
 		
 		return ResponseEntity.ok(Map.of("message", message));
-	}
-	
-	
+	}	
 }

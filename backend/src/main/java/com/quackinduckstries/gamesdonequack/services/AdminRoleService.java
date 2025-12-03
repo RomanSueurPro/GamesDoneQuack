@@ -26,5 +26,9 @@ public class AdminRoleService {
 		roleRepository.save(role);
 		return role;
 	}
+
+	public boolean existsByName(String name) {
+		return roleRepository.existsByName(name);
+	}
 	
 }
