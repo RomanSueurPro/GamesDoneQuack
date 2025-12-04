@@ -7,11 +7,11 @@ import com.quackinduckstries.gamesdonequack.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 	
-	User findById(long id);
+	Optional<User> findById(long id);
 	
 	Optional<User> findByUsername(String username);
-	
+
 	void deleteById(long id);
-	
-	
+
+	boolean existsByName(String username);
 }

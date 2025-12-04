@@ -52,13 +52,7 @@ public class AdminController {
 		
 		UserDto userToBeDeleted = userService.deleteUserById(id);
 		
-		StringBuilder builder = new StringBuilder();
-		builder.append("User ")
-			.append(userToBeDeleted.getUsername())
-			.append(" was succeffully deleted");
-		String message = builder.toString();
-		
-		return ResponseEntity.ok(Map.of("message", message));
+		return ResponseEntity.ok(Map.of("message", "User " + userToBeDeleted.getUsername() + " was succeffully deleted"));
 	}
 	
 	
@@ -155,30 +149,15 @@ public class AdminController {
 		
 		Permission permission = adminPermissionService.deletePermission(id);
 		
-		StringBuilder builder = new StringBuilder();
-		builder.append("Permission ")
-			.append(permission.getName())
-			.append(" was successfully deleted.");
-			
-		String message = builder.toString();
-		
-		return ResponseEntity.ok(Map.of("message", message));
+		return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully deleted."));
 	}
 	
 	
 	@PostMapping("/createpermission")
 	public ResponseEntity<?> createPermission(@RequestParam("name") String name){
 		
-		try {
 	        Permission permission = adminPermissionService.createPermission(name);
 
-	        return ResponseEntity.ok(
-	            Map.of("message", "Permission " + permission.getName() + " was successfully created.")
-	        );
-
-	    } catch (NewPermissionAlreadyExistsException e) {
-
-	        return ResponseEntity.ok(Map.of("error", e.getMessage()));
-	    }
+	        return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully created."));
 	}	
 }

@@ -1,14 +1,15 @@
 package com.quackinduckstries.gamesdonequack.controllers;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDTO;
+import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameException;
 import com.quackinduckstries.gamesdonequack.services.UserService;
 
 @RestController
@@ -23,9 +24,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ObjectNode> registerUser(
+    public ResponseEntity<?> registerUser(
     		@RequestParam("username") String username,
-            @RequestParam("password") String password) {
+            @RequestParam("password") String password) throws IllegalStateException, DuplicateUsernameException {
 
         System.out.println("username: " + username);
         System.out.println("password: " + password);
@@ -33,12 +34,6 @@ public class UserController {
         RegisterRequestDTO request = new RegisterRequestDTO(username, password);
         userService.registerNewUser(request);
         
-        //JSON message code
-        ObjectMapper mapper = new ObjectMapper();
-		ObjectNode json = mapper.createObjectNode();
-		String message = "New user insertion procedure completed";
-		json.put("message", message);
-        
-        return ResponseEntity.ok(json);
+        return ResponseEntity.ok(Map.of("message", "New user insertion procedure completed."));
     }	
 }

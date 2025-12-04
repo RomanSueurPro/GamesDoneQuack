@@ -9,6 +9,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.entities.User;
+import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameException;
 import com.quackinduckstries.gamesdonequack.mappers.UserMapper;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
@@ -33,31 +34,34 @@ public class UserService {
 	
 	
 	@Transactional
-	public User registerNewUser(RegisterRequestDTO request) {
+	public User registerNewUser(RegisterRequestDTO request) throws IllegalStateException, DuplicateUsernameException {
 		User newUser = new User();
 		newUser.setUsername(request.getRequestedUsername());
 		newUser.setPassword(passwordEncoder.encode(request.getRequestedPassword()));
 		
 		Role defaultRole = roleRepository.findByName(roleConfig.getDefaultRole())
-				.orElseThrow(() -> new IllegalStateException("Default Role not found : " + roleConfig.getDefaultRole()));
+				.orElseThrow(() -> new IllegalStateException("Default Role not found : " + roleConfig.getDefaultRole() + ".\n Please contact support."));
 		
 		newUser.setRole(defaultRole);
 		
+		if(userRepository.existsByName(newUser.getUsername())) {
+			throw new DuplicateUsernameException("Username " + newUser.getUsername() + " already exists.");
+		}
 		userRepository.save(newUser);
 		return newUser;
 	}
 	
 	@Transactional
-	public UserDto deleteUserById(long id) {
-		User userToBeDeleted = userRepository.findById(id);
+	public UserDto deleteUserById(long id) throws IllegalArgumentException{
+		User userToBeDeleted = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not delete user : user with id=" + id + " not found."));
 		userRepository.deleteById(id);
 		return userMapper.userToUserDto(userToBeDeleted);
 	}
 	
 	@Transactional
-	public UserDto updateUserRole(long idUser, long idRole) {
-		User userToUpdate = userRepository.findById(idUser);
-		Role role = roleRepository.findById(idRole);
+	public UserDto updateUserRole(long idUser, long idRole) throws IllegalArgumentException {
+		User userToUpdate = userRepository.findById(idUser).orElseThrow(() -> new IllegalArgumentException("Could not update role of user : user with id=" + idUser + " not found."));
+		Role role = roleRepository.findById(idRole).orElseThrow(() -> new IllegalArgumentException("Could not update role of user : role with id=" + idRole + " not found."));
 		
 		userToUpdate.setRole(role);
 		userRepository.flush();

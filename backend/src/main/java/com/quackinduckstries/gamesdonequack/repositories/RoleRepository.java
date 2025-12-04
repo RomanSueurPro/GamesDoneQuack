@@ -9,7 +9,7 @@ import com.quackinduckstries.gamesdonequack.entities.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-	Role findById(long id);
+	Optional<Role> findById(long id);
 	Optional<Role> findByName(String name);
 	boolean existsByName(String name);
 }
