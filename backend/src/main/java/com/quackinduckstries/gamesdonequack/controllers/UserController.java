@@ -26,7 +26,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(
     		@RequestParam("username") String username,
-            @RequestParam("password") String password) throws IllegalStateException, DuplicateUsernameException {
+            @RequestParam("password") String password) throws DuplicateUsernameException {
 
         System.out.println("username: " + username);
         System.out.println("password: " + password);

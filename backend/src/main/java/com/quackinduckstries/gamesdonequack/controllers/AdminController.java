@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
-import com.quackinduckstries.gamesdonequack.exceptions.AlreadyExistingRoleNameException;
-import com.quackinduckstries.gamesdonequack.exceptions.ExistingPermissionDoesNotExistException;
-import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
 import com.quackinduckstries.gamesdonequack.services.UserService;
@@ -61,86 +58,16 @@ public class AdminController {
 		
 		UserDto userToUpdate = userService.updateUserRole(idUser, idRole);
 		
-		StringBuilder builder = new StringBuilder();
-		builder.append("User ")
-			.append(userToUpdate.getUsername())
-			.append(" was successfully granted ")
-			.append(userToUpdate.getRole().getName())
-			.append(" role.");
-		String message = builder.toString();
-		
-		return ResponseEntity.ok(Map.of("message", message));
+		return ResponseEntity.ok(Map.of("message", "User \"" + userToUpdate.getUsername() + "\" was successfully granted \"" + userToUpdate.getRole().getName() + "\" role."));
 	}
 	
 	
 	@PostMapping("/createRole")
 	public ResponseEntity<?> createRole(@RequestParam("name") String name, @RequestParam("existingPermissions") List<String> existingPermissions, @RequestParam("newPermissions") List<String> newPermissions) {
 		
-		List<Permission> allPermissions = new ArrayList<Permission>();
-		List<String> toAddPermissionsName = new ArrayList<String>();
-		List<String> errorMessages = new ArrayList<String>(); 
-		boolean errorFlag = false;
+		Role role = adminRoleService.createRole(name, existingPermissions, newPermissions);
 		
-		for(String newPermission : newPermissions) {
-			try {
-				if(!adminPermissionService.existsByName(newPermission)) {
-					toAddPermissionsName.add(newPermission);
-				}
-				else {
-					throw new NewPermissionAlreadyExistsException("New permission \"" + newPermission + "\" already exists");
-				}
-				
-			}catch(NewPermissionAlreadyExistsException e) {
-				e.printStackTrace();
-				errorFlag = true;
-				errorMessages.add(e.getMessage());
-			}
-		}
-		
-		for(String existingPermission : existingPermissions) {
-			try {
-				if(adminPermissionService.existsByName(existingPermission)) {
-					toAddPermissionsName.add(existingPermission);
-				}
-				else {
-					throw new ExistingPermissionDoesNotExistException("Existing permission \"" + existingPermission + "\" does not exist");
-				}
-				
-			}catch(ExistingPermissionDoesNotExistException e) {
-				e.printStackTrace();
-				errorFlag = true;
-				errorMessages.add(e.getMessage());
-			}
-		}
-		
-		try {
-			if(adminRoleService.existsByName(name)) {
-				throw new AlreadyExistingRoleNameException("Role \"" + name + "\" already exists");
-			}
-			
-		}catch(AlreadyExistingRoleNameException e) {
-			e.printStackTrace();
-			errorFlag = true;
-			errorMessages.add(e.getMessage());
-		}
-		
-		if(errorFlag) {
-			return ResponseEntity.ok(Map.of("error", errorMessages));
-		}
-		else {
-			for (var permissionName : newPermissions) {
-				allPermissions.add(adminPermissionService.createPermission(permissionName));
-			}
-
-			for (var permissionName : existingPermissions) {
-				allPermissions.add(adminPermissionService.getPermissionByName(permissionName));
-			}
-
-			Role role = new Role(name, allPermissions);
-			adminRoleService.save(role);
-			
-			return ResponseEntity.ok(Map.of("message", "Role \"" + role.getName() + "\" was successfully created"));
-		}
+		return ResponseEntity.ok(Map.of("message", "Role \"" + role.getName() + "\" was successfully created"));
 	}
 	
 	

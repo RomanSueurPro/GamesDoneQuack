@@ -31,13 +31,13 @@ public class AdminPermissionService {
 	}
 
 	
-	public Permission getPermissionByName(String existingPermission) throws IllegalArgumentException{
+	public Permission getPermissionByName(String existingPermission) {
 		return permissionRepository.findByName(existingPermission).orElseThrow(() -> new IllegalArgumentException("Permission not found: \"" + existingPermission + "\"."));
 	}
 	
 	
 	@Transactional
-	public Permission deletePermission(Long id) throws IllegalArgumentException {
+	public Permission deletePermission(Long id) {
 		Permission toDelete = permissionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not delete permission : permission not found."));
 		var roles = toDelete.getRoles();
 		for(var role : roles) {
@@ -55,5 +55,10 @@ public class AdminPermissionService {
 	
 	public boolean existsByName(String name) {
 		return permissionRepository.existsByName(name);
+	}
+
+
+	public Permission findByName(String name) {
+		return permissionRepository.findByName(name).orElseThrow(() -> new IllegalArgumentException("Could not find Permissions with name \"" + name + "\"."));
 	}
 }
