@@ -1,11 +1,15 @@
 package com.quackinduckstries.gamesdonequack.services;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
+import com.quackinduckstries.gamesdonequack.mappers.PermissionMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 
 @Service
@@ -13,10 +17,12 @@ public class AdminPermissionService {
 
     private final RoleRepository roleRepository;
 	private final PermissionRepository permissionRepository;
+	private final PermissionMapper permissionMapper;
 	
-	public AdminPermissionService(PermissionRepository permissionRepository, RoleRepository roleRepository) {
+	public AdminPermissionService(PermissionRepository permissionRepository, RoleRepository roleRepository, PermissionMapper permissionMapper) {
 		this.permissionRepository = permissionRepository;
 		this.roleRepository = roleRepository;
+		this.permissionMapper = permissionMapper;
 	}
 	
 	
@@ -60,5 +66,15 @@ public class AdminPermissionService {
 
 	public Permission findByName(String name) {
 		return permissionRepository.findByName(name).orElseThrow(() -> new IllegalArgumentException("Could not find Permissions with name \"" + name + "\"."));
+	}
+
+
+	public PermissionDto updatePermission(long id, String name) {
+		Permission toUpdate = permissionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find the permission with id : " + id + "."));
+		
+		toUpdate.setName(name);
+		permissionRepository.flush();
+		
+		return permissionMapper.fromPermissionToPermissionDto(toUpdate);
 	}
 }

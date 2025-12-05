@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
@@ -53,7 +54,7 @@ public class AdminController {
 	}
 	
 	
-	@PatchMapping("/updateUserRole")
+	@PatchMapping("/updateuserrole")
 	public ResponseEntity<?> updateUserRole(@RequestParam("idUser") long idUser, @RequestParam("idRole")long idRole) {
 		
 		UserDto userToUpdate = userService.updateUserRole(idUser, idRole);
@@ -62,7 +63,7 @@ public class AdminController {
 	}
 	
 	
-	@PostMapping("/createRole")
+	@PostMapping("/createrole")
 	public ResponseEntity<?> createRole(@RequestParam("name") String name, @RequestParam("existingPermissions") List<String> existingPermissions, @RequestParam("newPermissions") List<String> newPermissions) {
 		
 		Role role = adminRoleService.createRole(name, existingPermissions, newPermissions);
@@ -87,4 +88,13 @@ public class AdminController {
 
 	        return ResponseEntity.ok(Map.of("message", "Permission \"" + permission.getName() + "\" was successfully created."));
 	}	
+	
+	@PatchMapping("/updatepermission")
+	public ResponseEntity<?> updatePermission(@RequestParam("id") long id, @RequestParam("name") String name) {
+		
+		PermissionDto permissionToUpdate = adminPermissionService.updatePermission(id, name);
+		
+		
+		return ResponseEntity.ok(Map.of("message", "Renaming to " + permissionToUpdate.getName() + " went fine"));
+	}
 }

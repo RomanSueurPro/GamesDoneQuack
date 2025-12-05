@@ -8,13 +8,11 @@ import com.quackinduckstries.gamesdonequack.entities.Permission;
 
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
-	Permission findById(long id);
-	
 	Optional<Permission> findByName(String name);
 	
-	Optional<Permission> findById(Long id);
+	Optional<Permission> findById(long id);
 	
-	void deleteById(Long id);
+	void deleteById(long id);
 
 	boolean existsByName(String name);
 }
