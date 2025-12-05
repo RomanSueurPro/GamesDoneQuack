@@ -24,7 +24,7 @@ public class AdminPermissionService {
 	public Permission createPermission(String name) {
 
 		if (permissionRepository.existsByName(name)) {
-	        throw new NewPermissionAlreadyExistsException("New permission " + name + " already exists.");
+	        throw new NewPermissionAlreadyExistsException("New permission \"" + name + "\" already exists.");
 	    }
 
 	    return permissionRepository.save(new Permission(name));
@@ -32,12 +32,12 @@ public class AdminPermissionService {
 
 	
 	public Permission getPermissionByName(String existingPermission) throws IllegalArgumentException{
-		return permissionRepository.findByName(existingPermission).orElseThrow(() -> new IllegalArgumentException("Permission not found: " + existingPermission + "."));
+		return permissionRepository.findByName(existingPermission).orElseThrow(() -> new IllegalArgumentException("Permission not found: \"" + existingPermission + "\"."));
 	}
 	
 	
 	@Transactional
-	public synchronized Permission deletePermission(Long id) throws IllegalArgumentException {
+	public Permission deletePermission(Long id) throws IllegalArgumentException {
 		Permission toDelete = permissionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not delete permission : permission not found."));
 		var roles = toDelete.getRoles();
 		for(var role : roles) {

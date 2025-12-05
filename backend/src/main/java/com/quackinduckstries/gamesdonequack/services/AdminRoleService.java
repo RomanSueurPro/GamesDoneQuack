@@ -13,13 +13,14 @@ public class AdminRoleService {
 
     private final PermissionRepository permissionRepository;
     private final RoleRepository roleRepository;
-	
 	private final UserRepository userRepository;
+	
 	public AdminRoleService(UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository) {
 		this.userRepository = userRepository;
 		this.permissionRepository = permissionRepository;
 		this.roleRepository = roleRepository;
 	}
+	
 	
 	@Transactional
 	public Role save(Role role) {
@@ -27,8 +28,8 @@ public class AdminRoleService {
 		return role;
 	}
 
+	
 	public boolean existsByName(String name) {
 		return roleRepository.existsByName(name);
 	}
-	
 }

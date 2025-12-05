@@ -44,7 +44,7 @@ public class UserService {
 		
 		newUser.setRole(defaultRole);
 		
-		if(userRepository.existsByName(newUser.getUsername())) {
+		if(userRepository.existsByUsername(newUser.getUsername())) {
 			throw new DuplicateUsernameException("Username " + newUser.getUsername() + " already exists.");
 		}
 		userRepository.save(newUser);

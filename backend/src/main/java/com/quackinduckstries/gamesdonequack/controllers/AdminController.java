@@ -52,7 +52,7 @@ public class AdminController {
 		
 		UserDto userToBeDeleted = userService.deleteUserById(id);
 		
-		return ResponseEntity.ok(Map.of("message", "User " + userToBeDeleted.getUsername() + " was succeffully deleted"));
+		return ResponseEntity.ok(Map.of("message", "User \"" + userToBeDeleted.getUsername() + "\" was succeffully deleted"));
 	}
 	
 	
@@ -87,7 +87,7 @@ public class AdminController {
 					toAddPermissionsName.add(newPermission);
 				}
 				else {
-					throw new NewPermissionAlreadyExistsException("New permission " + newPermission + " already exists");
+					throw new NewPermissionAlreadyExistsException("New permission \"" + newPermission + "\" already exists");
 				}
 				
 			}catch(NewPermissionAlreadyExistsException e) {
@@ -103,7 +103,7 @@ public class AdminController {
 					toAddPermissionsName.add(existingPermission);
 				}
 				else {
-					throw new ExistingPermissionDoesNotExistException("Existing permission " + existingPermission + " does not exist");
+					throw new ExistingPermissionDoesNotExistException("Existing permission \"" + existingPermission + "\" does not exist");
 				}
 				
 			}catch(ExistingPermissionDoesNotExistException e) {
@@ -115,7 +115,7 @@ public class AdminController {
 		
 		try {
 			if(adminRoleService.existsByName(name)) {
-				throw new AlreadyExistingRoleNameException("Role " + name + " already exists");
+				throw new AlreadyExistingRoleNameException("Role \"" + name + "\" already exists");
 			}
 			
 		}catch(AlreadyExistingRoleNameException e) {
@@ -139,7 +139,7 @@ public class AdminController {
 			Role role = new Role(name, allPermissions);
 			adminRoleService.save(role);
 			
-			return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
+			return ResponseEntity.ok(Map.of("message", "Role \"" + role.getName() + "\" was successfully created"));
 		}
 	}
 	
@@ -149,7 +149,7 @@ public class AdminController {
 		
 		Permission permission = adminPermissionService.deletePermission(id);
 		
-		return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully deleted."));
+		return ResponseEntity.ok(Map.of("message", "Permission \"" + permission.getName() + "\" was successfully deleted."));
 	}
 	
 	
@@ -158,6 +158,6 @@ public class AdminController {
 		
 	        Permission permission = adminPermissionService.createPermission(name);
 
-	        return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully created."));
+	        return ResponseEntity.ok(Map.of("message", "Permission \"" + permission.getName() + "\" was successfully created."));
 	}	
 }
