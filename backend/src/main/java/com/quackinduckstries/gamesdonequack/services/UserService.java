@@ -39,8 +39,8 @@ public class UserService {
 		newUser.setUsername(request.getRequestedUsername());
 		newUser.setPassword(passwordEncoder.encode(request.getRequestedPassword()));
 		
-		Role defaultRole = roleRepository.findByName(roleConfig.getDefaultRole())
-				.orElseThrow(() -> new IllegalStateException("Default Role not found : " + roleConfig.getDefaultRole() + ".\n Please contact support."));
+		Role defaultRole = roleRepository.findByName(roleConfig.getDefaultRoleName())
+				.orElseThrow(() -> new IllegalStateException("Default Role not found : " + roleConfig.getDefaultRoleName() + ".\n Please contact support."));
 		
 		newUser.setRole(defaultRole);
 		

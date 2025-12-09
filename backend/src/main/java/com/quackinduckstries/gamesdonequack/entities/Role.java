@@ -28,6 +28,12 @@ public class Role {
 	@Column(nullable = false, unique = true)
 	private String name;
 	
+	@Column(nullable = false)
+	private boolean isDefaultRole;
+	
+	@Column(nullable = false)
+	private boolean isAdminRole;
+	
 	@OneToMany(mappedBy = "role")
 	private Collection<User> users;
 	

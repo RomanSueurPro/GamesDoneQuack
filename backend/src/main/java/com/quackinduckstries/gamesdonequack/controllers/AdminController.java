@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
@@ -96,5 +97,13 @@ public class AdminController {
 		
 		
 		return ResponseEntity.ok(Map.of("message", "Renaming to " + permissionToUpdate.getName() + " went fine"));
+	}
+	
+	@PatchMapping("/updaterole")
+	public ResponseEntity<?> updateRole(@RequestParam("id") long id, @RequestParam("name") String name, @RequestParam("permissions") List<String> permissions) {
+		
+		RoleDto roleToUpdate = adminRoleService.updateRole(id, name, permissions);
+		
+		return ResponseEntity.ok(Map.of("message", "Updating " + roleToUpdate.getName() + " went fine"));
 	}
 }

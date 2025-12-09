@@ -1,12 +1,16 @@
 roles:
-  defaultRole: "ROLE_USER"
+  defaultRoleName: "ROLE_USER"
   definitions:
     - name: "ROLE_USER"
       description: "Standard user role"
+      isDefaultRole: 1
+      isAdminRole: 0
       permissions:
         - "READ_PERMISSION"
     - name: "ROLE_ADMIN"
       description: "Administrator role"
+      isDefaultRole: 0
+      isAdminRole: 1
       permissions:
         - "READ_PERMISSION"
         - "WRITE_PERMISSION"

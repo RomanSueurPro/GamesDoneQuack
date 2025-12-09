@@ -19,6 +19,8 @@ public class AdminPermissionService {
 	private final PermissionRepository permissionRepository;
 	private final PermissionMapper permissionMapper;
 	
+	
+	//DO NOT inject adminRoleService here, or the circular dependency malediction would be complete
 	public AdminPermissionService(PermissionRepository permissionRepository, RoleRepository roleRepository, PermissionMapper permissionMapper) {
 		this.permissionRepository = permissionRepository;
 		this.roleRepository = roleRepository;
@@ -34,6 +36,14 @@ public class AdminPermissionService {
 	    }
 
 	    return permissionRepository.save(new Permission(name));
+	}
+	
+	@Transactional
+	public Permission createPermissionIfNotExist(String name) {
+		return permissionRepository.findByName(name).orElseGet(() -> {
+			Permission permission = new Permission(name);
+			return permission;
+		});
 	}
 
 	
@@ -51,8 +61,6 @@ public class AdminPermissionService {
 		}
 		
 		roles.clear();
-		permissionRepository.flush();
-		roleRepository.flush();
 		permissionRepository.deleteById(id);
 		
 		return toDelete;
@@ -69,11 +77,11 @@ public class AdminPermissionService {
 	}
 
 
+	@Transactional
 	public PermissionDto updatePermission(long id, String name) {
 		Permission toUpdate = permissionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find the permission with id : " + id + "."));
 		
 		toUpdate.setName(name);
-		permissionRepository.flush();
 		
 		return permissionMapper.fromPermissionToPermissionDto(toUpdate);
 	}

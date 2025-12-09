@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class RoleConfig {
 
-	private String defaultRole;
+	private String defaultRoleName;
 	private List<RoleDefinition> definitions;
 	
 	@Getter
@@ -22,6 +22,8 @@ public class RoleConfig {
 	public static class RoleDefinition{
 		private String name;
 		private String description;
+		private boolean isAdminRole;
+        private boolean isDefaultRole;
 		private List<String> permissions;
 	}
 }

@@ -12,6 +12,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quackinduckstries.gamesdonequack.config.RoleConfig.RoleDefinition;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
@@ -21,16 +22,10 @@ import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent>{
 
-
 	boolean alreadySetup = false;
-	
 	private final RoleRepository roleRepository;
-	
 	private final PermissionRepository permissionRepository;
-	
-	
 	private final RoleConfig roleConfig;
-	
 	
 	SetupDataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository, RoleConfig roleConfig){
 		this.roleRepository = roleRepository;
@@ -56,7 +51,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 					.stream()
 					.map(this::createPermissionIfNotFound)
 					.toList();
-			createRoleIfNotFound(def.getName(), permissions);
+			createRoleIfNotFound(def, permissions);
 		}
 		alreadySetup = true;
 	}
@@ -94,11 +89,13 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 	}
 	
 	@Transactional
-	Role createRoleIfNotFound(String name, List<Permission> permissions) {
+	Role createRoleIfNotFound(RoleDefinition def, List<Permission> permissions) {
 				
-		Optional<Role> role = roleRepository.findByName(name);
+		Optional<Role> role = roleRepository.findByName(def.getName());
 		if (role.isEmpty()) {
-	        Role newRole = new Role(name, permissions);
+	        Role newRole = new Role(def.getName(), permissions);
+	        newRole.setDefaultRole(def.isDefaultRole());
+	        newRole.setAdminRole(def.isAdminRole());
 	        return roleRepository.save(newRole);
 	    }
 		Role noOption = role.get();
@@ -107,7 +104,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 		for(Permission p : toAdd) {
 			noOption.addPermission(p);
 		}
-		roleRepository.flush();
 		
 		return noOption;
 	}
