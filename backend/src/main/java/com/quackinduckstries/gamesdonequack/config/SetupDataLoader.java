@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.config.RoleConfig.RoleDefinition;
+import com.quackinduckstries.gamesdonequack.controllers.AdminController;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
@@ -22,21 +23,29 @@ import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent>{
 
+    private final AdminController adminController;
+
 	boolean alreadySetup = false;
 	private final RoleRepository roleRepository;
 	private final PermissionRepository permissionRepository;
 	private final RoleConfig roleConfig;
 	
-	SetupDataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository, RoleConfig roleConfig){
+	SetupDataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository, RoleConfig roleConfig, AdminController adminController){
 		this.roleRepository = roleRepository;
 		this.permissionRepository = permissionRepository;
 		this.roleConfig = roleConfig;
+		this.adminController = adminController;
 	}
 	
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		if(alreadySetup) {
+			return;
+		}
+		
+		if(roleRepository.existsByIsDefaultRoleTrue()) {
+			roleConfig.setDefaultRoleName(roleRepository.findByIsDefaultRoleTrue().orElseThrow(() -> new IllegalArgumentException("No default role in database")).getName());
 			return;
 		}
 		
@@ -102,6 +111,12 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 		for(Permission p : toAdd) {
 			noOption.addPermission(p);
 		}
+		/* 
+		 * This handles the very edge case where we do have a ROLE_USER in database, but it is not set
+		 * as the default role, and somehow there is no default role in base at application start.
+		 * */
+		noOption.setDefaultRole(def.isDefaultRole());
+		noOption.setAdminRole(def.isAdminRole());
 		
 		return noOption;
 	}
