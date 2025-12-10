@@ -51,7 +51,7 @@ public class AdminController {
 		
 		UserDto userToBeDeleted = userService.deleteUserById(id);
 		
-		return ResponseEntity.ok(Map.of("message", "User \"" + userToBeDeleted.getUsername() + "\" was succeffully deleted"));
+		return ResponseEntity.ok(Map.of("message", "User " + userToBeDeleted.getUsername() + " was succeffully deleted"));
 	}
 	
 	
@@ -60,7 +60,7 @@ public class AdminController {
 		
 		UserDto userToUpdate = userService.updateUserRole(idUser, idRole);
 		
-		return ResponseEntity.ok(Map.of("message", "User \"" + userToUpdate.getUsername() + "\" was successfully granted \"" + userToUpdate.getRole().getName() + "\" role."));
+		return ResponseEntity.ok(Map.of("message", "User " + userToUpdate.getUsername() + " was successfully granted " + userToUpdate.getRole().getName() + " role."));
 	}
 	
 	
@@ -69,7 +69,7 @@ public class AdminController {
 		
 		Role role = adminRoleService.createRole(name, existingPermissions, newPermissions);
 		
-		return ResponseEntity.ok(Map.of("message", "Role \"" + role.getName() + "\" was successfully created"));
+		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
 	}
 	
 	
@@ -78,7 +78,7 @@ public class AdminController {
 		
 		Permission permission = adminPermissionService.deletePermission(id);
 		
-		return ResponseEntity.ok(Map.of("message", "Permission \"" + permission.getName() + "\" was successfully deleted."));
+		return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully deleted."));
 	}
 	
 	
@@ -87,7 +87,7 @@ public class AdminController {
 		
 	        Permission permission = adminPermissionService.createPermission(name);
 
-	        return ResponseEntity.ok(Map.of("message", "Permission \"" + permission.getName() + "\" was successfully created."));
+	        return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully created."));
 	}	
 	
 	@PatchMapping("/updatepermission")

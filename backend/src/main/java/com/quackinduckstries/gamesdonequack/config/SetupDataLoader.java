@@ -40,19 +40,17 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 			return;
 		}
 		
-		for(var p : roleConfig.getDefinitions()) {
-			for(var perm : p.getPermissions()) {
+		for(var def : roleConfig.getDefinitions()) {
+			for(var perm : def.getPermissions()) {
 				createPermissionIfNotFound(perm);
 			}
-		}
-		
-		for(var def : roleConfig.getDefinitions()) {
 			List<Permission> permissions = def.getPermissions()
 					.stream()
 					.map(this::createPermissionIfNotFound)
 					.toList();
 			createRoleIfNotFound(def, permissions);
 		}
+
 		alreadySetup = true;
 	}
 	

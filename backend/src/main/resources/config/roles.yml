@@ -3,14 +3,14 @@ roles:
   definitions:
     - name: "ROLE_USER"
       description: "Standard user role"
-      isDefaultRole: 1
-      isAdminRole: 0
+      defaultRole: true
+      adminRole: false
       permissions:
         - "READ_PERMISSION"
     - name: "ROLE_ADMIN"
       description: "Administrator role"
-      isDefaultRole: 0
-      isAdminRole: 1
+      defaultRole: false
+      adminRole: true
       permissions:
         - "READ_PERMISSION"
         - "WRITE_PERMISSION"

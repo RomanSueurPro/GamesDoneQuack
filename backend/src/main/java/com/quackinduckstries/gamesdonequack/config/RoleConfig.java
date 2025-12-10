@@ -22,8 +22,8 @@ public class RoleConfig {
 	public static class RoleDefinition{
 		private String name;
 		private String description;
-		private boolean isAdminRole;
-        private boolean isDefaultRole;
+		private boolean adminRole;
+        private boolean defaultRole;
 		private List<String> permissions;
 	}
 }
