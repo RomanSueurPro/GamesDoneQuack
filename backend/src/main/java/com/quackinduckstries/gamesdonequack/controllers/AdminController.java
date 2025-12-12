@@ -100,9 +100,9 @@ public class AdminController {
 	}
 	
 	@PatchMapping("/updaterole")
-	public ResponseEntity<?> updateRole(@RequestParam("id") long id, @RequestParam("name") String name, @RequestParam("permissions") List<String> permissions) {
+	public ResponseEntity<?> updateRole(@RequestParam("id") long id, @RequestParam("name") String name, @RequestParam("permissions") List<String> permissions, @RequestParam("isNewDefaultRole") boolean isNewDefaultRole) {
 		
-		RoleDto roleToUpdate = adminRoleService.updateRole(id, name, permissions);
+		RoleDto roleToUpdate = adminRoleService.updateRole(id, name, permissions, isNewDefaultRole);
 		
 		return ResponseEntity.ok(Map.of("message", "Updating " + roleToUpdate.getName() + " went fine"));
 	}
