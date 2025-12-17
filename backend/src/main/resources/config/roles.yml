@@ -1,5 +1,7 @@
 roles:
   defaultRoleName: "ROLE_USER"
+  defaultPermissionNames:
+    - "READ_PERMISSION"
   definitions:
     - name: "ROLE_USER"
       description: "Standard user role"

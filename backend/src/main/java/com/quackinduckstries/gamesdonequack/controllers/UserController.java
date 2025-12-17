@@ -28,9 +28,6 @@ public class UserController {
     		@RequestParam("username") String username,
             @RequestParam("password") String password) throws DuplicateUsernameException {
 
-        System.out.println("username: " + username);
-        System.out.println("password: " + password);
-
         RegisterRequestDTO request = new RegisterRequestDTO(username, password);
         userService.registerNewUser(request);
         

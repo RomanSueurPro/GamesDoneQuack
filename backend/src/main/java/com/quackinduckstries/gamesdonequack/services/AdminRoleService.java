@@ -94,12 +94,15 @@ public class AdminRoleService {
 	public RoleDto updateRole(long id, String name, List<String> permissionNames, boolean isNewDefaultRole) {
 		
 		Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));									
-		
 		Optional<Role> defaultRole = role.isDefaultRole() ? Optional.ofNullable(role) : getDefaultRole();
 		
 		if(defaultRole.isEmpty() && isNewDefaultRole) {
 			roleConfig.setDefaultRoleName(name);
 			role.setDefaultRole(true);
+			roleConfig.setDefaultPermissionNames(role.getPermissions()
+					.stream()
+					.map((permission)-> permission.getName())
+					.toList());
 		} 
 		else if(defaultRole.isEmpty() && !isNewDefaultRole){
 			throw new IllegalStateException("No default Role in database. You must update a role to default before anything else.");
@@ -125,6 +128,11 @@ public class AdminRoleService {
 		formerDefaultRole.setDefaultRole(false);
 		newDefaultRole.setDefaultRole(true);
 		roleConfig.setDefaultRoleName(newDefaultRole.getName());
+		roleConfig.setDefaultPermissionNames(
+				newDefaultRole.getPermissions()
+				.stream()
+				.map((permission)-> permission.getName())
+				.toList());
 	}
 	
 	private Optional<Role> getDefaultRole() {

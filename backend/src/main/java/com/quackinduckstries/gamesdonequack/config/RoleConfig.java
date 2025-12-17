@@ -15,6 +15,7 @@ import lombok.Setter;
 public class RoleConfig {
 
 	private String defaultRoleName;
+	private List<String> defaultPermissionNames;
 	private List<RoleDefinition> definitions;
 	
 	@Getter

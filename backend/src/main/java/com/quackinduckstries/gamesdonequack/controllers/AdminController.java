@@ -76,7 +76,7 @@ public class AdminController {
 	@PostMapping("/deletepermission")
 	public ResponseEntity<?> deletePermission(@RequestParam("id") Long id) {
 		
-		Permission permission = adminPermissionService.deletePermission(id);
+		PermissionDto permission = adminPermissionService.deletePermission(id);
 		
 		return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully deleted."));
 	}
