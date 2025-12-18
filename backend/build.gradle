@@ -44,6 +44,11 @@ dependencies {
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    // https://mvnrepository.com/artifact/org.flywaydb/flyway-database-postgresql
+    //implementation("org.flywaydb:flyway-core:11.17.0")
+	//runtimeOnly("org.flywaydb:flyway-database-postgresql:11.17.0")
+
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -51,10 +56,6 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs << "-parameters"
 }
-
-//tasks.withType(JavaCompile).configureEach {
-//    options.annotationProcessorPath = configurations.annotationProcessor
-//}
 
 sourceSets {
     main {
