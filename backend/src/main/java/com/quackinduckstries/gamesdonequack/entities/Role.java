@@ -3,6 +3,9 @@ package com.quackinduckstries.gamesdonequack.entities;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,17 +17,22 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "roles")
-@Data
+@Getter
+@Setter
 public class Role {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@EqualsAndHashCode.Include
 	@Column(nullable = false, unique = true)
 	private String name;
 	
@@ -35,9 +43,11 @@ public class Role {
 	private boolean isAdminRole;
 	
 	@OneToMany(mappedBy = "role")
+	@JsonManagedReference 
 	private Collection<User> users;
 	
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JsonBackReference
 	@JoinTable(
 			name = "roles_permissions",
 			joinColumns = @JoinColumn(

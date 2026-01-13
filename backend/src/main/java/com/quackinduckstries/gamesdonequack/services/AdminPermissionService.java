@@ -1,7 +1,7 @@
 package com.quackinduckstries.gamesdonequack.services;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
+import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.PermissionMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
@@ -33,14 +34,22 @@ public class AdminPermissionService {
 	
 	
 	@Transactional
-	public Permission createPermission(String name) {
+	public PermissionDto createPermission(String name, List<Long> idRoles) {
 
 		if (permissionRepository.existsByName(name)) {
 	        throw new NewPermissionAlreadyExistsException("New permission \"" + name + "\" already exists.");
 	    }
-
-	    return permissionRepository.save(new Permission(name));
+		
+		Permission createdPermission =  new Permission(name);
+			
+		for(long id: idRoles) {
+			Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Error on permission creation : one of the roles was not found"));
+			createdPermission.addRole(role);
+		}
+				
+	    return permissionMapper.fromPermissionToPermissionDto(permissionRepository.save(createdPermission));
 	}
+	
 	
 	@Transactional
 	public Permission createPermissionIfNotExist(String name) {
@@ -64,11 +73,11 @@ public class AdminPermissionService {
 			role.getPermissions().remove(toDelete);
 		}
 		
+		//Permission is removed from the default permissions set
 		if(roleConfig.getDefaultPermissionNames().contains(toDelete.getName())) {
 			roleConfig.getDefaultPermissionNames().remove(toDelete.getName());
 		}
 		
-		roles.clear();
 		permissionRepository.deleteById(id);
 		
 		return permissionMapper.fromPermissionToPermissionDto(toDelete);
@@ -95,5 +104,14 @@ public class AdminPermissionService {
 		toUpdate.setName(name);
 		
 		return permissionMapper.fromPermissionToPermissionDto(toUpdate);
+	}
+
+
+	public List<PermissionDto> fetchAllPermissions() {
+		
+		return permissionRepository.findAll()
+				.stream()
+				.map((permission)-> permissionMapper.fromPermissionToPermissionDto(permission))
+				.toList();
 	}
 }

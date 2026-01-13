@@ -1,5 +1,7 @@
 package com.quackinduckstries.gamesdonequack.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,6 +28,7 @@ public class User {
     private String password;
     
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(
     	name = "id_role", nullable = false, referencedColumnName = "id")
     private Role role;

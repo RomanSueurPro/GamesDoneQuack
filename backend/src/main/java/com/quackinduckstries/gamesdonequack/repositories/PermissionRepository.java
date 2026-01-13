@@ -1,5 +1,6 @@
 package com.quackinduckstries.gamesdonequack.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
 	void deleteById(long id);
 
 	boolean existsByName(String name);
+	
+	List<Permission> findAll();
 }

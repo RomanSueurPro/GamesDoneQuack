@@ -10,9 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.controllers.HomeController;
+import com.quackinduckstries.gamesdonequack.controllers.ProfileController;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
-import com.quackinduckstries.gamesdonequack.exceptions.MultipleErrorsException;
+import com.quackinduckstries.gamesdonequack.exceptions.NewRoleAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.RoleMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
@@ -20,6 +21,8 @@ import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
 @Service
 public class AdminRoleService {
+
+    private final ProfileController profileController;
 
     private final HomeController homeController;
 
@@ -31,7 +34,7 @@ public class AdminRoleService {
 	private final RoleConfig roleConfig;
 	private final RoleMapper roleMapper;
 	
-	public AdminRoleService(UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository, AdminPermissionService adminPermissionService, RoleConfig roleConfig, RoleMapper roleMapper, HomeController homeController) {
+	public AdminRoleService(UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository, AdminPermissionService adminPermissionService, RoleConfig roleConfig, RoleMapper roleMapper, HomeController homeController, ProfileController profileController) {
 		this.userRepository = userRepository;
 		this.permissionRepository = permissionRepository;
 		this.roleRepository = roleRepository;
@@ -39,6 +42,7 @@ public class AdminRoleService {
 		this.roleConfig = roleConfig;
 		this.roleMapper = roleMapper;
 		this.homeController = homeController;
+		this.profileController = profileController;
 	}
 	
 	
@@ -54,44 +58,55 @@ public class AdminRoleService {
 	}
 
 	@Transactional
-	public Role createRole(String name, List<String> existingPermissions, List<String> newPermissions) throws MultipleErrorsException {
+	public RoleDto createRole(String name, List<String> permissions) {
 		
 		List<Permission> allPermissions = new ArrayList<Permission>();
-		List<String> errorMessages = new ArrayList<>();
+//		List<String> errorMessages = new ArrayList<>();
 
+//		if(this.existsByName(name)) {
+//			errorMessages.add("Role " + name + " already exists");
+//		}
+		
 		if(this.existsByName(name)) {
-			errorMessages.add("Role " + name + " already exists");
+			throw new NewRoleAlreadyExistsException("Role " + name + " already exists");
 		}
 		
-		for(String existingPermission : existingPermissions) {
-			
-			if(adminPermissionService.existsByName(existingPermission)) {
-				allPermissions.add(adminPermissionService.findByName(existingPermission));
-			}
-			else {
-				errorMessages.add("Existing permission " + existingPermission + " does not exist");
-			}
+		for(String permission : permissions) {
+			allPermissions.add(adminPermissionService.createPermissionIfNotExist(permission));
 		}
 		
-		for(String newPermission : newPermissions) {
-			
-			if(!adminPermissionService.existsByName(newPermission)) {
-				allPermissions.add(adminPermissionService.createPermission(newPermission));
-			}
-			else {
-				errorMessages.add("New permission " + newPermission + " already exists");
-			}
-		}
+		Role role = new Role(name, allPermissions);
 		
-		if(!errorMessages.isEmpty()) {
-			throw new MultipleErrorsException(errorMessages);
-		}
+		this.save(role);
+//		for(String existingPermission : existingPermissions) {
+//			
+//			if(adminPermissionService.existsByName(existingPermission)) {
+//				allPermissions.add(adminPermissionService.findByName(existingPermission));
+//			}
+//			else {
+//				errorMessages.add("Existing permission " + existingPermission + " does not exist");
+//			}
+//		}
+//		
+//		for(String newPermission : newPermissions) {
+//			
+//			if(!adminPermissionService.existsByName(newPermission)) {
+//				allPermissions.add(adminPermissionService.createPermission(newPermission));
+//			}
+//			else {
+//				errorMessages.add("New permission " + newPermission + " already exists");
+//			}
+//		}
+//		
+//		if(!errorMessages.isEmpty()) {
+//			throw new MultipleErrorsException(errorMessages);
+//		}
 		
-		return this.save(new Role(name, allPermissions));
+		return roleMapper.fromRoleToRoleDto(role);
 	}
 
 	@Transactional
-	public RoleDto updateRole(long id, String name, List<String> permissionNames, boolean isNewDefaultRole) {
+	public RoleDto updateRole(long id, String name, List<String> permissionNames, boolean isNewDefaultRole) {                         
 		
 		Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));									
 		Optional<Role> defaultRole = role.isDefaultRole() ? Optional.ofNullable(role) : getDefaultRole();
@@ -122,6 +137,8 @@ public class AdminRoleService {
 		}
 		
 		return roleMapper.fromRoleToRoleDto(role);
+		
+
 	}
 	
 	private void setToDefaultRole(Role newDefaultRole, Role formerDefaultRole) {
