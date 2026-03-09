@@ -46,4 +46,9 @@ public class Permission {
 		role.getPermissions().add(this);
 	}
 	
+	public void removeRole(Role role) {
+	    this.roles.remove(role);
+	    role.getPermissions().remove(this);
+	}
+	
 }

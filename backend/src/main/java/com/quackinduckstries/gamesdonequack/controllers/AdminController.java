@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
@@ -91,12 +92,12 @@ public class AdminController {
 	}	
 	
 	@PatchMapping("/updatepermission")
-	public ResponseEntity<?> updatePermission(@RequestParam("id") long id, @RequestParam("name") String name) {
+	public ResponseEntity<?> updatePermission(@RequestParam("id") long id, @RequestParam("name") String name, @RequestParam("idRoles") List<Long> idRoles) {
 		
-		PermissionDto permissionToUpdate = adminPermissionService.updatePermission(id, name);
+		PermissionDto permissionToUpdate = adminPermissionService.updatePermission(id, name, idRoles);
 		
 		
-		return ResponseEntity.ok(Map.of("message", "Renaming to " + permissionToUpdate.getName() + " went fine"));
+		return ResponseEntity.ok(Map.of("message", "Update of permission " + permissionToUpdate.getName() + " went fine"));
 	}
 	
 	@PatchMapping("/updaterole")
@@ -104,7 +105,7 @@ public class AdminController {
 		
 		RoleDto roleToUpdate = adminRoleService.updateRole(id, name, permissions, isNewDefaultRole);
 		
-		return ResponseEntity.ok(Map.of("message", "Updating " + roleToUpdate.getName() + " went fine"));
+		return ResponseEntity.ok(Map.of("message", "Update of role " + roleToUpdate.getName() + " went fine"));
 	}
 	
 	@GetMapping("/fetchpermissions")
@@ -120,5 +121,20 @@ public class AdminController {
 		}
 		
 		return ResponseEntity.ok(permissions);
+	}
+	
+	@GetMapping("/fetchroles")
+	public ResponseEntity<?> fetchAllRoles() {
+		
+		List<RoleAdminListDto> roles = new ArrayList<>();
+		roles = adminRoleService.fetchAllRoles();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode json = mapper.createObjectNode();
+		for(var role : roles) {
+			json.arrayNode().addPOJO(role);
+		}
+		
+		return ResponseEntity.ok(roles);
 	}
 }

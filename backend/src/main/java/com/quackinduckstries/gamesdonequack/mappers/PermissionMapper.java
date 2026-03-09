@@ -2,6 +2,7 @@ package com.quackinduckstries.gamesdonequack.mappers;
 
 import org.mapstruct.Mapper;
 
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionAdminRoleListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 
@@ -10,5 +11,6 @@ public interface PermissionMapper {
 
 	Permission fromPermissionDtoToPermission(PermissionDto dto);
 	PermissionDto fromPermissionToPermissionDto(Permission permission);
+	PermissionAdminRoleListDto fromPermissionToPermissionAdminRoleListDto(Permission permission);
 	
 }

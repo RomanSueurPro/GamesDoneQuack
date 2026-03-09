@@ -7,12 +7,14 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.controllers.HomeController;
 import com.quackinduckstries.gamesdonequack.controllers.ProfileController;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
+import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.exceptions.NewRoleAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.RoleMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
@@ -108,7 +110,13 @@ public class AdminRoleService {
 	@Transactional
 	public RoleDto updateRole(long id, String name, List<String> permissionNames, boolean isNewDefaultRole) {                         
 		
-		Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));									
+		Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));	
+		
+		if(!role.getName().equals(name) && roleRepository.existsByName(name)) {
+			
+			throw new NewPermissionAlreadyExistsException("Updating role name to  \"" + name + "\" was denied since there is already a role with this name.");
+		}
+		
 		Optional<Role> defaultRole = role.isDefaultRole() ? Optional.ofNullable(role) : getDefaultRole();
 		
 		if(defaultRole.isEmpty() && isNewDefaultRole) {
@@ -137,8 +145,6 @@ public class AdminRoleService {
 		}
 		
 		return roleMapper.fromRoleToRoleDto(role);
-		
-
 	}
 	
 	private void setToDefaultRole(Role newDefaultRole, Role formerDefaultRole) {
@@ -154,5 +160,13 @@ public class AdminRoleService {
 	
 	private Optional<Role> getDefaultRole() {
 		return roleRepository.findByIsDefaultRoleTrue();
+	}
+
+
+	public List<RoleAdminListDto> fetchAllRoles() {
+		return roleRepository.findAll()
+				.stream()
+				.map((role)-> roleMapper.fromRoleToRoleAdminListDto(role))
+				.toList();
 	}
 }
