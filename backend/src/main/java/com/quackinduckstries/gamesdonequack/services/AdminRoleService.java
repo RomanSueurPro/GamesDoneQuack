@@ -169,4 +169,16 @@ public class AdminRoleService {
 				.map((role)-> roleMapper.fromRoleToRoleAdminListDto(role))
 				.toList();
 	}
+
+	@Transactional
+	public String deleteRole(long id) {
+		Role toDelete = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Role was not found in database"));
+		
+		if(toDelete.isAdminRole() || toDelete.isDefaultRole()) {
+			throw new IllegalStateException("Deleting admin role or default role is not authorized");
+		}
+		
+		roleRepository.delete(toDelete);
+		return toDelete.getName();
+	}
 }

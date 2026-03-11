@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -136,5 +137,11 @@ public class AdminController {
 		}
 		
 		return ResponseEntity.ok(roles);
+	}
+	
+	@DeleteMapping("deleterole")
+	public ResponseEntity<?> deleteRole(@RequestParam("id") long id){
+		String roleName = adminRoleService.deleteRole(id);
+		return ResponseEntity.ok("Role " + roleName + " was deleted successfully");
 	}
 }
