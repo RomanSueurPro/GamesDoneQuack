@@ -51,8 +51,8 @@ export class AuthService {
       concatMap(() => this.logoutObservable()),
       concatMap(() => this.checkLoginObservable())
     ).subscribe({
-      next: () => console.log('sure'),
-      error: () => console.log('not sure')
+      next: () => console.log('Logout successful'),
+      error: () => console.log('Error on logout')
     })
   };
 
