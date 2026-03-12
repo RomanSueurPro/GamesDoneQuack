@@ -8,6 +8,6 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
   templateUrl: './profile-component.component.html',
   styleUrl: './profile-component.component.scss'
 })
-export class ProfileComponent {
+export class ProfileComponentComponent {
 
 }
