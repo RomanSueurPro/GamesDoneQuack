@@ -4,11 +4,13 @@ import { Router } from '@angular/router';
 import { ConnectionPopUpComponent } from '../connection-pop-up/connection-pop-up.component';
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({ template: '' })
 export class LoginRouteComponent implements OnInit {
   constructor(private dialog: MatDialog, private router: Router,
-    private authService: AuthService, private authState: AuthStateService
+    private authService: AuthService, private authState: AuthStateService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -17,7 +19,10 @@ export class LoginRouteComponent implements OnInit {
     this.authService.checkLoginObservable().subscribe({
       next: () => {
         if(this.authState.isLoggedIn()){
-          this.router.navigate(['/profile']);
+          const redirect =
+    this.route.snapshot.queryParamMap.get('redirect') || '/profile';
+    this.router.navigateByUrl(redirect);
+    
         }else{
           const dialogRef = this.dialog.open(ConnectionPopUpComponent, {
           height: '200px',
