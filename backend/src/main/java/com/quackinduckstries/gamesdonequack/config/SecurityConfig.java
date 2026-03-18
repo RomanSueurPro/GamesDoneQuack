@@ -55,6 +55,7 @@ public class SecurityConfig {
                     authorizeHttp.requestMatchers("/csrf").permitAll();
                     authorizeHttp.requestMatchers("/favicon.svg").permitAll();
                     authorizeHttp.requestMatchers("/error").permitAll();
+                    authorizeHttp.requestMatchers("/api/me").permitAll();
                     authorizeHttp.anyRequest().authenticated();
             }
         );

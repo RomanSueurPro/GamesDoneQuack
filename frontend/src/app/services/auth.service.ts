@@ -4,42 +4,51 @@ import { map, switchMap, concatMap, catchError } from 'rxjs/operators';
 import { CsrfService } from './csrf.service';
 import { Observable, of } from 'rxjs';
 import { AuthStateService } from './auth-state.service';
-import { UserInfo } from '../interfaces/models'
+import { User } from '../models/User'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient, private csrfService: CsrfService, private authState: AuthStateService) { }
+  constructor(private http: HttpClient,
+     private csrfService: CsrfService,
+      private authState: AuthStateService) { }
 
 
+  loadUser(){
+    return this.http.get<User>('http://localhost:8080/api/me',
+    {withCredentials: true});
+  }
 
-  checkLogin(){
-    this.http.get<UserInfo>('http://localhost:8080/api/me', {withCredentials: true}).subscribe({
-      next: (user) => {
-        this.authState.login();
-        this.authState.user.set(user);
+  refreshUser(){
+    this.loadUser().subscribe({
+      next: (user: any) => {
+        if(user){
+          this.authState.setUser(user);
+        }else{
+          this.authState.clear();
+        }
       },
       error: () => {
-        this.authState.logout();
-        this.authState.user.set(null);
+        this.authState.clear();
+        console.error("refreshUser() went to error");
       }
     });
   }
 
   checkLoginObservable(): Observable<boolean> {
-    return this.http.get<UserInfo>('http://localhost:8080/api/me', { withCredentials: true }).pipe(
+    return this.loadUser().pipe(
       // map to true/false for signal
       map((user) => {
-        this.authState.login();
+        
         this.authState.user.set(user);
         return true;
       }),
       // catch errors and set false
       catchError(err => {
-        this.authState.logout();
-        this.authState.user.set(null);
+        
+        this.authState.clear();
         return of(false);
       })
     );

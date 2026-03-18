@@ -24,15 +24,13 @@ export class HomeComponent {
   
     constructor(private http: HttpClient, private kaamelottService: KaamelottService, private steamService: SteamService, private backendService: BackendService, private authService: AuthService, public authState: AuthStateService){}
   
-  
     ngOnInit(): void{
+      //just checking we can reach backend
       this.http.get('http://localhost:8080/home', { responseType: 'text'}).subscribe(
         data => {
           this.response = data;
         }
       );
-      this.refreshCsrf();
-      this.authService.checkLogin();
     }
   
     fetchKaamelottData(){

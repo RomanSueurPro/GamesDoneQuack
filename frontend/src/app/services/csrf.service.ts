@@ -13,8 +13,7 @@ export class CsrfService {
 
 
   loadUp(){
-    this.http.get('http://localhost:8080/csrf', {withCredentials: true}).subscribe({
-        next: () => console.log('Csrf load OK'),
+    this.http.get('http://localhost:8080/csrf', {withCredentials: true}).subscribe({      
         error: () => console.log('Csrf load did not work as intended (it is not OK)')  
     });
   }
