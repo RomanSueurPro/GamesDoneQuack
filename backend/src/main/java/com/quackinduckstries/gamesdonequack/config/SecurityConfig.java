@@ -56,6 +56,7 @@ public class SecurityConfig {
                     authorizeHttp.requestMatchers("/favicon.svg").permitAll();
                     authorizeHttp.requestMatchers("/error").permitAll();
                     authorizeHttp.requestMatchers("/api/me").permitAll();
+                    authorizeHttp.requestMatchers("/adminrolename").permitAll();
                     authorizeHttp.anyRequest().authenticated();
             }
         );

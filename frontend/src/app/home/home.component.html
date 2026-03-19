@@ -20,6 +20,9 @@
     <p>{{authState.isLoggedIn()}}</p>
     <hr>
 
+    <button (click)="callRoleNameServiceTest()">test Role Admin Name</button>
+    <hr>
+    
     <p *ngIf="kaamelottData">{{kaamelottData}}</p>
     <p *ngIf="steamData">{{steamData}}</p>
 </div>

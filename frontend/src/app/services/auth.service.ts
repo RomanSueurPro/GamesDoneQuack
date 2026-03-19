@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { map, switchMap, concatMap, catchError } from 'rxjs/operators';
 import { CsrfService } from './csrf.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { AuthStateService } from './auth-state.service';
 import { User } from '../models/User'
 
@@ -40,14 +40,12 @@ export class AuthService {
   checkLoginObservable(): Observable<boolean> {
     return this.loadUser().pipe(
       // map to true/false for signal
-      map((user) => {
-        
+      tap((user) => {
         this.authState.user.set(user);
-        return true;
       }),
+      map(() => true),
       // catch errors and set false
       catchError(err => {
-        
         this.authState.clear();
         return of(false);
       })

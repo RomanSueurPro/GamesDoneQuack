@@ -7,6 +7,7 @@ import { BackendService } from '../services/backend.service';
 import { HeaderComponent } from "../header/header.component";
 import { AuthService } from '../services/auth.service';
 import { AuthStateService } from '../services/auth-state.service';
+import { AdminRoleNameService } from '../services/admin-role-name.service';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +23,7 @@ export class HomeComponent {
     kaamelottData: string | undefined;
     steamData: string | undefined;
   
-    constructor(private http: HttpClient, private kaamelottService: KaamelottService, private steamService: SteamService, private backendService: BackendService, private authService: AuthService, public authState: AuthStateService){}
+    constructor(private http: HttpClient, private kaamelottService: KaamelottService, private steamService: SteamService, private backendService: BackendService, private authService: AuthService, public authState: AuthStateService, private adminRoleName: AdminRoleNameService){}
   
     ngOnInit(): void{
       //just checking we can reach backend
@@ -62,4 +63,9 @@ export class HomeComponent {
     updateLoginStatus(){
       this.authState.isLoggedIn();
     }
+
+    callRoleNameServiceTest(){
+      this.adminRoleName.testRoleName();
+    }
+    
 }

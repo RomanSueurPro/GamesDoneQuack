@@ -7,9 +7,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.quackinduckstries.gamesdonequack.services.AdminRoleNameFinderService;
 
 @RestController
 public class HomeController {
+	
+	private final AdminRoleNameFinderService adminRoleNameFinderService;
+	
+	HomeController(AdminRoleNameFinderService adminRoleNameFinderService){
+		this.adminRoleNameFinderService = adminRoleNameFinderService;
+	}
+	
 	@GetMapping("/home")
 	public ResponseEntity<ObjectNode> message(){
 		
@@ -35,5 +43,14 @@ public class HomeController {
 	@GetMapping("/csrf")
 	public CsrfToken csrf(CsrfToken token) {
 	    return token;
+	}
+	
+	@GetMapping("/adminrolename")
+	public ResponseEntity<Object> fetchAdminRoleName() {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode json = mapper.createObjectNode();
+		String message = adminRoleNameFinderService.getAdminRoleName();
+		json.put("roleName", message);
+		return ResponseEntity.ok(json);
 	}
 }
