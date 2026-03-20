@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable} from 'rxjs';
-import { AdminRoleName } from '../models/adminRoleName';
+import { Role } from '../models/Role';
 
 @Injectable({
   providedIn: 'root'
@@ -10,26 +10,25 @@ export class AdminRoleNameService {
 
   constructor(private http: HttpClient) { }
 
-  roleName = signal<string>("");
+  adminRoleName = signal<string>("");
 
   fetchAdminNameObservable():Observable<void>{
-    return this.http.get<AdminRoleName>('http://localhost:8080/adminrolename', 
+    return this.http.get<Role>('http://localhost:8080/adminrolename', 
       {withCredentials: true}).pipe(
     
-      map(result => this.setRoleName(result.roleName))
+      map(result => this.setRoleName(result.name))
     );
-    
   }
  
   setRoleName(name:string){
-    this.roleName.set(name);
+    this.adminRoleName.set(name);
   }
 
   testRoleName(){
-    console.log(this.roleName());
+    console.log(this.adminRoleName());
   }
   
   getRoleName(){
-    return this.roleName();
+    return this.adminRoleName();
   }
 }

@@ -50,7 +50,7 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode json = mapper.createObjectNode();
 		String message = adminRoleNameFinderService.getAdminRoleName();
-		json.put("roleName", message);
+		json.put("name", message);
 		return ResponseEntity.ok(json);
 	}
 }
