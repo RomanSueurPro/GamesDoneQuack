@@ -17,21 +17,23 @@ export class RoleListComponent {
   public roleList = {};
 
   ngOnInit(){
-    this.roleList = this.fetchRolesObservable();
+    this.loadRoles();
 
   }
 
   refreshObject(){
-    this.roleList = this.fetchRolesObservable();
-    console.log(this.roleList);
-    console.log(this.fetchRolesObservable());
+    this.loadRoles();
   }
 
   fetchRolesObservable(){
-    return this.http.get('http://localhost:8080/admin/fetchroles', {withCredentials: true}).subscribe({
+    return this.http.get('http://localhost:8080/admin/fetchroles', {withCredentials: true});
+  }
+
+  loadRoles(){
+    this.fetchRolesObservable().subscribe({
       next: (result) => this.roleList = JSON.stringify(result),
       error: (error) => console.log(error)
-  });
+    })
   }
 
 }
