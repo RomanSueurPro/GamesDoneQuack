@@ -2,4 +2,24 @@
 
 <p>{{roleList}}</p>
 
-<button (click)="refreshObject()">refresh Role list</button>
+
+<mat-selection-list #roleList name="roles" [multiple]="false" class="role-list">
+    @for (role of arrayRoles; track role) {
+    <mat-list-option [value]="role.id">{{role.name}}</mat-list-option>
+    }
+</mat-selection-list>
+<p>
+    Option selected: {{roleList.selectedOptions.hasValue() ? roleList.selectedOptions.selected[0].value : 'None'}} 
+</p>
+
+
+
+@for(role of arrayRoles; track role){
+    <p>{{role.name}}</p>
+    <p>{{role.id}}</p>
+    <p>{{role.permissions[0].name}}</p>
+    
+}
+
+
+<button (click)="refreshObject()">refresh RoleWithoutPermissions list</button>
