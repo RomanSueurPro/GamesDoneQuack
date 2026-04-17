@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../config/api-endpoints';
 
 
 @Injectable({
@@ -13,7 +14,7 @@ export class CsrfService {
 
 
   loadUp(){
-    this.http.get('http://localhost:8080/csrf', {withCredentials: true}).subscribe({      
+    this.http.get(API_ENDPOINTS.auth.csrf, {withCredentials: true}).subscribe({      
         error: () => console.log('Csrf load did not work as intended (it is not OK)')  
     });
   }
@@ -21,6 +22,6 @@ export class CsrfService {
 
   loadUpObservable(): Observable<any> {
     // Return the observable instead of subscribing here
-    return this.http.get('http://localhost:8080/csrf', { withCredentials: true });
+    return this.http.get(API_ENDPOINTS.auth.csrf, { withCredentials: true });
   }
 }

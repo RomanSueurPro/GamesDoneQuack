@@ -8,6 +8,7 @@ import { HeaderComponent } from "../../header/header.component";
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { AdminRoleNameService } from '../../services/admin-role-name.service';
+import { API_ENDPOINTS } from '../../config/api-endpoints';
 
 @Component({
   selector: 'app-home',
@@ -27,7 +28,7 @@ export class HomeComponent {
   
     ngOnInit(): void{
       //just checking we can reach backend
-      this.http.get('http://localhost:8080/home', { responseType: 'text'}).subscribe(
+      this.http.get(API_ENDPOINTS.homePage.home, { responseType: 'text'}).subscribe(
         data => {
           this.response = data;
         }

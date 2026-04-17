@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { CsrfService } from "./csrf.service";
+import { API_ENDPOINTS } from "../config/api-endpoints";
 
 @Injectable({
     providedIn : 'root'
@@ -24,14 +25,14 @@ export class BackendService {
     }
 
     visitLogin(){
-        this.http.get('http://localhost:8080/login', {withCredentials: true}).subscribe({
+        this.http.get(API_ENDPOINTS.auth.login, {withCredentials: true}).subscribe({
             next: () => console.log('oui'),
             error: () => console.log('error. error. red alert')  
         });
     }
 
     sendRegisterRequest(username: string, pass: string): void{
-        const registerUrl: string = 'http://localhost:8080/register';
+        const registerUrl: string = API_ENDPOINTS.auth.register;
         let requestBody: URLSearchParams = new URLSearchParams();
         const csrfToken = this.getCSRFTokenFromCookies('XSRF-TOKEN');
 

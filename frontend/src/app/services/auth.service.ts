@@ -4,7 +4,8 @@ import { map, switchMap, concatMap, catchError } from 'rxjs/operators';
 import { CsrfService } from './csrf.service';
 import { Observable, of, tap } from 'rxjs';
 import { AuthStateService } from './auth-state.service';
-import { User } from '../models/User'
+import { User } from '../models/User';
+import { API_ENDPOINTS } from '../config/api-endpoints';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class AuthService {
 
 
   loadUser(){
-    return this.http.get<User>('http://localhost:8080/api/me',
+    return this.http.get<User>(API_ENDPOINTS.auth.me,
     {withCredentials: true});
   }
 
@@ -77,7 +78,7 @@ export class AuthService {
     const csrfToken = this.getCSRFTokenFromCookies();
     body.set('_csrf', csrfToken || '');
 
-    return this.http.post('http://localhost:8080/logout', body, {
+    return this.http.post(API_ENDPOINTS.auth.logout, body, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       withCredentials: true
     });
@@ -91,7 +92,7 @@ export class AuthService {
   }
 
   sendRegisterRequest(username: string, pass: string){
-      const registerUrl: string = 'http://localhost:8080/register';
+      const registerUrl: string = API_ENDPOINTS.auth.register;
       let requestBody: URLSearchParams = new URLSearchParams();
       const csrfToken = this.getCSRFTokenFromCookies();
 
@@ -106,7 +107,7 @@ export class AuthService {
   }
 
   sendLoginRequest(username: string, password: string){
-    const loginUrl = 'http://localhost:8080/login';
+    const loginUrl = API_ENDPOINTS.auth.login;
     const csrfToken = this.getCSRFTokenFromCookies();
 
     const body = new URLSearchParams();

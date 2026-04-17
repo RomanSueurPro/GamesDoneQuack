@@ -3,4 +3,33 @@
   
 }
 
+.role-list {
+  border: 1px black solid;
+}
 
+#update-container {
+  border: 1px black solid;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: 1%;
+  padding: 1%;
+}
+
+#role-update-form{
+  border: 1px black solid;
+  display: flex;
+  flex-direction: column;
+  
+  & > *{
+    margin: 1em;
+  }
+}
+
+
+
+#confirm-buttons{
+  display: flex;
+  
+  justify-content: space-around;
+}

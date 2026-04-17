@@ -1,25 +1,47 @@
-<p>role-list works!</p>
+<div id="update-container">
+    <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true">
+        @for (role of arrayRoles; track role) {
+            <mat-list-option [value]="role">{{role.name}}</mat-list-option>
+        }
+        <p>
+            Option selected: {{roleList.selectedOptions.hasValue() ? roleList.selectedOptions.selected[0].value.id : 'None'}} 
+        </p>
+    </mat-selection-list>
 
-<p>{{roleList}}</p>
+    <div id="role-update-form">
+        <input type="text" value="{{roleList.selectedOptions.hasValue() ? roleList.selectedOptions.selected[0].value.name : 'None'}}">
 
+        <mat-list role="list">
+            @for (permission of associatedPermissions; track permission) {
+                <mat-list-item>{{permission.name}}</mat-list-item>
+            }
+        </mat-list>
 
-<mat-selection-list #roleList name="roles" [multiple]="false" class="role-list">
-    @for (role of arrayRoles; track role) {
-    <mat-list-option [value]="role.id">{{role.name}}</mat-list-option>
-    }
-</mat-selection-list>
-<p>
-    Option selected: {{roleList.selectedOptions.hasValue() ? roleList.selectedOptions.selected[0].value : 'None'}} 
-</p>
+        <mat-list role="list">
+            @for (permission of notAssociatedPermissions; track permission) {
+                <mat-list-item>{{permission.name}}</mat-list-item>
+            }
+        </mat-list>
 
+        <div id="confirm-buttons">
+            <input type="button" value="Enregistrer">
+            <input type="button" value="Annuler">
+            <!-- This button cannot show on role admin nor default role -->
+            <input type="button" value="Supprimer">
+        </div>
+    </div>
+</div>
 
-
-@for(role of arrayRoles; track role){
+<!-- @for(role of arrayRoles; track role){
     <p>{{role.name}}</p>
     <p>{{role.id}}</p>
     <p>{{role.permissions[0].name}}</p>
     
-}
+} -->
 
 
-<button (click)="refreshObject()">refresh RoleWithoutPermissions list</button>
+
+
+
+
+<button (click)="testWithButton(roleList.selectedOptions.selected[0].value)">test me!</button>
