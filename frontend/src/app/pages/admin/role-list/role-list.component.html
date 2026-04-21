@@ -1,33 +1,54 @@
 <div id="update-container">
-    <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true">
+    
+    <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true" 
+    (selectionChange)="onSelectionChange($event)">
         @for (role of arrayRoles; track role) {
-            <mat-list-option [value]="role">{{role.name}}</mat-list-option>
+            <mat-list-option [value]="role" [selected]="$index === 0">
+                <div class="role-display-list">
+                    {{role.name}}
+                </div>
+            </mat-list-option>
         }
-        <p>
-            Option selected: {{roleList.selectedOptions.hasValue() ? roleList.selectedOptions.selected[0].value.id : 'None'}} 
-        </p>
     </mat-selection-list>
 
     <div id="role-update-form">
-        <input type="text" value="{{roleList.selectedOptions.hasValue() ? roleList.selectedOptions.selected[0].value.name : 'None'}}">
-
+        <input type="text" [value]="selectedRole?.name ?? 'No role currently selected'" [(ngModel)]="rolenametextfield">
+        <h3>Associated Permissions</h3>
         <mat-list role="list">
             @for (permission of associatedPermissions; track permission) {
-                <mat-list-item>{{permission.name}}</mat-list-item>
+                <mat-list-item>
+                    <div class="permission-display-list-items">
+                        {{permission.name}}
+                        <input type="button" value="-" class="manage-permission-button" (click)="togglePermission(permission.name)">
+                    </div>
+                </mat-list-item>
+            }
+            @if (associatedPermissions.length === 0){
+                <span class="no-permission-message">No associated permission</span>
             }
         </mat-list>
 
+        <h3>Available Permissions</h3>
         <mat-list role="list">
             @for (permission of notAssociatedPermissions; track permission) {
-                <mat-list-item>{{permission.name}}</mat-list-item>
+                <mat-list-item>
+                    <div class="permission-display-list-items">
+                        {{permission.name}}
+                        <input type="button" value="+" class="manage-permission-button" (click)="togglePermission(permission.name)">
+                    </div>
+                </mat-list-item>
+            }
+            @if (notAssociatedPermissions.length === 0){
+                <span class="no-permission-message">No more permissions to associate</span>
             }
         </mat-list>
 
         <div id="confirm-buttons">
-            <input type="button" value="Enregistrer">
-            <input type="button" value="Annuler">
+            <input type="button" value="Save">
+            <input type="button" value="Cancel" (click)="cancelChanges(selectedRole)">
             <!-- This button cannot show on role admin nor default role -->
-            <input type="button" value="Supprimer">
+            <!-- This button triggers a pop up for extra validation -->
+            <input type="button" value="Delete">
         </div>
     </div>
 </div>
@@ -38,10 +59,3 @@
     <p>{{role.permissions[0].name}}</p>
     
 } -->
-
-
-
-
-
-
-<button (click)="testWithButton(roleList.selectedOptions.selected[0].value)">test me!</button>
