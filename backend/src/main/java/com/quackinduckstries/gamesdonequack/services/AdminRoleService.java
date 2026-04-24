@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
-import com.quackinduckstries.gamesdonequack.Dtos.RoleDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.controllers.HomeController;
 import com.quackinduckstries.gamesdonequack.controllers.ProfileController;
@@ -60,7 +60,7 @@ public class AdminRoleService {
 	}
 
 	@Transactional
-	public RoleDto createRole(String name, List<String> permissions) {
+	public RoleCompleteDto createRole(String name, List<String> permissions) {
 		
 		List<Permission> allPermissions = new ArrayList<Permission>();
 //		List<String> errorMessages = new ArrayList<>();
@@ -104,11 +104,11 @@ public class AdminRoleService {
 //			throw new MultipleErrorsException(errorMessages);
 //		}
 		
-		return roleMapper.fromRoleToRoleDto(role);
+		return roleMapper.roleToRoleCompleteDto(role);
 	}
 
 	@Transactional
-	public RoleDto updateRole(long id, String name, List<String> permissionNames, boolean isNewDefaultRole) {                         
+	public RoleCompleteDto updateRole(long id, String name, List<String> permissionNames, boolean isNewDefaultRole) {                         
 		
 		Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));	
 		
@@ -144,7 +144,7 @@ public class AdminRoleService {
 			role.addPermission(permission);
 		}
 		
-		return roleMapper.fromRoleToRoleDto(role);
+		return roleMapper.roleToRoleCompleteDto(role);
 	}
 	
 	private void setToDefaultRole(Role newDefaultRole, Role formerDefaultRole) {
@@ -166,7 +166,7 @@ public class AdminRoleService {
 	public List<RoleAdminListDto> fetchAllRoles() {
 		return roleRepository.findAll()
 				.stream()
-				.map((role)-> roleMapper.fromRoleToRoleAdminListDto(role))
+				.map((role)-> roleMapper.roleToRoleAdminListDto(role))
 				.toList();
 	}
 

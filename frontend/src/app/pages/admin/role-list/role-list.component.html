@@ -12,7 +12,7 @@
     </mat-selection-list>
 
     <div id="role-update-form">
-        <input type="text" [value]="selectedRole?.name ?? 'No role currently selected'" [(ngModel)]="rolenametextfield">
+        <input type="text" [value]="selectedRole?.name ?? 'No role currently selected'" [formControl]="rolenameControl">
         <h3>Associated Permissions</h3>
         <mat-list role="list">
             @for (permission of associatedPermissions; track permission) {
@@ -44,7 +44,7 @@
         </mat-list>
 
         <div id="confirm-buttons">
-            <input type="button" value="Save">
+            <input type="button" value="Save" (click)="testFormValues()">
             <input type="button" value="Cancel" (click)="cancelChanges(selectedRole)">
             <!-- This button cannot show on role admin nor default role -->
             <!-- This button triggers a pop up for extra validation -->

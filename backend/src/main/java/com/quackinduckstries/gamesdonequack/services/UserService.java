@@ -41,7 +41,7 @@ public class UserService {
 	
 	
 	@Transactional
-	public UserDto registerNewUser(RegisterRequestDTO request) throws IllegalStateException, DuplicateUsernameException {
+	public void registerNewUser(RegisterRequestDTO request) throws IllegalStateException, DuplicateUsernameException {
 		User newUser = new User();
 		newUser.setUsername(request.getRequestedUsername());
 		newUser.setPassword(passwordEncoder.encode(request.getRequestedPassword()));
@@ -80,7 +80,6 @@ public class UserService {
 		newUser.setRole(defaultRole);
 		
 		userRepository.save(newUser);
-		return userMapper.userToUserDto(newUser);
 	}
 	
 	@Transactional

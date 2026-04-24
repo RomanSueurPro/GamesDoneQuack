@@ -1,14 +1,12 @@
 package com.quackinduckstries.gamesdonequack.Dtos;
 
-import java.util.List;
-
 import lombok.Data;
 
 @Data
-public class PermissionDto {
-
+public class RoleNoRelationsDto {
 	private long id;
 	private String name;
+	private boolean isDefaultRole;
+	private boolean isAdminRole;
 	
-	private List<RoleNoRelationsDto> roles;
 }

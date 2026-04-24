@@ -1,12 +1,11 @@
 package com.quackinduckstries.gamesdonequack.services;
-import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
-
 import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionAdminRoleListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
@@ -14,6 +13,7 @@ import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.PermissionMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
+import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 
 @Service
 public class AdminPermissionService {
@@ -48,7 +48,7 @@ public class AdminPermissionService {
 			createdPermission.addRole(role);
 		}
 				
-	    return permissionMapper.fromPermissionToPermissionDto(permissionRepository.save(createdPermission));
+	    return permissionMapper.permissionToPermissionDto(permissionRepository.save(createdPermission));
 	}
 	
 	
@@ -83,7 +83,7 @@ public class AdminPermissionService {
 		
 		permissionRepository.deleteById(id);
 		
-		return permissionMapper.fromPermissionToPermissionDto(toDelete);
+		return permissionMapper.permissionToPermissionDto(toDelete);
 	}
 
 	
@@ -125,14 +125,22 @@ public class AdminPermissionService {
 		
 		toUpdate.setName(newName);
 		
-		return permissionMapper.fromPermissionToPermissionDto(toUpdate);
+		return permissionMapper.permissionToPermissionDto(toUpdate);
 	}
 	
 	public List<PermissionDto> fetchAllPermissions() {
 		
 		return permissionRepository.findAll()
 				.stream()
-				.map((permission)-> permissionMapper.fromPermissionToPermissionDto(permission))
+				.map((permission)-> permissionMapper.permissionToPermissionDto(permission))
+				.toList();
+	}
+	
+public List<PermissionAdminRoleListDto> fetchAllPermissionsNoRoleField() {
+		
+		return permissionRepository.findAll()
+				.stream()
+				.map((permission)-> permissionMapper.permissionToPermissionAdminRoleListDto(permission))
 				.toList();
 	}
 }

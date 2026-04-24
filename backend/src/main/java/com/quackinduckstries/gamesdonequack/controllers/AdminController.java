@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionAdminRoleListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
-import com.quackinduckstries.gamesdonequack.Dtos.RoleDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
 import com.quackinduckstries.gamesdonequack.services.UserService;
+
 
 
 @RequestMapping("/admin")
@@ -30,14 +30,17 @@ import com.quackinduckstries.gamesdonequack.services.UserService;
 @RestController
 public class AdminController {
 
+    private final HomeController homeController;
+
 	private final AdminRoleService adminRoleService;
 	private final UserService userService;
 	private final AdminPermissionService adminPermissionService;
 	
-	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService) {
+	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService, HomeController homeController) {
 		this.userService = userService;
 		this.adminRoleService = adminRoleService;
 		this.adminPermissionService = adminPermissionService;
+		this.homeController = homeController;
 	}
 	
 	
@@ -69,7 +72,7 @@ public class AdminController {
 	@PostMapping("/createrole")
 	public ResponseEntity<?> createRole(@RequestParam("name") String name, @RequestParam("permissions") List<String> permissions) {
 		
-		RoleDto role = adminRoleService.createRole(name, permissions);
+		RoleCompleteDto role = adminRoleService.createRole(name, permissions);
 		
 		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
 	}
@@ -104,37 +107,34 @@ public class AdminController {
 	@PatchMapping("/updaterole")
 	public ResponseEntity<?> updateRole(@RequestParam("id") long id, @RequestParam("name") String name, @RequestParam("permissions") List<String> permissions, @RequestParam("isNewDefaultRole") boolean isNewDefaultRole) {
 		
-		RoleDto roleToUpdate = adminRoleService.updateRole(id, name, permissions, isNewDefaultRole);
+		RoleCompleteDto roleToUpdate = adminRoleService.updateRole(id, name, permissions, isNewDefaultRole);
 		
 		return ResponseEntity.ok(Map.of("message", "Update of role " + roleToUpdate.getName() + " went fine"));
 	}
 	
-	@GetMapping("/fetchpermissions")
+	@GetMapping("/fetchallpermissions")
 	public ResponseEntity<?> fetchAllPermissions() {
 		
 		List<PermissionDto> permissions = new ArrayList<>();
 		permissions = adminPermissionService.fetchAllPermissions();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode json = mapper.createObjectNode();
-		for(var perm : permissions) {
-			json.arrayNode().addPOJO(perm);
-		}
-		
+
 		return ResponseEntity.ok(permissions);
 	}
 	
-	@GetMapping("/fetchroles")
+	@GetMapping("/fetchallpermissionsnorolefield")
+	public ResponseEntity<?> fetchAllPermissionsNoRoleField() {
+		
+		List<PermissionAdminRoleListDto> permissions = new ArrayList<>();
+		permissions = adminPermissionService.fetchAllPermissionsNoRoleField();
+
+		return ResponseEntity.ok(permissions);
+	}
+	
+	@GetMapping("/fetchallroles")
 	public ResponseEntity<?> fetchAllRoles() {
 		
 		List<RoleAdminListDto> roles = new ArrayList<>();
 		roles = adminRoleService.fetchAllRoles();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode json = mapper.createObjectNode();
-		for(var role : roles) {
-			json.arrayNode().addPOJO(role);
-		}
 		
 		return ResponseEntity.ok(roles);
 	}

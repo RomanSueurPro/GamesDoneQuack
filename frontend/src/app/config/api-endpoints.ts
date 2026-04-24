@@ -7,9 +7,9 @@ const ADMIN_BASE = `admin`;
 export const API_ENDPOINTS = {
 
     admin: {
-        fetchRoles: `${BASE}/${ADMIN_BASE}/fetchroles`,
-        fetchPermissions: `${BASE}/${ADMIN_BASE}/fetchpermissions`,
-        
+        fetchAllRoles: `${BASE}/${ADMIN_BASE}/fetchallroles`,
+        fetchAllPermissions: `${BASE}/${ADMIN_BASE}/fetchallpermissions`,
+        fetchAllPermissionsNoRoleField: `${BASE}/${ADMIN_BASE}/fetchallpermissionsnorolefield`,
     },
 
     homePage: {

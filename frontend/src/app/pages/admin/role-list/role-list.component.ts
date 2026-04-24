@@ -17,16 +17,22 @@ import { API_ENDPOINTS } from '../../../config/api-endpoints';
 })
 export class RoleListComponent {
 
+  rolenameControl = new FormControl('');
+  idControl = new FormControl(-1);
+  permissionsControl = new FormControl();
+
   constructor(private http: HttpClient){
     this.form = new FormGroup({
-      rolename: new FormControl(''),
+      rolename: this.rolenameControl,
+      id: this.idControl,
+      permissions: this.permissionsControl,
     });
     
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayRoles = [];
   }
-  
+
   @Input()
   hideSingleSelectionIndicator: boolean;
 
@@ -37,10 +43,7 @@ export class RoleListComponent {
   form: FormGroup;
   public arrayRoles: RoleAllFields[];
   public arrayPermissions: PermissionWithoutRoles[] = [];
-  rolesControl = new FormControl();
-  rolenametextfield: string = "";
   
-
   public associatedPermissions: PermissionWithoutRoles[] = [];
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
 
@@ -58,6 +61,10 @@ export class RoleListComponent {
         this.selectedRole = this.arrayRoles[0] ?? null;
         this.arrayPermissions = permissions;
         this.updatePermissionsAssociations(this.selectedRole);
+        this.idControl.setValue(this.selectedRole.id);
+        this.rolenameControl.setValue(this.selectedRole.name);
+        console.log(roles);
+        console.log(permissions);
       },
       error: () => {
         console.log('An error occured during component initialization')
@@ -66,11 +73,11 @@ export class RoleListComponent {
   }
 
   fetchRolesObservable(){
-    return this.http.get<RoleAllFields[]>(API_ENDPOINTS.admin.fetchRoles, {withCredentials: true});
+    return this.http.get<RoleAllFields[]>(API_ENDPOINTS.admin.fetchAllRoles, {withCredentials: true});
   }
 
   fetchPermissionsObservable(){
-    return this.http.get<PermissionWithoutRoles[]>(API_ENDPOINTS.admin.fetchPermissions, {withCredentials: true});
+    return this.http.get<PermissionWithoutRoles[]>(API_ENDPOINTS.admin.fetchAllPermissionsNoRoleField, {withCredentials: true});
   }
 
   updatePermissionsAssociations(role: RoleAllFields){
@@ -92,12 +99,15 @@ export class RoleListComponent {
         this.notAssociatedPermissions.push(permission);
       }
     }
+    this.permissionsControl.setValue(this.associatedPermissions);
   }
 
   onSelectionChange(event: any) {
     const selected = event.options[0]?.value;
     this.selectedRole = selected;
     this.updatePermissionsAssociations(selected);
+    this.idControl.setValue(selected.id);
+    this.rolenameControl.setValue(this.selectedRole.name);
   }
 
   togglePermission(permissionName: string){
@@ -121,13 +131,19 @@ export class RoleListComponent {
 
   cancelChanges(role: RoleAllFields):void{
     this.updatePermissionsAssociations(role);
-    this.rolenametextfield = role.name;
+    this.rolenameControl.setValue(role.name);
   }
 
   saveChanges(){
 
   }
 
+
+  testFormValues(){
+    
+    console.log(this.form.value);
+    console.log(this.associatedPermissions);
+  }
 }
 
 
