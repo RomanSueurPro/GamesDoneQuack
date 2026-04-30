@@ -110,8 +110,9 @@ export class RoleListComponent {
     this.updatePermissionsAssociations(selected);
     this.idControl.setValue(selected.id);
     this.rolenameControl.setValue(this.selectedRole.name);
-    this.isAdminControl.setValue(this.selectedRole.isAdmin);
-    this.isDefaultControl.setValue(this.selectedRole.isDefault);
+    this.isAdminControl.setValue(this.selectedRole.adminRole);
+    this.isDefaultControl.setValue(this.selectedRole.defaultRole);
+    
   }
 
   togglePermission(permissionName: string){

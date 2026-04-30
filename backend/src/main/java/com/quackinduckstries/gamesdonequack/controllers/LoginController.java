@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,9 +21,11 @@ import jakarta.servlet.http.HttpSession;
 public class LoginController {
 
 	private final AuthenticationManager authManager;
+	private final SessionRegistry sessionRegistry;
 	
-	public LoginController(AuthenticationManager authManager){
+	public LoginController(AuthenticationManager authManager, SessionRegistry sessionRegistry){
 		this.authManager = authManager;
+		this.sessionRegistry = sessionRegistry;
 	}
 	
 	@PostMapping("/login")
@@ -37,6 +40,11 @@ public class LoginController {
 		
 		HttpSession session = request.getSession(true);
 		session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+		
+		sessionRegistry.registerNewSession(
+		        session.getId(),
+		        authentication.getPrincipal()
+		    );
 		
 		return ResponseEntity.ok(Map.of("message", "login successful"));
 	}

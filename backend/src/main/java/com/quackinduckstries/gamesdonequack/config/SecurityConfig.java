@@ -12,10 +12,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -42,6 +45,12 @@ public class SecurityConfig {
             		.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             		.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()));
     	}
+    	
+    	http
+        .sessionManagement(session -> session
+            .maximumSessions(-1)
+            .sessionRegistry(sessionRegistry())
+        );
     	    	
 		http
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -104,4 +113,15 @@ public class SecurityConfig {
     	
     	return authBuilder.build();
     }
+    
+    @Bean
+    SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+    
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+    
 }
