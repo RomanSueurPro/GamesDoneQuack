@@ -7,7 +7,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { appInitializer } from './initializers/appInitializer';
 
-
 export const appConfig: ApplicationConfig = {
   providers: [{provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: false}},
     importProvidersFrom(HttpClientModule, 
@@ -17,13 +16,10 @@ export const appConfig: ApplicationConfig = {
         })),
     provideRouter(routes),
     provideClientHydration(), provideAnimationsAsync(),
-    
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializer,
       multi: true
     }
-
   ]
-  
 };

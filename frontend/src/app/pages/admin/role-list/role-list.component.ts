@@ -20,12 +20,16 @@ export class RoleListComponent {
   rolenameControl = new FormControl('');
   idControl = new FormControl(-1);
   permissionsControl = new FormControl();
+  isAdminControl = new FormControl(false);
+  isDefaultControl = new FormControl(false);
 
   constructor(private http: HttpClient){
     this.form = new FormGroup({
-      rolename: this.rolenameControl,
+      name: this.rolenameControl,
       id: this.idControl,
       permissions: this.permissionsControl,
+      adminRole: this.isAdminControl,
+      defaultRole: this.isDefaultControl,
     });
     
     this.hideSingleSelectionIndicator = false;
@@ -63,8 +67,6 @@ export class RoleListComponent {
         this.updatePermissionsAssociations(this.selectedRole);
         this.idControl.setValue(this.selectedRole.id);
         this.rolenameControl.setValue(this.selectedRole.name);
-        console.log(roles);
-        console.log(permissions);
       },
       error: () => {
         console.log('An error occured during component initialization')
@@ -108,6 +110,8 @@ export class RoleListComponent {
     this.updatePermissionsAssociations(selected);
     this.idControl.setValue(selected.id);
     this.rolenameControl.setValue(this.selectedRole.name);
+    this.isAdminControl.setValue(this.selectedRole.isAdmin);
+    this.isDefaultControl.setValue(this.selectedRole.isDefault);
   }
 
   togglePermission(permissionName: string){
@@ -140,9 +144,16 @@ export class RoleListComponent {
 
 
   testFormValues(){
-    
+    this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
+      {withCredentials: true,
+
+      }).subscribe({
+        next: () => console.log("patchin went through"),
+        error: (error) => console.log("error" + error),
+        });
     console.log(this.form.value);
-    console.log(this.associatedPermissions);
+    console.log(this.form);
+    console.log(typeof(this.form.value.id));
   }
 }
 

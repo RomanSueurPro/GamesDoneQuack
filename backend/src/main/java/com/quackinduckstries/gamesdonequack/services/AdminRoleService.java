@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionAdminRoleListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
@@ -63,12 +64,6 @@ public class AdminRoleService {
 	public RoleCompleteDto createRole(String name, List<String> permissions) {
 		
 		List<Permission> allPermissions = new ArrayList<Permission>();
-//		List<String> errorMessages = new ArrayList<>();
-
-//		if(this.existsByName(name)) {
-//			errorMessages.add("Role " + name + " already exists");
-//		}
-		
 		if(this.existsByName(name)) {
 			throw new NewRoleAlreadyExistsException("Role " + name + " already exists");
 		}
@@ -78,72 +73,49 @@ public class AdminRoleService {
 		}
 		
 		Role role = new Role(name, allPermissions);
-		
 		this.save(role);
-//		for(String existingPermission : existingPermissions) {
-//			
-//			if(adminPermissionService.existsByName(existingPermission)) {
-//				allPermissions.add(adminPermissionService.findByName(existingPermission));
-//			}
-//			else {
-//				errorMessages.add("Existing permission " + existingPermission + " does not exist");
-//			}
-//		}
-//		
-//		for(String newPermission : newPermissions) {
-//			
-//			if(!adminPermissionService.existsByName(newPermission)) {
-//				allPermissions.add(adminPermissionService.createPermission(newPermission));
-//			}
-//			else {
-//				errorMessages.add("New permission " + newPermission + " already exists");
-//			}
-//		}
-//		
-//		if(!errorMessages.isEmpty()) {
-//			throw new MultipleErrorsException(errorMessages);
-//		}
-		
+	
 		return roleMapper.roleToRoleCompleteDto(role);
 	}
 
 	@Transactional
-	public RoleCompleteDto updateRole(long id, String name, List<String> permissionNames, boolean isNewDefaultRole) {                         
+	public RoleCompleteDto updateRole(RoleAdminListDto roleToUpdate) {                         
 		
-		Role role = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));	
+		Role role = roleRepository.findById(roleToUpdate.getId()).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));	
 		
-		if(!role.getName().equals(name) && roleRepository.existsByName(name)) {
+		if(!role.getName().equals(roleToUpdate.getName()) && roleRepository.existsByName(roleToUpdate.getName())) {
 			
-			throw new NewPermissionAlreadyExistsException("Updating role name to  \"" + name + "\" was denied since there is already a role with this name.");
+			throw new NewPermissionAlreadyExistsException("Updating role name to  \"" + roleToUpdate.getName() + "\" was denied since there is already a role with this name.");
 		}
 		
 		Optional<Role> defaultRole = role.isDefaultRole() ? Optional.ofNullable(role) : getDefaultRole();
 		
-		if(defaultRole.isEmpty() && isNewDefaultRole) {
-			roleConfig.setDefaultRoleName(name);
+		if(defaultRole.isEmpty() && roleToUpdate.isDefaultRole()) {
+			roleConfig.setDefaultRoleName(roleToUpdate.getName());
 			role.setDefaultRole(true);
 			roleConfig.setDefaultPermissionNames(role.getPermissions()
 					.stream()
 					.map((permission)-> permission.getName())
 					.toList());
 		} 
-		else if(defaultRole.isEmpty() && !isNewDefaultRole){
+		else if(defaultRole.isEmpty() && !roleToUpdate.isDefaultRole()){
 			throw new IllegalStateException("No default Role in database. You must update a role to default before anything else.");
 		}
 		else {
 			Role dRole = defaultRole.get();
-			if(isNewDefaultRole) {
+			if(roleToUpdate.isDefaultRole()) {
 				setToDefaultRole(role, dRole);
 			}
 		}
 		
-		role.setName(name);
+		role.setName(roleToUpdate.getName());
 		role.getPermissions().clear();
-		for(String permissionName : permissionNames) {
-			Permission permission = adminPermissionService.createPermissionIfNotExist(permissionName);
-			role.addPermission(permission);
-		}
 		
+		for(PermissionAdminRoleListDto permission : roleToUpdate.getPermissions()) {
+			 
+			role.addPermission(adminPermissionService.createPermissionIfNotExist(permission.getName()));
+		}
+			
 		return roleMapper.roleToRoleCompleteDto(role);
 	}
 	

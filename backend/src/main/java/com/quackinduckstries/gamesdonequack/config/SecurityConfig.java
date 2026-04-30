@@ -47,7 +47,7 @@ public class SecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(
             authorizeHttp -> {
-//                		authorizeHttp.requestMatchers("/admin").hasRole("ROLE_ADMIN");
+                	authorizeHttp.requestMatchers("/admin").hasRole("ADMIN");
                     authorizeHttp.requestMatchers("/home").permitAll();
                     authorizeHttp.requestMatchers("/login").permitAll();
                     authorizeHttp.requestMatchers("/register").permitAll();
@@ -60,7 +60,6 @@ public class SecurityConfig {
             }
         );
 		
-		
         //.formLogin(AbstractHttpConfigurer::disable)
 //            .httpBasic(Customizer.withDefaults()) //Only enable for Postman testing
 		
@@ -71,12 +70,7 @@ public class SecurityConfig {
 		
         http.logout(l -> l.logoutSuccessUrl("/home")
         		.deleteCookies("JSESSIONID"));
-            
-		
-            
-//		System.out.println("enable basic : " + enableBasic);
-//		System.out.println("disable csrf : " + disableCsrf);
-        
+
         return http.build();              
     }
     
@@ -84,8 +78,13 @@ public class SecurityConfig {
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList(
+        	    "Content-Type",
+        	    "X-XSRF-TOKEN",
+        	    "Authorization"
+        	));
+        configuration.setExposedHeaders(List.of("X-XSRF-TOKEN")); //csrf debug, maybe remove for production
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

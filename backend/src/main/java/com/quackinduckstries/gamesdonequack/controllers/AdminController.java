@@ -1,5 +1,6 @@
 package com.quackinduckstries.gamesdonequack.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +20,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.PermissionAdminRoleListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
@@ -26,7 +29,7 @@ import com.quackinduckstries.gamesdonequack.services.UserService;
 
 
 @RequestMapping("/admin")
-@PreAuthorize("hasRole('ADMIN')")	
+@PreAuthorize("hasRole(@adminRoleNameFinderService.getAdminRoleName())")	
 @RestController
 public class AdminController {
 
@@ -35,6 +38,8 @@ public class AdminController {
 	private final AdminRoleService adminRoleService;
 	private final UserService userService;
 	private final AdminPermissionService adminPermissionService;
+	
+
 	
 	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService, HomeController homeController) {
 		this.userService = userService;
@@ -105,9 +110,9 @@ public class AdminController {
 	}
 	
 	@PatchMapping("/updaterole")
-	public ResponseEntity<?> updateRole(@RequestParam("id") long id, @RequestParam("name") String name, @RequestParam("permissions") List<String> permissions, @RequestParam("isNewDefaultRole") boolean isNewDefaultRole) {
-		
-		RoleCompleteDto roleToUpdate = adminRoleService.updateRole(id, name, permissions, isNewDefaultRole);
+	public ResponseEntity<?> updateRole(@RequestBody RoleAdminListDto roleToUpdate) {
+
+		adminRoleService.updateRole(roleToUpdate);
 		
 		return ResponseEntity.ok(Map.of("message", "Update of role " + roleToUpdate.getName() + " went fine"));
 	}
