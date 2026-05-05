@@ -43,6 +43,8 @@ export class RoleListComponent {
   @Input()
   selected: boolean;
 
+  // MODIFICATION
+
   selectedRole: any = null;
   form: FormGroup;
   public arrayRoles: RoleAllFields[];
