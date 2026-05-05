@@ -13,7 +13,7 @@
 
     <div id="role-update-form">
         <input type="text" [value]="selectedRole?.name ?? 'No role currently selected'" [formControl]="rolenameControl">
-        <h3>Associated Permissions</h3>
+        <h3>Associated permissions</h3>
         <mat-list role="list">
             @for (permission of associatedPermissions; track permission) {
                 <mat-list-item>
@@ -28,7 +28,7 @@
             }
         </mat-list>
 
-        <h3>Available Permissions</h3>
+        <h3>Available permissions</h3>
         <mat-list role="list">
             @for (permission of notAssociatedPermissions; track permission) {
                 <mat-list-item>
@@ -43,8 +43,17 @@
             }
         </mat-list>
 
+        <h3>Add new permission : </h3>
+        <div id="add-permission">
+            <div class="permission-display-list-items">
+                <input type="text" placeholder="New Permission" id="permission-text-field" [(ngModel)]="newPermissionField">
+                <input type="button" value="+" class="manage-permission-button" (click)="associateNewPermission()">
+            </div>
+        </div>
+        
+
         <div id="confirm-buttons">
-            <input type="button" value="Save" (click)="testFormValues()">
+            <input type="button" value="Save" (click)="saveChanges()">
             <input type="button" value="Cancel" (click)="cancelChanges(selectedRole)">
             <!-- This button cannot show on role admin nor default role -->
             <!-- This button triggers a pop up for extra validation -->

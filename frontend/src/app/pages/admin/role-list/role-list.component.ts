@@ -43,8 +43,6 @@ export class RoleListComponent {
   @Input()
   selected: boolean;
 
-  // MODIFICATION
-
   selectedRole: any = null;
   form: FormGroup;
   public arrayRoles: RoleAllFields[];
@@ -52,6 +50,8 @@ export class RoleListComponent {
   
   public associatedPermissions: PermissionWithoutRoles[] = [];
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
+
+  newPermissionField: string = "";
 
   ngOnInit(){
     this.loadData();
@@ -86,6 +86,7 @@ export class RoleListComponent {
 
   updatePermissionsAssociations(role: RoleAllFields){
   
+    this.arrayPermissions = this.arrayPermissions.filter((p) => p.id !== -1);
     if(role ===null){
       return;
     }
@@ -142,21 +143,19 @@ export class RoleListComponent {
   }
 
   saveChanges(){
-
-  }
-
-
-  testFormValues(){
     this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
-      {withCredentials: true,
+    {withCredentials: true,
 
-      }).subscribe({
-        next: () => console.log("patchin went through"),
-        error: (error) => console.log("error" + error),
-        });
-    console.log(this.form.value);
-    console.log(this.form);
-    console.log(typeof(this.form.value.id));
+    }).subscribe({
+      next: () => console.log("patchin went through"),
+      error: (error) => console.log("error" + error),
+      });
+  }
+  
+  associateNewPermission(){
+    let perm: PermissionWithoutRoles = {id: -1, name: this.newPermissionField};
+    this.associatedPermissions.push(perm);
+    this.arrayPermissions.push(perm);
   }
 }
 
