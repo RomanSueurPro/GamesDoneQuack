@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { concat, concatMap, forkJoin, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { RoleAllFields } from '../../../models/RoleAllFields';
 import { MatListModule } from '@angular/material/list';
@@ -17,21 +17,15 @@ import { API_ENDPOINTS } from '../../../config/api-endpoints';
 })
 export class RoleListComponent {
 
-  rolenameControl = new FormControl('');
-  idControl = new FormControl(-1);
-  permissionsControl = new FormControl();
-  isAdminControl = new FormControl(false);
-  isDefaultControl = new FormControl(false);
+  form = new FormGroup({
+    id: new FormControl<number | null>(-1),
+    name: new FormControl<string>(''),
+    permissions: new FormControl<PermissionWithoutRoles[]>([]),
+    isAdmin: new FormControl<boolean>(false),
+    isDefault: new FormControl<boolean>(false),
+  });
 
   constructor(private http: HttpClient){
-    this.form = new FormGroup({
-      name: this.rolenameControl,
-      id: this.idControl,
-      permissions: this.permissionsControl,
-      adminRole: this.isAdminControl,
-      defaultRole: this.isDefaultControl,
-    });
-    
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayRoles = [];
@@ -42,9 +36,7 @@ export class RoleListComponent {
 
   @Input()
   selected: boolean;
-
-  selectedRole: any = null;
-  form: FormGroup;
+  
   public arrayRoles: RoleAllFields[];
   public arrayPermissions: PermissionWithoutRoles[] = [];
   
@@ -52,28 +44,86 @@ export class RoleListComponent {
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
 
   newPermissionField: string = "";
+  
+
+  get selectedRole(): RoleAllFields | null {
+    const id = this.form.get('id')?.value;
+    return this.arrayRoles.find(r => r.id === id) ?? null;
+  }
 
   ngOnInit(){
     this.loadData();
   }
 
-  loadData(){
+  loadData() {
+    const previousId = this.form.get('id')?.value;
+
     forkJoin({
       permissions: this.fetchPermissionsObservable(),
       roles: this.fetchRolesObservable(),
     }).subscribe({
-      next: ({permissions, roles}) => {
+      next: ({ permissions, roles }) => {
         this.arrayRoles = roles;
-        this.selectedRole = this.arrayRoles[0] ?? null;
         this.arrayPermissions = permissions;
-        this.updatePermissionsAssociations(this.selectedRole);
-        this.idControl.setValue(this.selectedRole.id);
-        this.rolenameControl.setValue(this.selectedRole.name);
+
+        // Try to restore previous selection
+        let role = this.arrayRoles.find(r => r.id === previousId);
+
+        // Fallback for first load
+        if (!role) {
+          role = this.arrayRoles[0] ?? null;
+        }
+
+        this.updatePermissionsAssociations(role);
+
+        if (role) {
+          this.form.patchValue({
+            id: role.id,
+            name: role.name,
+            permissions: role.permissions,
+            isAdmin: role.isAdmin,
+            isDefault: role.isDefault
+          });
+        }
       },
-      error: () => {
-        console.log('An error occured during component initialization')
+      error: (error) => {
+        console.log('An error occured during component initialization : ' + error)
       }
     });
+  }
+
+  loadDataObservable(){
+    const previousId = this.form.get('id')?.value;
+
+    return forkJoin({
+      permissions: this.fetchPermissionsObservable(),
+      roles: this.fetchRolesObservable(),
+    }).pipe(
+      tap(({ permissions, roles }) => {
+        this.arrayRoles = roles;
+        this.arrayPermissions = permissions;
+
+        // Try to restore previous selection
+        let role = this.arrayRoles.find(r => r.id === previousId);
+
+        // Fallback for first load
+        if (!role) {
+          role = this.arrayRoles[0] ?? null;
+        }
+
+        this.updatePermissionsAssociations(role);
+
+        if (role) {
+          this.form.patchValue({
+            id: role.id,
+            name: role.name,
+            permissions: role.permissions,
+            isAdmin: role.isAdmin,
+            isDefault: role.isDefault
+          });
+        }
+      })
+    );
   }
 
   fetchRolesObservable(){
@@ -104,23 +154,26 @@ export class RoleListComponent {
         this.notAssociatedPermissions.push(permission);
       }
     }
-    this.permissionsControl.setValue(this.associatedPermissions);
+    this.form.patchValue({
+          permissions: this.associatedPermissions
+        })
   }
 
   onSelectionChange(event: any) {
-    const selected = event.options[0]?.value;
-    this.selectedRole = selected;
+    const selected: RoleAllFields = event.options[0]?.value;
+
     this.updatePermissionsAssociations(selected);
-    this.idControl.setValue(selected.id);
-    this.rolenameControl.setValue(this.selectedRole.name);
-    this.isAdminControl.setValue(this.selectedRole.adminRole);
-    this.isDefaultControl.setValue(this.selectedRole.defaultRole);
-    
+    this.form.patchValue({
+          id: selected.id,
+          name: selected.name,
+          isAdmin: selected.isAdmin,
+          isDefault: selected.isDefault,
+          permissions: selected.permissions,
+        });
   }
 
   togglePermission(permissionName: string){
-    const permissionObject = this.arrayPermissions.filter((permission) => permission.name === permissionName)[0];
-    
+    const permissionObject: PermissionWithoutRoles = this.arrayPermissions.filter((permission) => permission.name === permissionName)[0];
     if(this.associatedPermissions.includes(permissionObject)){
       const index = this.associatedPermissions.indexOf(permissionObject, 0);
       if(index > -1){
@@ -135,27 +188,64 @@ export class RoleListComponent {
         this.associatedPermissions.push(permissionObject);
       }
     }
+    this.form.patchValue({
+      permissions: this.associatedPermissions,
+    })
   }
 
-  cancelChanges(role: RoleAllFields):void{
-    this.updatePermissionsAssociations(role);
-    this.rolenameControl.setValue(role.name);
+  cancelChanges(roleId: number|null|undefined):void{
+    let role = undefined;
+    if(roleId){
+      role = this.arrayRoles.find((r) => r.id = roleId);
+    }
+    if(role){
+      this.updatePermissionsAssociations(role);
+      this.form.patchValue({
+        name: role.name,
+        permissions: role.permissions,
+        isAdmin: role.isAdmin,
+        isDefault: role.isDefault
+      });
+    }
   }
 
   saveChanges(){
+    console.log(this.form.value);
     this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
     {withCredentials: true,
 
     }).subscribe({
-      next: () => console.log("patchin went through"),
+      next: () => {
+        console.log("patchin went through");
+        this.loadData();
+      },
       error: (error) => console.log("error" + error),
       });
   }
-  
+
+  saveChangesObservable(){
+    console.log(this.form.value);
+    return this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
+    {withCredentials: true});
+  }
+
+  completeProcedure(){
+    
+    of(null).pipe(
+      concatMap(() => this.saveChangesObservable()),
+      concatMap(() => this.loadDataObservable()),
+    ).subscribe({
+      error: (error) => console.log(error),
+    })
+  }
+
   associateNewPermission(){
     let perm: PermissionWithoutRoles = {id: -1, name: this.newPermissionField};
     this.associatedPermissions.push(perm);
     this.arrayPermissions.push(perm);
+    this.form.patchValue({
+      permissions: this.associatedPermissions,
+    })
   }
 }
 

@@ -1,9 +1,10 @@
+<form [formGroup]="form">
 <div id="update-container">
     
     <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true" 
     (selectionChange)="onSelectionChange($event)">
         @for (role of arrayRoles; track role) {
-            <mat-list-option [value]="role" [selected]="$index === 0">
+            <mat-list-option [value]="role" [selected]="role.id === selectedRole?.id">
                 <div class="role-display-list">
                     {{role.name}}
                 </div>
@@ -12,7 +13,7 @@
     </mat-selection-list>
 
     <div id="role-update-form">
-        <input type="text" [value]="selectedRole?.name ?? 'No role currently selected'" [formControl]="rolenameControl">
+        <input type="text" formControlName="name">
         <h3>Associated permissions</h3>
         <mat-list role="list">
             @for (permission of associatedPermissions; track permission) {
@@ -46,15 +47,15 @@
         <h3>Add new permission : </h3>
         <div id="add-permission">
             <div class="permission-display-list-items">
-                <input type="text" placeholder="New Permission" id="permission-text-field" [(ngModel)]="newPermissionField">
+                <input type="text" placeholder="New Permission" id="permission-text-field" [(ngModel)]="newPermissionField" [ngModelOptions]="{ standalone: true }">
                 <input type="button" value="+" class="manage-permission-button" (click)="associateNewPermission()">
             </div>
         </div>
         
 
         <div id="confirm-buttons">
-            <input type="button" value="Save" (click)="saveChanges()">
-            <input type="button" value="Cancel" (click)="cancelChanges(selectedRole)">
+            <input type="button" value="Save" (click)="completeProcedure()">
+            <input type="button" value="Cancel" (click)="cancelChanges(form.value.id)">
             <!-- This button cannot show on role admin nor default role -->
             <!-- This button triggers a pop up for extra validation -->
             <input type="button" value="Delete">
@@ -68,3 +69,5 @@
     <p>{{role.permissions[0].name}}</p>
     
 } -->
+
+</form>

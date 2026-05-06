@@ -52,12 +52,15 @@ public class AdminPermissionService {
 	}
 	
 	
-	
-	
 	@Transactional
 	public Permission createPermissionIfNotExist(String name) {
 		return permissionRepository.findByName(name).orElseGet(() -> {
-			Permission permission = new Permission(name);
+			String finalName = name.toUpperCase();
+			String tailPattern = "_PERMISSION";
+			if(finalName.length() < 11 || !finalName.substring(finalName.length()-11).equals(tailPattern)) {
+				finalName = finalName + tailPattern;
+			}
+			Permission permission = new Permission(finalName);
 			return permission;
 		});
 	}
