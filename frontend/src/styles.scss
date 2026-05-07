@@ -7,16 +7,14 @@ body {
     color: rgb(231, 219, 194);
 }
 
-// .cdk-global-scrollblock {
-//   overflow-y: hidden !important;
-// }
+.success-snackbar {
+  --mdc-snackbar-container-color: rgb(192, 201, 94);
+  --mdc-snackbar-supporting-text-color: rgb(18, 39, 57);
+  --mat-snack-bar-button-color: rgb(18, 39, 57);
+}
 
-
-
-// .small-menu .mat-mdc-menu-item {
-//   min-height: 0.5em;
-//   font-size: 2em;
-//   padding: 0 12px;
-//   background-color: red;
-// }
-
+.failure-snackbar{
+  --mdc-snackbar-container-color: rgb(192, 201, 94);
+  --mdc-snackbar-supporting-text-color: red;
+  --mat-snack-bar-button-color: red;
+}

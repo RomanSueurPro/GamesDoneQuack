@@ -3,9 +3,11 @@ import { concat, concatMap, forkJoin, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { RoleAllFields } from '../../../models/RoleAllFields';
 import { MatListModule } from '@angular/material/list';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { PermissionWithoutRoles } from '../../../models/PermissionWithoutRoles';
 import { API_ENDPOINTS } from '../../../config/api-endpoints';
+// import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-role-list',
@@ -25,15 +27,15 @@ export class RoleListComponent {
     isDefault: new FormControl<boolean>(false),
   });
 
-  constructor(private http: HttpClient){
+  constructor(private http: HttpClient, private snackbar: MatSnackBar){
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayRoles = [];
   }
 
+  //@Input directives are the way to enforce API options from Angular Material
   @Input()
   hideSingleSelectionIndicator: boolean;
-
   @Input()
   selected: boolean;
   
@@ -64,7 +66,9 @@ export class RoleListComponent {
     }).subscribe({
       next: ({ permissions, roles }) => {
         this.arrayRoles = roles;
+        this.sortAlphabetically(this.arrayRoles);
         this.arrayPermissions = permissions;
+        this.sortAlphabetically(this.arrayPermissions);
 
         // Try to restore previous selection
         let role = this.arrayRoles.find(r => r.id === previousId);
@@ -87,7 +91,8 @@ export class RoleListComponent {
         }
       },
       error: (error) => {
-        console.log('An error occured during component initialization : ' + error)
+        console.log('An error occured during component initialization : ');
+        console.log(error);
       }
     });
   }
@@ -134,6 +139,28 @@ export class RoleListComponent {
     return this.http.get<PermissionWithoutRoles[]>(API_ENDPOINTS.admin.fetchAllPermissionsNoRoleField, {withCredentials: true});
   }
 
+  //elements of the array must have a name property
+  sortAlphabetically(array: Array<any>){
+    array.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  insertPermission(permission: PermissionWithoutRoles, permissionList: PermissionWithoutRoles[]){
+    let low = 0;
+    let high = permissionList.length;
+
+    while (low < high) {
+    const mid = Math.floor((low + high) / 2);
+
+    if (permissionList[mid].name.localeCompare(permission.name) < 0) {
+      low = mid + 1;
+    } else {
+      high = mid;
+    }
+  }
+
+  permissionList.splice(low, 0, permission);
+  }
+
   updatePermissionsAssociations(role: RoleAllFields){
   
     this.arrayPermissions = this.arrayPermissions.filter((p) => p.id !== -1);
@@ -149,11 +176,14 @@ export class RoleListComponent {
     }
     for(let permission of this.arrayPermissions){
       if(ids.includes(permission.id)){
-        this.associatedPermissions.push(permission);
+        this.insertPermission(permission, this.associatedPermissions);
       }else{       
-        this.notAssociatedPermissions.push(permission);
+        this.insertPermission(permission, this.notAssociatedPermissions);
       }
     }
+    //permissions in alphabetical order
+    this.sortAlphabetically(this.associatedPermissions);
+    this.sortAlphabetically(this.notAssociatedPermissions);
     this.form.patchValue({
           permissions: this.associatedPermissions
         })
@@ -178,16 +208,18 @@ export class RoleListComponent {
       const index = this.associatedPermissions.indexOf(permissionObject, 0);
       if(index > -1){
         this.associatedPermissions.splice(index, 1);
-        this.notAssociatedPermissions.push(permissionObject);
+        this.insertPermission(permissionObject, this.notAssociatedPermissions);
       }
     }
     else{
       const index = this.notAssociatedPermissions.indexOf(permissionObject, 0);
       if(index > -1){
         this.notAssociatedPermissions.splice(index, 1);
-        this.associatedPermissions.push(permissionObject);
+        this.insertPermission(permissionObject, this.associatedPermissions);
       }
     }
+    this.sortAlphabetically(this.associatedPermissions);
+    this.sortAlphabetically(this.notAssociatedPermissions);
     this.form.patchValue({
       permissions: this.associatedPermissions,
     })
@@ -235,17 +267,41 @@ export class RoleListComponent {
       concatMap(() => this.saveChangesObservable()),
       concatMap(() => this.loadDataObservable()),
     ).subscribe({
-      error: (error) => console.log(error),
+      next: () => {
+        this.snackbar.open(
+        'Role update successfull',
+        'Close',
+        {
+          duration: 3000,
+          panelClass: ['success-snackbar'],
+        }
+        );
+      },
+      error: (error) => {
+        console.log(error);
+        this.snackbar.open(
+        'Error occured' + '\n' + error,
+        'Close',
+        {
+          panelClass: ['failure-snackbar'],
+        }
+        );
+      },
     })
   }
 
   associateNewPermission(){
     let perm: PermissionWithoutRoles = {id: -1, name: this.newPermissionField};
-    this.associatedPermissions.push(perm);
-    this.arrayPermissions.push(perm);
+    this.insertPermission(perm, this.associatedPermissions);
+    this.insertPermission(perm, this.arrayPermissions);
     this.form.patchValue({
       permissions: this.associatedPermissions,
     })
+  }
+
+  submitFeedback(){
+    const message: string = "Petit message sympa";
+
   }
 }
 
