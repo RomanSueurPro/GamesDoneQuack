@@ -18,3 +18,61 @@ body {
   --mdc-snackbar-supporting-text-color: red;
   --mat-snack-bar-button-color: red;
 }
+
+.mdc-checkbox__background{
+  border-radius: 50% !important;
+  width: 1.5em !important;
+  height: 1.5em !important;
+}
+
+.mdc-checkbox .mdc-checkbox__background {
+  top: calc((var(--mdc-checkbox-state-layer-size) - 28px) / 2) !important;
+  left: calc((var(--mdc-checkbox-state-layer-size) - 40px) / 2) !important;
+}
+
+.mat-mdc-checkbox-ripple,
+.mdc-checkbox__ripple {
+  display: none;
+}
+
+.defaultrole-checkbox {
+
+  /* unchecked border */
+  --mdc-checkbox-unselected-icon-color: #999;
+
+  /* checked checkbox background */
+  --mdc-checkbox-selected-icon-color: #4caf50;
+
+  /* checkmark color */
+  --mdc-checkbox-selected-checkmark-color: white;
+
+  /* hover */
+  --mdc-checkbox-selected-hover-icon-color: #66bb6a;
+
+  /* pressed/click */
+  --mdc-checkbox-selected-pressed-icon-color: #388e3c;
+
+  //focus color
+  --mdc-checkbox-selected-focus-icon-color: #388e3c;
+
+  // outerborder
+  --mdc-checkbox-selected-icon-color: #388e3c;
+
+  //border unselected
+  --mdc-checkbox-unselected-icon-color: #C0C95E;
+
+  //border unselected hovered
+  --mdc-checkbox-unselected-hover-icon-color: #388e3c;
+
+  //border on deselect
+  --mdc-checkbox-unselected-focus-icon-color: #C0C95E;
+}
+
+.mdc-checkbox__checkmark{
+  color: rgb(231, 219, 194) !important;
+  
+}
+
+.my-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background{
+  color: white !important;
+}

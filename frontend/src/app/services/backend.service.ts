@@ -61,6 +61,13 @@ export class BackendService {
         return this.auth.checkLoginObservable();
     }
 
-
+    superLogMe(){
+        this.http.get(API_ENDPOINTS.homePage.superadmin, {
+            withCredentials: true,
+        }).subscribe({
+            next: () => console.log("superuser online"),
+            error: (error) => console.log(error),
+        });
+    }
 
 }

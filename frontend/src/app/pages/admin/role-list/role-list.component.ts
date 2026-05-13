@@ -6,13 +6,13 @@ import { MatListModule } from '@angular/material/list';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { PermissionWithoutRoles } from '../../../models/PermissionWithoutRoles';
 import { API_ENDPOINTS } from '../../../config/api-endpoints';
-// import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-role-list',
   standalone: true,
-  imports: [MatListModule, FormsModule, ReactiveFormsModule,
+  imports: [MatListModule, FormsModule, ReactiveFormsModule, MatCheckboxModule
   ],
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss'
@@ -23,8 +23,8 @@ export class RoleListComponent {
     id: new FormControl<number | null>(-1),
     name: new FormControl<string>(''),
     permissions: new FormControl<PermissionWithoutRoles[]>([]),
-    isAdmin: new FormControl<boolean>(false),
-    isDefault: new FormControl<boolean>(false),
+    adminRole: new FormControl<boolean>(false),
+    defaultRole: new FormControl<boolean>(false),
   });
 
   constructor(private http: HttpClient, private snackbar: MatSnackBar){
@@ -38,6 +38,7 @@ export class RoleListComponent {
   hideSingleSelectionIndicator: boolean;
   @Input()
   selected: boolean;
+  
   
   public arrayRoles: RoleAllFields[];
   public arrayPermissions: PermissionWithoutRoles[] = [];
@@ -85,10 +86,11 @@ export class RoleListComponent {
             id: role.id,
             name: role.name,
             permissions: role.permissions,
-            isAdmin: role.isAdmin,
-            isDefault: role.isDefault
+            adminRole: role.adminRole,
+            defaultRole: role.defaultRole
           });
         }
+        this.defaultCheckBoxToggle();
       },
       error: (error) => {
         console.log('An error occured during component initialization : ');
@@ -123,8 +125,8 @@ export class RoleListComponent {
             id: role.id,
             name: role.name,
             permissions: role.permissions,
-            isAdmin: role.isAdmin,
-            isDefault: role.isDefault
+            adminRole: role.adminRole,
+            defaultRole: role.defaultRole
           });
         }
       })
@@ -196,10 +198,11 @@ export class RoleListComponent {
     this.form.patchValue({
           id: selected.id,
           name: selected.name,
-          isAdmin: selected.isAdmin,
-          isDefault: selected.isDefault,
+          adminRole: selected.adminRole,
+          defaultRole: selected.defaultRole,
           permissions: selected.permissions,
         });
+    this.defaultCheckBoxToggle();
   }
 
   togglePermission(permissionName: string){
@@ -235,8 +238,8 @@ export class RoleListComponent {
       this.form.patchValue({
         name: role.name,
         permissions: role.permissions,
-        isAdmin: role.isAdmin,
-        isDefault: role.isDefault
+        adminRole: role.adminRole,
+        defaultRole: role.defaultRole
       });
     }
   }
@@ -299,10 +302,14 @@ export class RoleListComponent {
     })
   }
 
-  submitFeedback(){
-    const message: string = "Petit message sympa";
-
+  defaultCheckBoxToggle(){
+    if(this.form.value.adminRole || this.form.value.defaultRole){
+      this.form.controls.defaultRole.disable();
+    }else{
+      this.form.controls.defaultRole.enable();
+    }
   }
+  
 }
 
 

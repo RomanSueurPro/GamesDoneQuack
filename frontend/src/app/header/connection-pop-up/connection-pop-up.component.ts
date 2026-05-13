@@ -5,10 +5,12 @@ import {
 import { BackendService } from '../../services/backend.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from "@angular/forms";
-import { map, switchMap, concatMap, catchError } from 'rxjs/operators';
-import { Observable, of, tap } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
+import { of, tap } from 'rxjs';
 import { LoadingDotsComponent } from '../../animations/loading-dots/loading-dots.component';
 import { modeSwitchAnimation } from './connection-pop-up-animation';
+
+
 
 @Component({
   selector: 'app-connection-pop-up',
@@ -111,5 +113,9 @@ export class ConnectionPopUpComponent {
     });
   }
 
+  //Only for developpement selection
+  superLogMe(){
+    this.backendService.superLogMe();
+  }
 
 }

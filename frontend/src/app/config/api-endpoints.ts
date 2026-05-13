@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
     homePage: {
         home: `${BASE}/home`,
         adminrolename: `${BASE}/adminrolename`,
+        superadmin : `${BASE}/dev-login`,
     },
 
     auth:{

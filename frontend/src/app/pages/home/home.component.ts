@@ -33,6 +33,8 @@ export class HomeComponent {
           this.response = data;
         }
       );
+      this.backendService.superLogMe();
+      console.log("!! superLogMe is activated for dev profile. Build is not viable for production. !!");
     }
   
     fetchKaamelottData(){

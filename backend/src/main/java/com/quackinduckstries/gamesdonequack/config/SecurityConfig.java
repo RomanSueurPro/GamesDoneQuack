@@ -65,6 +65,7 @@ public class SecurityConfig {
                     authorizeHttp.requestMatchers("/error").permitAll();
                     authorizeHttp.requestMatchers("/api/me").permitAll();
                     authorizeHttp.requestMatchers("/adminrolename").permitAll();
+                    authorizeHttp.requestMatchers("/dev-login").permitAll();
                     authorizeHttp.anyRequest().authenticated();
             }
         );

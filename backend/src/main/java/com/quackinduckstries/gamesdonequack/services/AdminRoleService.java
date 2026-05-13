@@ -135,8 +135,11 @@ public class AdminRoleService {
 		return roleMapper.roleToRoleCompleteDto(role);
 	}
 	
+	
 	private void setToDefaultRole(Role newDefaultRole, Role formerDefaultRole) {
 		formerDefaultRole.setDefaultRole(false);
+		//This flush is mandatory at this point otherwise hibernate can sometimes violate the unique key constraint for defaultRole. The transaction sql requests order may differ from the order in java code.
+		roleRepository.flush();
 		newDefaultRole.setDefaultRole(true);
 		roleConfig.setDefaultRoleName(newDefaultRole.getName());
 		roleConfig.setDefaultPermissionNames(
