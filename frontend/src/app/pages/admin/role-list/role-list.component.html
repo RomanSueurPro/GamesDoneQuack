@@ -1,8 +1,7 @@
 <form [formGroup]="form">
 <div id="update-container">
     
-    <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true" 
-    (selectionChange)="onSelectionChange($event)">
+    <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true" (selectionChange)="onSelectionChange($event)">
         @for (role of arrayRoles; track role) {
             <mat-list-option [value]="role" [selected]="role.id === selectedRole?.id">
                 <div class="role-display-list">
@@ -16,10 +15,11 @@
                 </div>
             </mat-list-option>
         }
+        
     </mat-selection-list>
 
     <div id="role-update-form">
-        <input type="text" formControlName="name">
+        <input type="text" formControlName="name" id="role-name-textfield">
         <h3>Associated permissions</h3>
         <mat-list role="list">
             @for (permission of associatedPermissions; track permission) {
@@ -66,7 +66,7 @@
 
         <div id="confirm-buttons">
             <input type="button" value="Save" (click)="completeProcedure()">
-            <input type="button" value="Cancel" (click)="cancelChanges(form.value.id)">
+            <input type="button" value="Cancel" (click)="cancelChanges()">
             <!-- This button cannot show on role admin nor default role -->
             <!-- This button triggers a pop up for extra validation -->
             <input type="button" value="Delete">

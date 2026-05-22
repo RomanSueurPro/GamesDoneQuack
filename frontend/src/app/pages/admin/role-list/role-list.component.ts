@@ -2,18 +2,21 @@ import { Component, Input } from '@angular/core';
 import { concat, concatMap, forkJoin, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { RoleAllFields } from '../../../models/RoleAllFields';
-import { MatListModule } from '@angular/material/list';
+import { MatListModule, MatSelectionList } from '@angular/material/list';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { PermissionWithoutRoles } from '../../../models/PermissionWithoutRoles';
 import { API_ENDPOINTS } from '../../../config/api-endpoints';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { ViewChild } from '@angular/core';
+
 
 @Component({
   selector: 'app-role-list',
   standalone: true,
-  imports: [MatListModule, FormsModule, ReactiveFormsModule, MatCheckboxModule
-  ],
+  imports: [MatListModule, FormsModule, ReactiveFormsModule, MatCheckboxModule],
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss'
 })
@@ -27,7 +30,7 @@ export class RoleListComponent {
     defaultRole: new FormControl<boolean>(false),
   });
 
-  constructor(private http: HttpClient, private snackbar: MatSnackBar){
+  constructor(private http: HttpClient, private snackbar: MatSnackBar, private dialog: MatDialog){
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayRoles = [];
@@ -38,7 +41,8 @@ export class RoleListComponent {
   hideSingleSelectionIndicator: boolean;
   @Input()
   selected: boolean;
-  
+
+  @ViewChild('roleList') roleList!: MatSelectionList;
   
   public arrayRoles: RoleAllFields[];
   public arrayPermissions: PermissionWithoutRoles[] = [];
@@ -55,17 +59,19 @@ export class RoleListComponent {
   }
 
   ngOnInit(){
-    this.loadData();
-  }
+    this.loadDataObservable().subscribe({
+      error: (error) => console.log(error), 
+    });
+  } 
 
-  loadData() {
+  loadDataObservable(){
     const previousId = this.form.get('id')?.value;
-
-    forkJoin({
+    
+    return forkJoin({
       permissions: this.fetchPermissionsObservable(),
       roles: this.fetchRolesObservable(),
-    }).subscribe({
-      next: ({ permissions, roles }) => {
+    }).pipe(
+      tap(({ permissions, roles }) => {
         this.arrayRoles = roles;
         this.sortAlphabetically(this.arrayRoles);
         this.arrayPermissions = permissions;
@@ -82,52 +88,7 @@ export class RoleListComponent {
         this.updatePermissionsAssociations(role);
 
         if (role) {
-          this.form.patchValue({
-            id: role.id,
-            name: role.name,
-            permissions: role.permissions,
-            adminRole: role.adminRole,
-            defaultRole: role.defaultRole
-          });
-        }
-        this.defaultCheckBoxToggle();
-      },
-      error: (error) => {
-        console.log('An error occured during component initialization : ');
-        console.log(error);
-      }
-    });
-  }
-
-  loadDataObservable(){
-    const previousId = this.form.get('id')?.value;
-
-    return forkJoin({
-      permissions: this.fetchPermissionsObservable(),
-      roles: this.fetchRolesObservable(),
-    }).pipe(
-      tap(({ permissions, roles }) => {
-        this.arrayRoles = roles;
-        this.arrayPermissions = permissions;
-
-        // Try to restore previous selection
-        let role = this.arrayRoles.find(r => r.id === previousId);
-
-        // Fallback for first load
-        if (!role) {
-          role = this.arrayRoles[0] ?? null;
-        }
-
-        this.updatePermissionsAssociations(role);
-
-        if (role) {
-          this.form.patchValue({
-            id: role.id,
-            name: role.name,
-            permissions: role.permissions,
-            adminRole: role.adminRole,
-            defaultRole: role.defaultRole
-          });
+          this.updateFullForm(role);
         }
       })
     );
@@ -151,16 +112,16 @@ export class RoleListComponent {
     let high = permissionList.length;
 
     while (low < high) {
-    const mid = Math.floor((low + high) / 2);
+      const mid = Math.floor((low + high) / 2);
 
-    if (permissionList[mid].name.localeCompare(permission.name) < 0) {
-      low = mid + 1;
-    } else {
-      high = mid;
+      if (permissionList[mid].name.localeCompare(permission.name) < 0) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
     }
-  }
 
-  permissionList.splice(low, 0, permission);
+    permissionList.splice(low, 0, permission);
   }
 
   updatePermissionsAssociations(role: RoleAllFields){
@@ -188,21 +149,55 @@ export class RoleListComponent {
     this.sortAlphabetically(this.notAssociatedPermissions);
     this.form.patchValue({
           permissions: this.associatedPermissions
-        })
+        });
   }
 
   onSelectionChange(event: any) {
     const selected: RoleAllFields = event.options[0]?.value;
+    if(!this.checkUnsavedModificationsOnRole()){
+      this.updateFullForm(selected);
+    }else{
+      this.openUnsavedDialog(selected);
+    } 
+  }
 
+  updateFullForm(selected: RoleAllFields){
     this.updatePermissionsAssociations(selected);
-    this.form.patchValue({
+      this.form.patchValue({
           id: selected.id,
           name: selected.name,
           adminRole: selected.adminRole,
           defaultRole: selected.defaultRole,
           permissions: selected.permissions,
-        });
-    this.defaultCheckBoxToggle();
+      });
+    
+      this.defaultCheckBoxToggle();
+  }
+
+  openUnsavedDialog(selected: RoleAllFields) {
+    const dialogRef = this.dialog.open(
+      ConfirmationDialogComponent,
+      {
+        width: '25rem',
+        height: '5rem',
+        hasBackdrop: true,
+        disableClose: true,
+        panelClass: 'confirmation-dialog',
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        //user confirms he wants to leave
+        this.updateFullForm(selected);
+      }
+      else {
+        if(this.form.value.id){
+          this.roleList.options.find(option => option.value.id === this.form.value.id)?.toggle();
+          this.form.markAsDirty();
+        }
+      }
+    });
   }
 
   togglePermission(permissionName: string){
@@ -225,37 +220,22 @@ export class RoleListComponent {
     this.sortAlphabetically(this.notAssociatedPermissions);
     this.form.patchValue({
       permissions: this.associatedPermissions,
-    })
+    });
+    this.form.markAsDirty();
+    
   }
 
-  cancelChanges(roleId: number|null|undefined):void{
+  cancelChanges():void{
     let role = undefined;
-    if(roleId){
-      role = this.arrayRoles.find((r) => r.id = roleId);
+    if(this.form.value.id){
+      role = this.arrayRoles.find((r) => r.id === this.form.value.id);
     }
+      
     if(role){
       this.updatePermissionsAssociations(role);
-      this.form.patchValue({
-        name: role.name,
-        permissions: role.permissions,
-        adminRole: role.adminRole,
-        defaultRole: role.defaultRole
-      });
+      this.updateFullForm(role);
+      this.form.markAsPristine();
     }
-  }
-
-  saveChanges(){
-    console.log(this.form.value);
-    this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
-    {withCredentials: true,
-
-    }).subscribe({
-      next: () => {
-        console.log("patchin went through");
-        this.loadData();
-      },
-      error: (error) => console.log("error" + error),
-      });
   }
 
   saveChangesObservable(){
@@ -303,12 +283,22 @@ export class RoleListComponent {
   }
 
   defaultCheckBoxToggle(){
+    this.form.controls.defaultRole.enable();
     if(this.form.value.adminRole || this.form.value.defaultRole){
       this.form.controls.defaultRole.disable();
-    }else{
-      this.form.controls.defaultRole.enable();
     }
   }
+
+  checkUnsavedModificationsOnRole(): boolean{
+    if(this.form.dirty){
+      this.form.markAsPristine();
+      return true;
+    }
+    return false;
+  }
+
+
+  
   
 }
 

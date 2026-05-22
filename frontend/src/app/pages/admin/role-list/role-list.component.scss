@@ -5,14 +5,12 @@
 
 .role-list {
   border: 1px rgb(192, 201, 94) solid;
-}
-
-.with-border {
-  border: 1px rgb(192, 201, 94) solid;
+  border-radius: 5px;
 }
 
 #update-container {
   border: 1px rgb(192, 201, 94) solid;
+  border-radius: 5px;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -22,6 +20,7 @@
 
 #role-update-form{
   border: 1px rgb(192, 201, 94) solid;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   
@@ -44,6 +43,7 @@
 
  mat-list{
   border: 1px rgb(192, 201, 94) solid;
+  border-radius: 5px;
  }
  
 
@@ -90,3 +90,6 @@
   margin-right: 1.25em;
  }
  
+#role-name-textfield{
+  margin-top: 8px !important;
+}
