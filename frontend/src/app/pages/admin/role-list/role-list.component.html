@@ -15,6 +15,19 @@
                 </div>
             </mat-list-option>
         }
+        <div>
+            <div id="new-role" #newRoleDiv class="add-role-div">
+                <input type="text" id="new-role-text-field" [(ngModel)]="newRoleField" [ngModelOptions]="{ standalone: true }"> 
+                <div id="new-role-buttons">
+                    <button (click)="makeNewRole()">Confirm</button>
+                    <button (click)="hideNewRoleField()">Cancel</button>
+                </div>
+            </div>
+            <div class="add-role-div" #newRoleButtonDiv id="add-new-role-button-div">
+                <input type="button" value="Add new role" (click)="showNewRoleField()" #buttonNewRole>
+            </div>
+            
+        </div>
         
     </mat-selection-list>
 
@@ -53,7 +66,7 @@
         <h3>Add new permission : </h3>
         <div id="add-permission">
             <div class="permission-display-list-items">
-                <input type="text" placeholder="New Permission" id="permission-text-field" [(ngModel)]="newPermissionField" [ngModelOptions]="{ standalone: true }">
+                <input type="text" placeholder="NEW_PERMISSION" id="permission-text-field" [(ngModel)]="newPermissionField" [ngModelOptions]="{ standalone: true }">
                 <input type="button" value="+" class="manage-permission-button" (click)="associateNewPermission()">
             </div>
         </div>

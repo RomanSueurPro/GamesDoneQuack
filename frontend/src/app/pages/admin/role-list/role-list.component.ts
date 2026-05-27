@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input } from '@angular/core';
 import { concat, concatMap, forkJoin, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { RoleAllFields } from '../../../models/RoleAllFields';
@@ -43,6 +43,12 @@ export class RoleListComponent {
   selected: boolean;
 
   @ViewChild('roleList') roleList!: MatSelectionList;
+  @ViewChild('newRoleDiv') newRoleDiv!: ElementRef;
+  @ViewChild('buttonNewRole') buttonNewRole!: ElementRef;
+  @ViewChild('newRoleButtonDiv') newRoleButtonDiv!: ElementRef;
+
+  
+
   
   public arrayRoles: RoleAllFields[];
   public arrayPermissions: PermissionWithoutRoles[] = [];
@@ -51,7 +57,7 @@ export class RoleListComponent {
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
 
   newPermissionField: string = "";
-  
+  newRoleField: string = "";
 
   get selectedRole(): RoleAllFields | null {
     const id = this.form.get('id')?.value;
@@ -239,9 +245,12 @@ export class RoleListComponent {
   }
 
   saveChangesObservable(){
-    console.log(this.form.value);
-    return this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
-    {withCredentials: true});
+    if(this.form.value.id !== null && this.form.value.id !== undefined && this.form.value.id >= 0){
+      return this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
+      {withCredentials: true});
+    }
+    return this.http.post(API_ENDPOINTS.admin.createRole, this.form.value, 
+      {withCredentials: true});
   }
 
   completeProcedure(){
@@ -252,22 +261,23 @@ export class RoleListComponent {
     ).subscribe({
       next: () => {
         this.snackbar.open(
-        'Role update successfull',
-        'Close',
-        {
-          duration: 3000,
-          panelClass: ['success-snackbar'],
-        }
+          'Role update successfull',
+          'Close',
+          {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+          }
         );
+        this.form.markAsPristine();
       },
       error: (error) => {
         console.log(error);
         this.snackbar.open(
-        'Error occured' + '\n' + error,
-        'Close',
-        {
-          panelClass: ['failure-snackbar'],
-        }
+          'Code status : ' + error.error.status + ', ' + error.error.error,
+          'Close',
+          {
+            panelClass: ['failure-snackbar'],
+          }
         );
       },
     })
@@ -297,8 +307,29 @@ export class RoleListComponent {
     return false;
   }
 
+  showNewRoleField(){
+    this.newRoleDiv.nativeElement.style.display = 'flex';
+    this.newRoleButtonDiv.nativeElement.style.display = 'none';
+    
+  }
 
-  
+  hideNewRoleField(){
+    this.newRoleDiv.nativeElement.style.display = 'none';
+    this.newRoleButtonDiv.nativeElement.style.display = 'flex';
+  }
+
+  makeNewRole(){
+    let role: RoleAllFields = {
+      id: -1,
+      name: this.newRoleField,
+      adminRole: false,
+      defaultRole: false,
+      permissions: [],
+    };
+    this.arrayRoles.push(role);
+    this.updateFullForm(role);
+    this.hideNewRoleField();
+  }
   
 }
 

@@ -72,6 +72,6 @@ public class DevLoginController {
                 context
         );
 
-        return "Logged in as JEAN PUTOIS" ;
+        return "Autologin for Dev successful";
     }
 }

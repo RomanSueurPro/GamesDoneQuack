@@ -75,10 +75,9 @@ public class AdminController {
 	
 	
 	@PostMapping("/createrole")
-	public ResponseEntity<?> createRole(@RequestParam("name") String name, @RequestParam("permissions") List<String> permissions) {
+	public ResponseEntity<?> createRole(@RequestBody RoleAdminListDto roleToCreate) {
 		
-		RoleCompleteDto role = adminRoleService.createRole(name, permissions);
-		
+		RoleCompleteDto role = adminRoleService.createRole(roleToCreate);
 		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
 	}
 	

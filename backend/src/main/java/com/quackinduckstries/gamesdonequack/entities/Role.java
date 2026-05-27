@@ -46,7 +46,7 @@ public class Role {
 	@JsonManagedReference 
 	private Collection<User> users;
 	
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(cascade = { CascadeType.MERGE })
 	@JsonBackReference
 	@JoinTable(
 			name = "roles_permissions",

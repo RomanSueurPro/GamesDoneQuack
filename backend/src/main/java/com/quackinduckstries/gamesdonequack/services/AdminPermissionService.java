@@ -60,8 +60,7 @@ public class AdminPermissionService {
 			if(finalName.length() < 11 || !finalName.substring(finalName.length()-11).equals(tailPattern)) {
 				finalName = finalName + tailPattern;
 			}
-			Permission permission = new Permission(finalName);
-			return permission;
+			return permissionRepository.save(new Permission(finalName));
 		});
 	}
 

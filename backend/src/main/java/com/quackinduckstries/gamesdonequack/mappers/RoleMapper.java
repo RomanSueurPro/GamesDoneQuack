@@ -10,7 +10,7 @@ import com.quackinduckstries.gamesdonequack.entities.Role;
 @Mapper(componentModel = "spring", uses = {PermissionMapper.class, UserMapper.class})
 public interface RoleMapper {
 	
-//	Role roleDtoToRole(RoleCompleteDto dto);
+	Role roleAdminListDtoToRole(RoleAdminListDto dto);
 	RoleCompleteDto roleToRoleCompleteDto(Role role);
 	RoleAdminListDto roleToRoleAdminListDto(Role role);
 	RoleNoRelationsDto roleToRoleNorelation(Role role);

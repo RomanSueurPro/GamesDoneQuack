@@ -1,6 +1,7 @@
 package com.quackinduckstries.gamesdonequack.services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.controllers.GlobalExceptionHandler;
 import com.quackinduckstries.gamesdonequack.controllers.HomeController;
+import com.quackinduckstries.gamesdonequack.controllers.LoginController;
 import com.quackinduckstries.gamesdonequack.controllers.ProfileController;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
@@ -27,6 +29,8 @@ import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
 @Service
 public class AdminRoleService {
+
+    private final LoginController loginController;
 
     private final GlobalExceptionHandler globalExceptionHandler;
 
@@ -43,7 +47,7 @@ public class AdminRoleService {
 	private final RoleMapper roleMapper;
 	private final SessionRegistry sessionRegistry;
 	
-	public AdminRoleService(UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository, AdminPermissionService adminPermissionService, RoleConfig roleConfig, RoleMapper roleMapper, HomeController homeController, ProfileController profileController, SessionRegistry sessionRegistry, GlobalExceptionHandler globalExceptionHandler) {
+	public AdminRoleService(UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository, AdminPermissionService adminPermissionService, RoleConfig roleConfig, RoleMapper roleMapper, HomeController homeController, ProfileController profileController, SessionRegistry sessionRegistry, GlobalExceptionHandler globalExceptionHandler, LoginController loginController) {
 		this.userRepository = userRepository;
 		this.permissionRepository = permissionRepository;
 		this.roleRepository = roleRepository;
@@ -54,6 +58,7 @@ public class AdminRoleService {
 		this.profileController = profileController;
 		this.sessionRegistry = sessionRegistry;
 		this.globalExceptionHandler = globalExceptionHandler;
+		this.loginController = loginController;
 	}
 	
 	
@@ -69,21 +74,28 @@ public class AdminRoleService {
 	}
 
 	@Transactional
-	public RoleCompleteDto createRole(String name, List<String> permissions) {
+	public RoleCompleteDto createRole(RoleAdminListDto roleToCreate) {
 		
-		List<Permission> allPermissions = new ArrayList<Permission>();
-		if(this.existsByName(name)) {
-			throw new NewRoleAlreadyExistsException("Role " + name + " already exists");
+		if(this.existsByName(roleToCreate.getName())) {
+			throw new NewRoleAlreadyExistsException("Role " + roleToCreate.getName() + " already exists");
 		}
 		
-		for(String permission : permissions) {
-			allPermissions.add(adminPermissionService.createPermissionIfNotExist(permission));
-		}
+		List<Permission> permissions = roleToCreate.getPermissions().stream()
+			    .map(p -> adminPermissionService.createPermissionIfNotExist(p.getName()))
+			    .toList();
 		
-		Role role = new Role(name, allPermissions);
-		this.save(role);
+		String finalName = roleToCreate.getName().toUpperCase();
+		String frontPattern = "ROLE_";
+		if(finalName.length() < 5 || !finalName.substring(0, 5).equals(frontPattern)) {
+			finalName = frontPattern + finalName;
+		}
+		roleToCreate.setName(finalName);
+		Role asModel = this.roleMapper.roleAdminListDtoToRole(roleToCreate);
+		asModel.setPermissions(new HashSet<Permission>(permissions));
+		asModel.setId(null);
+		this.save(asModel);
 	
-		return roleMapper.roleToRoleCompleteDto(role);
+		return roleMapper.roleToRoleCompleteDto(asModel);
 	}
 
 	@Transactional
