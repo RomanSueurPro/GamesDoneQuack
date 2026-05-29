@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { ViewChild } from '@angular/core';
+import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 
 
 @Component({
@@ -30,7 +31,7 @@ export class RoleListComponent {
     defaultRole: new FormControl<boolean>(false),
   });
 
-  constructor(private http: HttpClient, private snackbar: MatSnackBar, private dialog: MatDialog){
+  constructor(private http: HttpClient, private snackbar: MatSnackBar, private confirmDialog: MatDialog, private deleteDialog: MatDialog){
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayRoles = [];
@@ -91,9 +92,8 @@ export class RoleListComponent {
           role = this.arrayRoles[0] ?? null;
         }
 
-        this.updatePermissionsAssociations(role);
-
         if (role) {
+          this.updatePermissionsAssociations(role);
           this.updateFullForm(role);
         }
       })
@@ -160,6 +160,7 @@ export class RoleListComponent {
 
   onSelectionChange(event: any) {
     const selected: RoleAllFields = event.options[0]?.value;
+    
     if(!this.checkUnsavedModificationsOnRole()){
       this.updateFullForm(selected);
     }else{
@@ -181,7 +182,7 @@ export class RoleListComponent {
   }
 
   openUnsavedDialog(selected: RoleAllFields) {
-    const dialogRef = this.dialog.open(
+    const dialogRef = this.confirmDialog.open(
       ConfirmationDialogComponent,
       {
         width: '25rem',
@@ -195,6 +196,7 @@ export class RoleListComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
         //user confirms he wants to leave
+        this.arrayRoles = this.arrayRoles.filter((r) => r.id !== -1);
         this.updateFullForm(selected);
       }
       else {
@@ -238,6 +240,10 @@ export class RoleListComponent {
     }
       
     if(role){
+      if(role.id === -1){
+        this.arrayRoles = this.arrayRoles.filter((r) => r.id !== -1);
+        role = this.arrayRoles[0];
+      }
       this.updatePermissionsAssociations(role);
       this.updateFullForm(role);
       this.form.markAsPristine();
@@ -330,7 +336,62 @@ export class RoleListComponent {
     this.updateFullForm(role);
     this.hideNewRoleField();
   }
+
+  deleteRole():void{
+    this.openDeleteDialog();
+  }
   
+  openDeleteDialog(){
+    const dialogRef = this.deleteDialog.open(
+      DeleteDialogComponent,
+      {
+        width: '25rem',
+        height: '5rem',
+        hasBackdrop: true,
+        disableClose: true,
+        panelClass: 'confirmation-dialog',
+        data: 
+          {
+            name: this.form.value.name,
+          }
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        //user confirms he wants to remove role from db
+        this.http.delete(API_ENDPOINTS.admin.deleteRole, {
+          withCredentials: true,
+          body: this.form.value
+        }).subscribe({
+          next: (response:any) => {
+            this.arrayRoles = this.arrayRoles.filter((r) => r.id !== this.form.value.id);
+            this.loadDataObservable().subscribe({
+              error: (error) => console.log(error),         
+            });
+            this.snackbar.open(
+              response.message,
+              'Close',
+              {
+                duration: 3000,
+                panelClass: ['success-snackbar'],
+              }
+            );
+            this.form.markAsPristine();
+          },
+          error: (error) => {
+            console.log(error);
+            this.snackbar.open(
+              error.error.error,
+              'Close',
+              {
+                duration: 3000,
+                panelClass: ['failure-snackbar'],
+              }
+            );
+          }
+        })
+      }
+    });
+  }
 }
-
-

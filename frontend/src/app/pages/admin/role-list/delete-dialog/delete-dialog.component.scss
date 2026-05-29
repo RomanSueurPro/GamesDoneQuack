@@ -1,0 +1,15 @@
+.buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#root-div{
+    display: flex;
+    flex-direction: column;
+    
+    p{
+        align-self: center;
+        text-align: center;
+    }
+}

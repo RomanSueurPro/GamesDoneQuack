@@ -144,8 +144,9 @@ public class AdminController {
 	}
 	
 	@DeleteMapping("deleterole")
-	public ResponseEntity<?> deleteRole(@RequestParam("id") long id){
-		String roleName = adminRoleService.deleteRole(id);
-		return ResponseEntity.ok("Role " + roleName + " was deleted successfully");
+	public ResponseEntity<?> deleteRole(@RequestBody RoleCompleteDto roleToDelete){
+		
+		String roleName = adminRoleService.deleteRole(roleToDelete.getId());
+		return ResponseEntity.ok(Map.of("message", "Role " + roleName + " was deleted successfully"));
 	}
 }

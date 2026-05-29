@@ -80,10 +80,15 @@ public class AdminRoleService {
 			throw new NewRoleAlreadyExistsException("Role " + roleToCreate.getName() + " already exists");
 		}
 		
+		if(roleToCreate.isAdminRole()) {
+			throw new IllegalStateException("Creating a role with admin status is forbidden");
+		}
+		
 		List<Permission> permissions = roleToCreate.getPermissions().stream()
 			    .map(p -> adminPermissionService.createPermissionIfNotExist(p.getName()))
 			    .toList();
 		
+		Optional<Role> defaultRole = getDefaultRole();
 		String finalName = roleToCreate.getName().toUpperCase();
 		String frontPattern = "ROLE_";
 		if(finalName.length() < 5 || !finalName.substring(0, 5).equals(frontPattern)) {
@@ -93,6 +98,24 @@ public class AdminRoleService {
 		Role asModel = this.roleMapper.roleAdminListDtoToRole(roleToCreate);
 		asModel.setPermissions(new HashSet<Permission>(permissions));
 		asModel.setId(null);
+		
+		if(defaultRole.isEmpty() && roleToCreate.isDefaultRole()) {
+			roleConfig.setDefaultRoleName(roleToCreate.getName());
+			roleConfig.setDefaultPermissionNames(permissions
+					.stream()
+					.map((permission)-> permission.getName())
+					.toList());
+		} 
+		else if(defaultRole.isEmpty() && !roleToCreate.isDefaultRole()){
+			throw new IllegalStateException("No default Role in database. You must create or update a role to default before anything else.");
+		}
+		else {
+			Role dRole = defaultRole.get();
+			if(roleToCreate.isDefaultRole()) {
+				setToDefaultRole(asModel, dRole);
+			}
+		}
+		
 		this.save(asModel);
 	
 		return roleMapper.roleToRoleCompleteDto(asModel);

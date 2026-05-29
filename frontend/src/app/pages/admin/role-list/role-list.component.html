@@ -1,20 +1,23 @@
 <form [formGroup]="form">
 <div id="update-container">
     
-    <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true" (selectionChange)="onSelectionChange($event)">
-        @for (role of arrayRoles; track role) {
-            <mat-list-option [value]="role" [selected]="role.id === selectedRole?.id">
-                <div class="role-display-list">
-                    {{role.name}}
-                    
-                    @if (role.adminRole === true){
-                        <span>(Admin)</span>
-                    }@if (role.defaultRole === true){
-                        <span>(Default)</span>
-                    }
-                </div>
-            </mat-list-option>
-        }
+    <div>
+        <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true" (selectionChange)="onSelectionChange($event)" id="admin-role-list">
+            @for (role of arrayRoles; track role) {
+                <mat-list-option [value]="role" [selected]="role.id === selectedRole?.id">
+                    <div class="role-display-list">
+                        {{role.name}}
+                        
+                        @if (role.adminRole === true){
+                            <span>(Admin)</span>
+                        }@if (role.defaultRole === true){
+                            <span>(Default)</span>
+                        }
+                    </div>
+                </mat-list-option>
+            }
+        </mat-selection-list>
+
         <div>
             <div id="new-role" #newRoleDiv class="add-role-div">
                 <input type="text" id="new-role-text-field" [(ngModel)]="newRoleField" [ngModelOptions]="{ standalone: true }"> 
@@ -26,15 +29,13 @@
             <div class="add-role-div" #newRoleButtonDiv id="add-new-role-button-div">
                 <input type="button" value="Add new role" (click)="showNewRoleField()" #buttonNewRole>
             </div>
-            
         </div>
-        
-    </mat-selection-list>
+    </div>
 
     <div id="role-update-form">
         <input type="text" formControlName="name" id="role-name-textfield">
         <h3>Associated permissions</h3>
-        <mat-list role="list">
+        <mat-list role="list" id="associated-permissions-list">
             @for (permission of associatedPermissions; track permission) {
                 <mat-list-item>
                     <div class="permission-display-list-items">
@@ -49,7 +50,7 @@
         </mat-list>
 
         <h3>Available permissions</h3>
-        <mat-list role="list">
+        <mat-list role="list" id="available-permissions-list">
             @for (permission of notAssociatedPermissions; track permission) {
                 <mat-list-item>
                     <div class="permission-display-list-items">
@@ -75,14 +76,15 @@
             <h3>Set as new default role :</h3>
             <mat-checkbox class="defaultrole-checkbox" formControlName="defaultRole" disableRipple = true [disabled]=true></mat-checkbox>
         </div>
-        
 
         <div id="confirm-buttons">
             <input type="button" value="Save" (click)="completeProcedure()">
             <input type="button" value="Cancel" (click)="cancelChanges()">
             <!-- This button cannot show on role admin nor default role -->
             <!-- This button triggers a pop up for extra validation -->
-            <input type="button" value="Delete">
+             @if(!this.form.value.adminRole && this.form.value.defaultRole !== undefined){
+                <input type="button" value="Delete" (click)="deleteRole()">
+             }
         </div>
     </div>
 </div>
