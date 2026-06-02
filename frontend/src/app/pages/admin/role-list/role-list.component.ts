@@ -1,9 +1,9 @@
 import { Component, ElementRef, Input } from '@angular/core';
-import { concat, concatMap, forkJoin, of, tap } from 'rxjs';
+import { concatMap, forkJoin, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { RoleAllFields } from '../../../models/RoleAllFields';
 import { MatListModule, MatSelectionList } from '@angular/material/list';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { PermissionWithoutRoles } from '../../../models/PermissionWithoutRoles';
 import { API_ENDPOINTS } from '../../../config/api-endpoints';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -12,12 +12,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { ViewChild } from '@angular/core';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
-
+import { HeaderComponent } from '../../../header/header.component';
 
 @Component({
   selector: 'app-role-list',
   standalone: true,
-  imports: [MatListModule, FormsModule, ReactiveFormsModule, MatCheckboxModule],
+  imports: [MatListModule, FormsModule, ReactiveFormsModule, MatCheckboxModule, HeaderComponent],
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss'
 })
@@ -25,7 +25,7 @@ export class RoleListComponent {
 
   form = new FormGroup({
     id: new FormControl<number | null>(-1),
-    name: new FormControl<string>(''),
+    name: new FormControl<string>('', [this.roleNameValidator()]),
     permissions: new FormControl<PermissionWithoutRoles[]>([]),
     adminRole: new FormControl<boolean>(false),
     defaultRole: new FormControl<boolean>(false),
@@ -48,9 +48,6 @@ export class RoleListComponent {
   @ViewChild('buttonNewRole') buttonNewRole!: ElementRef;
   @ViewChild('newRoleButtonDiv') newRoleButtonDiv!: ElementRef;
 
-  
-
-  
   public arrayRoles: RoleAllFields[];
   public arrayPermissions: PermissionWithoutRoles[] = [];
   
@@ -58,7 +55,18 @@ export class RoleListComponent {
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
 
   newPermissionField: string = "";
+
+  get isNewPermissionNameValid():boolean {
+    const name = this.newPermissionField.toUpperCase().replace(/\s/g, "");
+    return name !== "_PERMISSION" && name !== '';
+  }
+
   newRoleField: string = "";
+
+  get isNewRoleNameValid():boolean {
+    const name = this.newRoleField.toUpperCase().replace(/\s/g, "");
+    return name !== "ROLE_" && name !== '';
+  }
 
   get selectedRole(): RoleAllFields | null {
     const id = this.form.get('id')?.value;
@@ -251,6 +259,7 @@ export class RoleListComponent {
   }
 
   saveChangesObservable(){
+    //validation
     if(this.form.value.id !== null && this.form.value.id !== undefined && this.form.value.id >= 0){
       return this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
       {withCredentials: true});
@@ -279,9 +288,10 @@ export class RoleListComponent {
       error: (error) => {
         console.log(error);
         this.snackbar.open(
-          'Code status : ' + error.error.status + ', ' + error.error.error,
+          'Code status : ' + error.status + ', ' + error.error.error,
           'Close',
           {
+            duration: 3000,
             panelClass: ['failure-snackbar'],
           }
         );
@@ -394,4 +404,18 @@ export class RoleListComponent {
       }
     });
   }
+
+  roleNameValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+
+    const value = (control.value ?? '').toString().toUpperCase().replace(/\s/g, "");
+
+    const isInvalid =
+      value === '' ||
+      value === 'ROLE_';
+
+    return isInvalid ? { invalidRoleName: true } : null;
+  };
+}
+
 }

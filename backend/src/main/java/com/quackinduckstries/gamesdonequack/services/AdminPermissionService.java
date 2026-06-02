@@ -10,6 +10,8 @@ import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
+import com.quackinduckstries.gamesdonequack.exceptions.EmptyPermissionNameException;
+import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.PermissionMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
@@ -37,6 +39,8 @@ public class AdminPermissionService {
 	@Transactional
 	public PermissionDto createPermission(String name, List<Long> idRoles) {
 
+		name = permissionNameValidator(name);
+		
 		if (permissionRepository.existsByName(name)) {
 	        throw new NewPermissionAlreadyExistsException("New permission \"" + name + "\" already exists.");
 	    }
@@ -55,12 +59,7 @@ public class AdminPermissionService {
 	@Transactional
 	public Permission createPermissionIfNotExist(String name) {
 		return permissionRepository.findByName(name).orElseGet(() -> {
-			String finalName = name.toUpperCase();
-			String tailPattern = "_PERMISSION";
-			if(finalName.length() < 11 || !finalName.substring(finalName.length()-11).equals(tailPattern)) {
-				finalName = finalName + tailPattern;
-			}
-			return permissionRepository.save(new Permission(finalName));
+			return permissionRepository.save(new Permission(permissionNameValidator(name)));
 		});
 	}
 
@@ -102,11 +101,12 @@ public class AdminPermissionService {
 	@Transactional
 	public PermissionDto updatePermission(long id, String newName, List<Long> idRoles) {
 		Permission toUpdate = permissionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find the permission with id : " + id + "."));
+		String name = permissionNameValidator(newName);
 		
 		//Check availability of new name if name was changed
-		if(!toUpdate.getName().equals(newName) && permissionRepository.existsByName(newName)) {
+		if(!toUpdate.getName().equals(name) && permissionRepository.existsByName(name)) {
 			
-			throw new NewPermissionAlreadyExistsException("Updating permission name to  \"" + newName + "\" was denied since there is already a permission with this name.");
+			throw new NewPermissionAlreadyExistsException("Updating permission name to  \"" + name + "\" was denied since there is already a permission with this name.");
 		}
 		
 		//you need a HashSet here or some sort of collection data structure to copy toUpdate.getRoles(), otherwise you would be iterating on a collection that gets modified inside the loop, causing undefined behavior.
@@ -123,9 +123,9 @@ public class AdminPermissionService {
 		
 		//If permission was in roleConfig
 		roleConfig.getDefaultPermissionNames()
-	    .replaceAll(p -> p.equals(toUpdate.getName()) ? newName : p);
+	    .replaceAll(p -> p.equals(toUpdate.getName()) ? name : p);
 		
-		toUpdate.setName(newName);
+		toUpdate.setName(name);
 		
 		return permissionMapper.permissionToPermissionDto(toUpdate);
 	}
@@ -144,5 +144,18 @@ public List<PermissionAdminRoleListDto> fetchAllPermissionsNoRoleField() {
 				.stream()
 				.map((permission)-> permissionMapper.permissionToPermissionAdminRoleListDto(permission))
 				.toList();
+	}
+
+	private String permissionNameValidator(String permissionName) {
+		
+		String finalName = permissionName.toUpperCase().replaceAll("\\s+", "");
+		String tailPattern = "_PERMISSION";
+		if(finalName.length() < 11 || !finalName.substring(finalName.length()-11).equals(tailPattern)) {
+			finalName = finalName + tailPattern;
+		}
+		if(finalName.equals(tailPattern)) {
+			throw new EmptyPermissionNameException("It is forbidden to create a permission without a name");
+		}
+		return finalName;
 	}
 }

@@ -1,3 +1,5 @@
+<app-header></app-header>
+
 <form [formGroup]="form">
 <div id="update-container">
     
@@ -22,9 +24,14 @@
             <div id="new-role" #newRoleDiv class="add-role-div">
                 <input type="text" id="new-role-text-field" [(ngModel)]="newRoleField" [ngModelOptions]="{ standalone: true }"> 
                 <div id="new-role-buttons">
-                    <button (click)="makeNewRole()">Confirm</button>
+                    <button (click)="makeNewRole()" [disabled]="!isNewRoleNameValid">Confirm</button>
                     <button (click)="hideNewRoleField()">Cancel</button>
                 </div>
+                @if (newRoleField.includes(" ")) {
+                    <div class="warning">
+                        All blank spaces will be removed
+                    </div>
+                }
             </div>
             <div class="add-role-div" #newRoleButtonDiv id="add-new-role-button-div">
                 <input type="button" value="Add new role" (click)="showNewRoleField()" #buttonNewRole>
@@ -34,6 +41,16 @@
 
     <div id="role-update-form">
         <input type="text" formControlName="name" id="role-name-textfield">
+        @if (form.get('name')?.hasError('invalidRoleName')) {
+            <div class="error">
+                Name cannot be empty or just "ROLE_"
+            </div>
+        }
+        @if (form.get('name')?.value?.includes(" ")) {
+            <div class="warning">
+                All blank spaces will be removed
+            </div>
+        }
         <h3>Associated permissions</h3>
         <mat-list role="list" id="associated-permissions-list">
             @for (permission of associatedPermissions; track permission) {
@@ -68,8 +85,13 @@
         <div id="add-permission">
             <div class="permission-display-list-items">
                 <input type="text" placeholder="NEW_PERMISSION" id="permission-text-field" [(ngModel)]="newPermissionField" [ngModelOptions]="{ standalone: true }">
-                <input type="button" value="+" class="manage-permission-button" (click)="associateNewPermission()">
+                <input type="button" value="+" class="manage-permission-button" (click)="associateNewPermission()" [disabled]="!isNewPermissionNameValid" id="add-new-permission-button">
             </div>
+            @if (newPermissionField.includes(" ")) {
+            <div class="warning">
+                All blank spaces will be removed
+            </div>
+        }
         </div>
 
         <div id="new-admin-role">
@@ -78,10 +100,13 @@
         </div>
 
         <div id="confirm-buttons">
-            <input type="button" value="Save" (click)="completeProcedure()">
+            @if(form.valid){
+                <input type="button" value="Save" (click)="completeProcedure()">
+            }@else{
+                <input type="button" value="Save" disabled>
+            }
+            
             <input type="button" value="Cancel" (click)="cancelChanges()">
-            <!-- This button cannot show on role admin nor default role -->
-            <!-- This button triggers a pop up for extra validation -->
              @if(!this.form.value.adminRole && this.form.value.defaultRole !== undefined){
                 <input type="button" value="Delete" (click)="deleteRole()">
              }

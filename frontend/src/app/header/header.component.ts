@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SessionComponent } from "./session/session.component";
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -10,4 +12,9 @@ import { SessionComponent } from "./session/session.component";
 })
 export class HeaderComponent {
 
+  router = inject(Router);
+
+  goHome(){
+    this.router.navigateByUrl("/");
+  }
 }

@@ -102,11 +102,12 @@ body {
   max-height: 40vh;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 /* width */
 #available-permissions-list::-webkit-scrollbar {
-  width: 8px;
+  width: 0.5em;
 }
 
 /* remove arrows */
@@ -125,11 +126,12 @@ body {
   max-height: 40vh;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 /* width */
 #associated-permissions-list::-webkit-scrollbar {
-  width: 8px;
+  width: 0.5em;
 }
 
 /* remove arrows */

@@ -1,6 +1,6 @@
 package com.quackinduckstries.gamesdonequack.exceptions;
 
-public class AlreadyExistingRoleNameException extends Exception {
+public class AlreadyExistingRoleNameException extends RuntimeException  {
 	/**
 	 * 
 	 */
@@ -9,5 +9,4 @@ public class AlreadyExistingRoleNameException extends Exception {
 	public AlreadyExistingRoleNameException(String message){
 		super(message);
 	}
-
 }

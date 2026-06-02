@@ -21,7 +21,8 @@ import com.quackinduckstries.gamesdonequack.controllers.LoginController;
 import com.quackinduckstries.gamesdonequack.controllers.ProfileController;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
-import com.quackinduckstries.gamesdonequack.exceptions.NewRoleAlreadyExistsException;
+import com.quackinduckstries.gamesdonequack.exceptions.AlreadyExistingRoleNameException;
+import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
 import com.quackinduckstries.gamesdonequack.mappers.RoleMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
@@ -76,8 +77,9 @@ public class AdminRoleService {
 	@Transactional
 	public RoleCompleteDto createRole(RoleAdminListDto roleToCreate) {
 		
+		roleToCreate.setName(roleNameValidator(roleToCreate.getName()));
 		if(this.existsByName(roleToCreate.getName())) {
-			throw new NewRoleAlreadyExistsException("Role " + roleToCreate.getName() + " already exists");
+			throw new AlreadyExistingRoleNameException("Role " + roleToCreate.getName() + " already exists");
 		}
 		
 		if(roleToCreate.isAdminRole()) {
@@ -89,12 +91,7 @@ public class AdminRoleService {
 			    .toList();
 		
 		Optional<Role> defaultRole = getDefaultRole();
-		String finalName = roleToCreate.getName().toUpperCase();
-		String frontPattern = "ROLE_";
-		if(finalName.length() < 5 || !finalName.substring(0, 5).equals(frontPattern)) {
-			finalName = frontPattern + finalName;
-		}
-		roleToCreate.setName(finalName);
+		
 		Role asModel = this.roleMapper.roleAdminListDtoToRole(roleToCreate);
 		asModel.setPermissions(new HashSet<Permission>(permissions));
 		asModel.setId(null);
@@ -124,11 +121,13 @@ public class AdminRoleService {
 	@Transactional
 	public RoleCompleteDto updateRole(RoleAdminListDto roleToUpdate) {                         
 				
-		Role role = roleRepository.findById(roleToUpdate.getId()).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));	
+		Role role = roleRepository.findById(roleToUpdate.getId()).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));
+		
+		roleToUpdate.setName(roleNameValidator(roleToUpdate.getName()));
 		
 		if(!role.getName().equals(roleToUpdate.getName()) && roleRepository.existsByName(roleToUpdate.getName())) {
 			
-			throw new NewRoleAlreadyExistsException("Updating role name to  \"" + roleToUpdate.getName() + "\" was denied since there is already a role with this name.");
+			throw new AlreadyExistingRoleNameException("Updating role name to  \"" + roleToUpdate.getName() + "\" was denied since there is already a role with this name.");
 		}
 		
 		//Only name update possible for admin role.
@@ -220,5 +219,18 @@ public class AdminRoleService {
 						.forEach(SessionInformation::expireNow);
 			}
 		}
+	}
+	
+	private String roleNameValidator(String rolename) {
+		String finalName = rolename.toUpperCase().replaceAll("\\s+", "");
+		
+		String frontPattern = "ROLE_";
+		if(finalName.length() < 5 || !finalName.substring(0, 5).equals(frontPattern)) {
+			finalName = frontPattern + finalName;
+		}
+		if(finalName.equals(frontPattern)) {
+			throw new EmptyRoleNameException("It is forbidden to create a role without a name");
+		}
+		return finalName;
 	}
 }

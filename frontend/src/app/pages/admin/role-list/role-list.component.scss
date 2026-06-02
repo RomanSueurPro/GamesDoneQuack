@@ -1,5 +1,5 @@
 .role-list mat-list-option[aria-selected="true"]{
-  background-color: rgb(37, 133, 160);
+  background-color: rgb(88, 135, 161);
   color: rgb(231, 219, 194);
 }
 
@@ -78,6 +78,10 @@
   margin-right: 0.4rem;
  }
 
+ #add-new-permission-button{
+  margin-right: 0.5em;
+ }
+
  #new-admin-role{
   display: flex;
   justify-content: space-between;
@@ -115,5 +119,14 @@
   justify-content: center;
 }
 
+.warning{
+  color: orange;
+}
 
+.error{
+  color:red;
+}
 
+.defaultrole-checkbox{
+  margin-right: 0.5em;
+}

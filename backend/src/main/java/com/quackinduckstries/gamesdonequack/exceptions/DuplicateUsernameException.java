@@ -1,6 +1,6 @@
 package com.quackinduckstries.gamesdonequack.exceptions;
 
-public class DuplicateUsernameException extends Exception {
+public class DuplicateUsernameException extends RuntimeException  {
 	/**
 	 * 
 	 */

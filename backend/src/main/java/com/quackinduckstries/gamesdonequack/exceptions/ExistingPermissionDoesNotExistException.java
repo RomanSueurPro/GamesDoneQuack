@@ -1,6 +1,6 @@
 package com.quackinduckstries.gamesdonequack.exceptions;
 
-public class ExistingPermissionDoesNotExistException extends Exception {
+public class ExistingPermissionDoesNotExistException extends RuntimeException  {
 	/**
 	 * 
 	 */
