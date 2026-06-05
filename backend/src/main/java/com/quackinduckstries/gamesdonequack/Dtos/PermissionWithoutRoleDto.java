@@ -3,9 +3,7 @@ package com.quackinduckstries.gamesdonequack.Dtos;
 import lombok.Data;
 
 @Data
-public class PermissionAdminRoleListDto {
-
+public class PermissionWithoutRoleDto {
 	private Long id;
 	private String name;
-	
 }

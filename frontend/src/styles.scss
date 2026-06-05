@@ -97,6 +97,8 @@ body {
     border-radius: 5px;
 }
 
+//role admin------------------------------
+
 //scroll available permissions
 #available-permissions-list {
   max-height: 40vh;
@@ -167,3 +169,109 @@ body {
   background: rgb(192, 201, 94);
   border-radius: 4px;
 }
+
+//permission admin------------------------------
+
+//scroll available roles
+#available-roles-list {
+  max-height: 40vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+/* width */
+#available-roles-list::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+/* remove arrows */
+#available-roles-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* thumb */
+#available-roles-list::-webkit-scrollbar-thumb {
+  background: rgb(192, 201, 94);
+  border-radius: 4px;
+}
+
+//scroll associated roles
+#associated-roles-list {
+  max-height: 40vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+/* width */
+#associated-roles-list::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+/* remove arrows */
+#associated-roles-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* thumb */
+#associated-roles-list::-webkit-scrollbar-thumb {
+  background: rgb(192, 201, 94);
+  border-radius: 4px;
+}
+
+//scroll role list
+#admin-permission-list {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 100vh;
+}
+
+/* width */
+#admin-permission-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* remove arrows */
+#admin-permission-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* thumb */
+#admin-permission-list::-webkit-scrollbar-thumb {
+  background: rgb(192, 201, 94);
+  border-radius: 4px;
+}
+
+.mat-mdc-tab-labels{
+  //underlining selected tab on hover after unfocused
+  --mdc-tab-indicator-active-indicator-color: rgb(192, 201, 94);
+
+  --mdc-tab-indicator-active-focus-indicator-color: rgb(192, 201, 94);
+
+  //active tab text color not focused
+  --mat-tab-header-active-label-text-color: rgb(192, 201, 94);
+
+  //selected tab text color focus
+  --mat-tab-header-active-focus-label-text-color: rgb(192, 201, 94);
+
+  //tab new select click confirm
+  --mat-tab-header-inactive-focus-label-text-color: rgb(192, 201, 94);
+
+  //on hover tab selected text color
+  --mat-tab-header-active-hover-label-text-color: rgb(192, 201, 94);
+
+  //underliner color on focus selected tab
+  --mat-tab-header-active-focus-indicator-color: rgb(192, 201, 94);
+
+  //ripples - on mouse press background fill
+  --mat-tab-header-inactive-ripple-color: rgb(192, 201, 94);
+  --mat-tab-header-active-ripple-color: rgb(192, 201, 94);
+
+  //underliner color on selected tab when you hover after defocused
+  --mat-tab-header-active-hover-indicator-color: rgb(192, 201, 94);
+
+  --mat-tab-header-inactive-hover-label-text-color: rgb(88, 135, 161);
+  --mat-tab-header-inactive-label-text-color: rgb(88, 135, 161);
+}
+

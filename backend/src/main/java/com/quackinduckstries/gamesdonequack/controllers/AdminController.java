@@ -1,6 +1,5 @@
 package com.quackinduckstries.gamesdonequack.controllers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.quackinduckstries.gamesdonequack.Dtos.PermissionAdminRoleListDto;
+
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
-import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionWithoutRoleDto;
+
 import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleNoUserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
@@ -33,19 +34,16 @@ import com.quackinduckstries.gamesdonequack.services.UserService;
 @RestController
 public class AdminController {
 
-    private final HomeController homeController;
-
 	private final AdminRoleService adminRoleService;
 	private final UserService userService;
 	private final AdminPermissionService adminPermissionService;
 	
 
 	
-	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService, HomeController homeController) {
+	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService) {
 		this.userService = userService;
 		this.adminRoleService = adminRoleService;
 		this.adminPermissionService = adminPermissionService;
-		this.homeController = homeController;
 	}
 	
 	
@@ -75,46 +73,48 @@ public class AdminController {
 	
 	
 	@PostMapping("/createrole")
-	public ResponseEntity<?> createRole(@RequestBody RoleAdminListDto roleToCreate) {
+	public ResponseEntity<?> createRole(@RequestBody RoleNoUserDto roleToCreate) {
 		
 		RoleCompleteDto role = adminRoleService.createRole(roleToCreate);
-		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created"));
+		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created", "id", role.getId()));
 	}
 	
 	
-	@PostMapping("/deletepermission")
-	public ResponseEntity<?> deletePermission(@RequestParam("id") Long id) {
+	@DeleteMapping("/deletepermission")
+	public ResponseEntity<?> deletePermission(@RequestBody PermissionDto permissionToDelete) {
 		
-		PermissionDto permission = adminPermissionService.deletePermission(id);
+		String permissionName = adminPermissionService.deletePermission(permissionToDelete);
 		
-		return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully deleted."));
+		return ResponseEntity.ok(Map.of("message", "Permission " + permissionName + " was successfully deleted."));
 	}
 	
 	
 	@PostMapping("/createpermission")
-	public ResponseEntity<?> createPermission(@RequestParam("name") String name, @RequestParam("idRoles") List<Long> idRoles){
+	public ResponseEntity<?> createPermission(@RequestBody PermissionDto permissionToCreate){
 		
-	        PermissionDto permission = adminPermissionService.createPermission(name, idRoles);
+	        PermissionDto permission = adminPermissionService.createPermission(permissionToCreate);
 
-	        return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully created."));
+	        return ResponseEntity.ok(Map.of("message", "Permission " + permission.getName() + " was successfully created.", "id", permission.getId()));
 	}	
 	
+	
 	@PatchMapping("/updatepermission")
-	public ResponseEntity<?> updatePermission(@RequestParam("id") long id, @RequestParam("name") String name, @RequestParam("idRoles") List<Long> idRoles) {
+	public ResponseEntity<?> updatePermission(@RequestBody PermissionDto permissionToUpdate) {
 		
-		PermissionDto permissionToUpdate = adminPermissionService.updatePermission(id, name, idRoles);
+		PermissionDto permission = adminPermissionService.updatePermission(permissionToUpdate);
 		
-		
-		return ResponseEntity.ok(Map.of("message", "Update of permission " + permissionToUpdate.getName() + " went fine"));
+		return ResponseEntity.ok(Map.of("message", "Update of permission " + permission.getName() + " went fine"));
 	}
 	
+	
 	@PatchMapping("/updaterole")
-	public ResponseEntity<?> updateRole(@RequestBody RoleAdminListDto roleToUpdate) {
+	public ResponseEntity<?> updateRole(@RequestBody RoleNoUserDto roleToUpdate) {
 
 		adminRoleService.updateRole(roleToUpdate);
 		
 		return ResponseEntity.ok(Map.of("message", "Update of role " + roleToUpdate.getName() + " went fine"));
 	}
+	
 	
 	@GetMapping("/fetchallpermissions")
 	public ResponseEntity<?> fetchAllPermissions() {
@@ -125,25 +125,38 @@ public class AdminController {
 		return ResponseEntity.ok(permissions);
 	}
 	
+	
 	@GetMapping("/fetchallpermissionsnorolefield")
 	public ResponseEntity<?> fetchAllPermissionsNoRoleField() {
 		
-		List<PermissionAdminRoleListDto> permissions = new ArrayList<>();
+		List<PermissionWithoutRoleDto> permissions = new ArrayList<>();
 		permissions = adminPermissionService.fetchAllPermissionsNoRoleField();
 
 		return ResponseEntity.ok(permissions);
 	}
 	
+	
 	@GetMapping("/fetchallroles")
 	public ResponseEntity<?> fetchAllRoles() {
 		
-		List<RoleAdminListDto> roles = new ArrayList<>();
+		List<RoleNoUserDto> roles = new ArrayList<>();
 		roles = adminRoleService.fetchAllRoles();
 		
 		return ResponseEntity.ok(roles);
 	}
 	
-	@DeleteMapping("deleterole")
+	
+	@GetMapping("/fetchallrolesnopermissionfield")
+	public ResponseEntity<?> fetchAllRolesNoPermissionField() {
+		
+		List<RoleNoRelationsDto> roles = new ArrayList<>();
+		roles = adminRoleService.fetchAllRolesNoPermissionField();
+		
+		return ResponseEntity.ok(roles);
+	}
+	
+	
+	@DeleteMapping("/deleterole")
 	public ResponseEntity<?> deleteRole(@RequestBody RoleCompleteDto roleToDelete){
 		
 		String roleName = adminRoleService.deleteRole(roleToDelete.getId());

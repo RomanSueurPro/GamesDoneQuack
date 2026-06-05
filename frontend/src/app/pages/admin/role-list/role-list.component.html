@@ -1,4 +1,3 @@
-<app-header></app-header>
 
 <form [formGroup]="form">
 <div id="update-container">
@@ -94,7 +93,7 @@
         }
         </div>
 
-        <div id="new-admin-role">
+        <div id="new-default-role">
             <h3>Set as new default role :</h3>
             <mat-checkbox class="defaultrole-checkbox" formControlName="defaultRole" disableRipple = true [disabled]=true></mat-checkbox>
         </div>
@@ -107,7 +106,7 @@
             }
             
             <input type="button" value="Cancel" (click)="cancelChanges()">
-             @if(!this.form.value.adminRole && this.form.value.defaultRole !== undefined){
+             @if(!this.form.value.adminRole && !this.form.getRawValue().defaultRole){
                 <input type="button" value="Delete" (click)="deleteRole()">
              }
         </div>

@@ -2,6 +2,7 @@ package com.quackinduckstries.gamesdonequack.entities;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -33,7 +34,7 @@ public class Permission {
 	
 	@ManyToMany(mappedBy = "permissions")
 	@JsonManagedReference
-	private Collection<Role> roles = new HashSet<>();
+	private Set<Role> roles = new HashSet<>();
 	
 	public Permission(String name) {
 		this.name = name;

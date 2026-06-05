@@ -11,14 +11,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.quackinduckstries.gamesdonequack.Dtos.PermissionAdminRoleListDto;
-import com.quackinduckstries.gamesdonequack.Dtos.RoleAdminListDto;
+import com.quackinduckstries.gamesdonequack.Dtos.PermissionWithoutRoleDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleNoUserDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
-import com.quackinduckstries.gamesdonequack.controllers.GlobalExceptionHandler;
-import com.quackinduckstries.gamesdonequack.controllers.HomeController;
-import com.quackinduckstries.gamesdonequack.controllers.LoginController;
-import com.quackinduckstries.gamesdonequack.controllers.ProfileController;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.exceptions.AlreadyExistingRoleNameException;
@@ -31,14 +28,6 @@ import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 @Service
 public class AdminRoleService {
 
-    private final LoginController loginController;
-
-    private final GlobalExceptionHandler globalExceptionHandler;
-
-    private final ProfileController profileController;
-
-    private final HomeController homeController;
-
     private final AdminPermissionService adminPermissionService;
 
     private final PermissionRepository permissionRepository;
@@ -48,18 +37,14 @@ public class AdminRoleService {
 	private final RoleMapper roleMapper;
 	private final SessionRegistry sessionRegistry;
 	
-	public AdminRoleService(UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository, AdminPermissionService adminPermissionService, RoleConfig roleConfig, RoleMapper roleMapper, HomeController homeController, ProfileController profileController, SessionRegistry sessionRegistry, GlobalExceptionHandler globalExceptionHandler, LoginController loginController) {
+	public AdminRoleService(UserRepository userRepository, PermissionRepository permissionRepository, RoleRepository roleRepository, AdminPermissionService adminPermissionService, RoleConfig roleConfig, RoleMapper roleMapper, SessionRegistry sessionRegistry) {
 		this.userRepository = userRepository;
 		this.permissionRepository = permissionRepository;
 		this.roleRepository = roleRepository;
 		this.adminPermissionService = adminPermissionService;
 		this.roleConfig = roleConfig;
 		this.roleMapper = roleMapper;
-		this.homeController = homeController;
-		this.profileController = profileController;
-		this.sessionRegistry = sessionRegistry;
-		this.globalExceptionHandler = globalExceptionHandler;
-		this.loginController = loginController;
+		this.sessionRegistry = sessionRegistry;		
 	}
 	
 	
@@ -75,7 +60,7 @@ public class AdminRoleService {
 	}
 
 	@Transactional
-	public RoleCompleteDto createRole(RoleAdminListDto roleToCreate) {
+	public RoleCompleteDto createRole(RoleNoUserDto roleToCreate) {
 		
 		roleToCreate.setName(roleNameValidator(roleToCreate.getName()));
 		if(this.existsByName(roleToCreate.getName())) {
@@ -92,7 +77,7 @@ public class AdminRoleService {
 		
 		Optional<Role> defaultRole = getDefaultRole();
 		
-		Role asModel = this.roleMapper.roleAdminListDtoToRole(roleToCreate);
+		Role asModel = this.roleMapper.roleNoUserDtoToRole(roleToCreate);
 		asModel.setPermissions(new HashSet<Permission>(permissions));
 		asModel.setId(null);
 		
@@ -119,7 +104,7 @@ public class AdminRoleService {
 	}
 
 	@Transactional
-	public RoleCompleteDto updateRole(RoleAdminListDto roleToUpdate) {                         
+	public RoleCompleteDto updateRole(RoleNoUserDto roleToUpdate) {                         
 				
 		Role role = roleRepository.findById(roleToUpdate.getId()).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));
 		
@@ -140,6 +125,13 @@ public class AdminRoleService {
 		
 		Optional<Role> defaultRole = role.isDefaultRole() ? Optional.ofNullable(role) : getDefaultRole();
 		
+		
+		role.getPermissions().clear();
+		
+		for(PermissionWithoutRoleDto permission : roleToUpdate.getPermissions()) {
+			
+			role.addPermission(adminPermissionService.createPermissionIfNotExist(permission.getName()));
+		}
 		if(defaultRole.isEmpty() && roleToUpdate.isDefaultRole()) {
 			roleConfig.setDefaultRoleName(roleToUpdate.getName());
 			role.setDefaultRole(true);
@@ -150,22 +142,26 @@ public class AdminRoleService {
 		} 
 		else if(defaultRole.isEmpty() && !roleToUpdate.isDefaultRole()){
 			throw new IllegalStateException("No default Role in database. You must update a role to default before anything else.");
-		}
-		else {
+			
+		}else if(defaultRole.get().getId() != roleToUpdate.getId()) {
 			Role dRole = defaultRole.get();
 			if(roleToUpdate.isDefaultRole()) {
 				setToDefaultRole(role, dRole);
 			}
 		}
+		else {
+			if(roleToUpdate.isDefaultRole()) {
+				
+				List<String> updated =new ArrayList<>(roleToUpdate.getPermissions()
+						.stream()
+						.map((p) -> p.getName())
+						.toList()
+						);
+				roleConfig.setDefaultPermissionNames(updated);
+			}
+		}
 		
 		role.setName(roleToUpdate.getName());
-		role.getPermissions().clear();
-		
-		for(PermissionAdminRoleListDto permission : roleToUpdate.getPermissions()) {
-			 
-			role.addPermission(adminPermissionService.createPermissionIfNotExist(permission.getName()));
-		}
-			
 		return roleMapper.roleToRoleCompleteDto(role);
 	}
 	
@@ -188,10 +184,17 @@ public class AdminRoleService {
 	}
 
 
-	public List<RoleAdminListDto> fetchAllRoles() {
+	public List<RoleNoUserDto> fetchAllRoles() {
 		return roleRepository.findAll()
 				.stream()
-				.map((role)-> roleMapper.roleToRoleAdminListDto(role))
+				.map((role)-> roleMapper.roleToRoleNoUserDto(role))
+				.toList();
+	}
+	
+	public List<RoleNoRelationsDto>fetchAllRolesNoPermissionField(){
+		return roleRepository.findAll()
+				.stream()
+				.map((role)-> roleMapper.roleToRoleNorelationDto(role))
 				.toList();
 	}
 
@@ -199,8 +202,11 @@ public class AdminRoleService {
 	public String deleteRole(long id) {
 		Role toDelete = roleRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Role was not found in database"));
 		
-		if(toDelete.isAdminRole() || toDelete.isDefaultRole()) {
-			throw new IllegalStateException("Deleting admin role or default role is not authorized");
+		if(toDelete.isAdminRole()) {
+			throw new IllegalStateException("Deleting admin role is not authorized");
+		}
+		else if(toDelete.isDefaultRole()) {
+			throw new IllegalStateException("Deleting default role is not authorized");
 		}
 		
 		roleRepository.delete(toDelete);

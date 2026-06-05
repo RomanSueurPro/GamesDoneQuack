@@ -6,18 +6,18 @@ import { MatListModule, MatSelectionList } from '@angular/material/list';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { PermissionWithoutRoles } from '../../../models/PermissionWithoutRoles';
 import { API_ENDPOINTS } from '../../../config/api-endpoints';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ViewChild } from '@angular/core';
-import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
-import { HeaderComponent } from '../../../header/header.component';
+import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component';
+import { SnackbarService } from '../../../services/snackbar.service';
+
 
 @Component({
   selector: 'app-role-list',
   standalone: true,
-  imports: [MatListModule, FormsModule, ReactiveFormsModule, MatCheckboxModule, HeaderComponent],
+  imports: [MatListModule, FormsModule, ReactiveFormsModule, MatCheckboxModule],
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss'
 })
@@ -31,7 +31,7 @@ export class RoleListComponent {
     defaultRole: new FormControl<boolean>(false),
   });
 
-  constructor(private http: HttpClient, private snackbar: MatSnackBar, private confirmDialog: MatDialog, private deleteDialog: MatDialog){
+  constructor(private http: HttpClient, private confirmDialog: MatDialog, private deleteDialog: MatDialog, private snackBarService: SnackbarService){
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayRoles = [];
@@ -42,6 +42,14 @@ export class RoleListComponent {
   hideSingleSelectionIndicator: boolean;
   @Input()
   selected: boolean;
+  @Input()
+  set active(value: boolean) {
+    if (value) {
+      this.loadDataObservable().subscribe({
+        error: (error) => console.log(error.error.error)
+      });
+    }
+  }
 
   @ViewChild('roleList') roleList!: MatSelectionList;
   @ViewChild('newRoleDiv') newRoleDiv!: ElementRef;
@@ -55,6 +63,7 @@ export class RoleListComponent {
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
 
   newPermissionField: string = "";
+  lastCreatedRoleId: number = -1;
 
   get isNewPermissionNameValid():boolean {
     const name = this.newPermissionField.toUpperCase().replace(/\s/g, "");
@@ -94,6 +103,11 @@ export class RoleListComponent {
 
         // Try to restore previous selection
         let role = this.arrayRoles.find(r => r.id === previousId);
+
+        //we did create an element before
+        if(!role && this.lastCreatedRoleId !== -1){
+          role = this.arrayRoles.find(r => r.id === this.lastCreatedRoleId);
+        }
 
         // Fallback for first load
         if (!role) {
@@ -141,7 +155,7 @@ export class RoleListComponent {
   updatePermissionsAssociations(role: RoleAllFields){
   
     this.arrayPermissions = this.arrayPermissions.filter((p) => p.id !== -1);
-    if(role ===null){
+    if(role === null){
       return;
     }
     this.associatedPermissions = [];
@@ -261,7 +275,7 @@ export class RoleListComponent {
   saveChangesObservable(){
     //validation
     if(this.form.value.id !== null && this.form.value.id !== undefined && this.form.value.id >= 0){
-      return this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.value, 
+      return this.http.patch(API_ENDPOINTS.admin.updateRole, this.form.getRawValue(), 
       {withCredentials: true});
     }
     return this.http.post(API_ENDPOINTS.admin.createRole, this.form.value, 
@@ -269,32 +283,22 @@ export class RoleListComponent {
   }
 
   completeProcedure(){
-    
+    let savedRole: any;
     of(null).pipe(
       concatMap(() => this.saveChangesObservable()),
+      tap((response) => {
+        savedRole = response;
+        this.lastCreatedRoleId = savedRole.id;
+      }),
       concatMap(() => this.loadDataObservable()),
     ).subscribe({
       next: () => {
-        this.snackbar.open(
-          'Role update successfull',
-          'Close',
-          {
-            duration: 3000,
-            panelClass: ['success-snackbar'],
-          }
-        );
+        this.snackBarService.showSuccessMessageSnackBar('Role update successfull');
         this.form.markAsPristine();
       },
       error: (error) => {
         console.log(error);
-        this.snackbar.open(
-          'Code status : ' + error.status + ', ' + error.error.error,
-          'Close',
-          {
-            duration: 3000,
-            panelClass: ['failure-snackbar'],
-          }
-        );
+        this.snackBarService.showErrorSnackBar(error);
       },
     })
   }
@@ -379,26 +383,12 @@ export class RoleListComponent {
             this.loadDataObservable().subscribe({
               error: (error) => console.log(error),         
             });
-            this.snackbar.open(
-              response.message,
-              'Close',
-              {
-                duration: 3000,
-                panelClass: ['success-snackbar'],
-              }
-            );
+            this.snackBarService.showSuccessResponseSnackBar(response);
             this.form.markAsPristine();
           },
           error: (error) => {
             console.log(error);
-            this.snackbar.open(
-              error.error.error,
-              'Close',
-              {
-                duration: 3000,
-                panelClass: ['failure-snackbar'],
-              }
-            );
+            this.snackBarService.showErrorSnackBar(error);
           }
         })
       }
@@ -406,16 +396,17 @@ export class RoleListComponent {
   }
 
   roleNameValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors | null => {
 
-    const value = (control.value ?? '').toString().toUpperCase().replace(/\s/g, "");
+      const value = (control.value ?? '').toString().toUpperCase().replace(/\s/g, "");
 
-    const isInvalid =
-      value === '' ||
-      value === 'ROLE_';
+      const isInvalid =
+        value === '' ||
+        value === 'ROLE_';
 
-    return isInvalid ? { invalidRoleName: true } : null;
-  };
-}
+      return isInvalid ? { invalidRoleName: true } : null;
+    };
+  }
 
+  
 }

@@ -2,6 +2,7 @@ package com.quackinduckstries.gamesdonequack.entities;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -55,7 +56,7 @@ public class Role {
 			inverseJoinColumns = @JoinColumn(
 					name = "id_permission")
 			)
-	private Collection<Permission> permissions= new HashSet<>();
+	private Set<Permission> permissions= new HashSet<>();
 	
 	protected Role() {}
 	
@@ -69,6 +70,9 @@ public class Role {
 	}
 	
 	public void addPermission(Permission permission) {
+		if (permissions.contains(permission)) {
+	        return;
+	    }
 		this.permissions.add(permission);
 		permission.getRoles().add(this);
 	}

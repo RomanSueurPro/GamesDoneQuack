@@ -14,5 +14,5 @@ public class RoleCompleteDto {
 	private boolean isAdminRole;
 	
 	private Collection<UserNoRoleDto> users;
-	private List<PermissionAdminRoleListDto> permissions;
+	private List<PermissionWithoutRoleDto> permissions;
 }
