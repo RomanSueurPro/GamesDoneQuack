@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, Input } from '@angular/core';
 import { concatMap, forkJoin, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { RoleAllFields } from '../../../models/RoleAllFields';
@@ -56,14 +56,26 @@ export class RoleListComponent {
   @ViewChild('buttonNewRole') buttonNewRole!: ElementRef;
   @ViewChild('newRoleButtonDiv') newRoleButtonDiv!: ElementRef;
 
+  @HostListener('document:mousedown', ['$event'])
+    onGlobalClick(event: MouseEvent) {
+      if (this.clickedInside || !this.blurEventActive) {
+        this.clickedInside = false;
+        return;
+      }
+      this.hideNewRoleField();
+    }
+
   public arrayRoles: RoleAllFields[];
   public arrayPermissions: PermissionWithoutRoles[] = [];
   
   public associatedPermissions: PermissionWithoutRoles[] = [];
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
 
+  private blurEventActive: boolean = true;
+
   newPermissionField: string = "";
   lastCreatedRoleId: number = -1;
+  clickedInside: boolean = false;
 
   get isNewPermissionNameValid():boolean {
     const name = this.newPermissionField.toUpperCase().replace(/\s/g, "");
@@ -310,6 +322,7 @@ export class RoleListComponent {
     this.form.patchValue({
       permissions: this.associatedPermissions,
     })
+    this.newPermissionField ="";
   }
 
   defaultCheckBoxToggle(){
@@ -328,14 +341,18 @@ export class RoleListComponent {
   }
 
   showNewRoleField(){
+    if(this.selectedRole !==  null && this.form.dirty){
+      this.openUnsavedDialogForCreation(this.selectedRole);
+    }
     this.newRoleDiv.nativeElement.style.display = 'flex';
     this.newRoleButtonDiv.nativeElement.style.display = 'none';
-    
+    this.newRoleDiv.nativeElement.children[0].focus();
   }
 
   hideNewRoleField(){
     this.newRoleDiv.nativeElement.style.display = 'none';
     this.newRoleButtonDiv.nativeElement.style.display = 'flex';
+    this.newRoleField = "";
   }
 
   makeNewRole(){
@@ -349,6 +366,7 @@ export class RoleListComponent {
     this.arrayRoles.push(role);
     this.updateFullForm(role);
     this.hideNewRoleField();
+    this.form.markAsDirty();
   }
 
   deleteRole():void{
@@ -408,5 +426,36 @@ export class RoleListComponent {
     };
   }
 
-  
+  openUnsavedDialogForCreation(role: RoleAllFields) {
+    this.blurEventActive = false;
+    const dialogRef = this.confirmDialog.open(
+      ConfirmationDialogComponent,
+      {
+        width: '25rem',
+        height: '5rem',
+        hasBackdrop: true,
+        disableClose: true,
+        panelClass: 'confirmation-dialog',
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        if(role.id === -1){
+          role = this.arrayRoles[0] ?? null;
+          this.updateFullForm(role);
+        }
+        this.arrayRoles = this.arrayRoles.filter((r) => r.id !== -1);
+        this.newRoleDiv.nativeElement.children[0].focus();
+        this.updatePermissionsAssociations(role);
+        this.form.markAsPristine();
+        this.blurEventActive = true;
+      }else{
+        if(this.form.value.id){
+          this.hideNewRoleField();
+        }
+      }
+    });
+  }
+
 }

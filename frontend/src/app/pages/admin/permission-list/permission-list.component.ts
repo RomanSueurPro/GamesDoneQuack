@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, Input } from '@angular/core';
 import { concatMap, forkJoin, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { MatListModule, MatSelectionList } from '@angular/material/list';
@@ -12,6 +12,7 @@ import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component'
 import { RoleWithoutPermissions } from '../../../models/RoleWithoutPermissions';
 import { PermissionAllFields } from '../../../models/PermissionAllFields';
 import { SnackbarService } from '../../../services/snackbar.service';
+import { RoleAllFields } from '../../../models/RoleAllFields';
 
 @Component({
   selector: 'app-permission-list',
@@ -54,6 +55,22 @@ form = new FormGroup({
   @ViewChild('buttonNewPermissino') buttonNewPermission!: ElementRef;
   @ViewChild('newPermissionButtonDiv') newPermissionButtonDiv!: ElementRef;
 
+  @HostListener('document:mousedown', ['$event'])
+  onGlobalClick(event: MouseEvent) {
+    if (this.clickedInside || !this.blurEventActive) {
+      this.clickedInside = false;
+      return;
+    }
+    this.hideNewPermissionField();
+  }
+
+  // newPermissionFieldLostFocus(){
+  //   if(this.blurEventActive){
+  //     this.hideNewPermissionField();
+  //   }
+  // }
+  private blurEventActive: boolean = true;
+
   public arrayPermissions: PermissionAllFields[];
   public arrayRoles: RoleWithoutPermissions[] = [];
   
@@ -62,6 +79,7 @@ form = new FormGroup({
 
   newPermissionField: string = "";
   lastCreatedPermissionId: number = -1;
+  clickedInside: boolean = false;
 
   get isNewPermissionNameValid():boolean {
     const name = this.newPermissionField.toUpperCase().replace(/\s/g, "");
@@ -298,25 +316,38 @@ form = new FormGroup({
   }
 
   showNewPermissionField(){
+    if(this.selectedPermission !==  null && this.form.dirty){
+      this.openUnsavedDialogForCreation(this.selectedPermission);
+    }
+
+    //It is fine if those execute while user makes choice in dialog
     this.newPermissionDiv.nativeElement.style.display = 'flex';
     this.newPermissionButtonDiv.nativeElement.style.display = 'none';
-    
+    this.newPermissionDiv.nativeElement.children[0].focus();
   }
 
   hideNewPermissionField(){
     this.newPermissionDiv.nativeElement.style.display = 'none';
     this.newPermissionButtonDiv.nativeElement.style.display = 'flex';
+    this.newPermissionField = "";
   }
 
   makeNewPermission(){
+    
+    let roleAdmin: RoleWithoutPermissions|undefined = this.arrayRoles.find((r) => r.adminRole);
     let permission: PermissionAllFields = {
       id: -1,
       name: this.newPermissionField,
       roles: [],
     };
+    if(roleAdmin !== undefined){
+      permission.roles.push(roleAdmin);
+    }
     this.arrayPermissions.push(permission);
     this.updateFullForm(permission);
     this.hideNewPermissionField();
+    this.newPermissionField = "";
+    this.form.markAsDirty();
   }
 
   deletePermission():void{
@@ -376,4 +407,36 @@ form = new FormGroup({
     };
   }
 
+  openUnsavedDialogForCreation(permission: PermissionAllFields) {
+    this.blurEventActive = false;
+    const dialogRef = this.confirmDialog.open(
+      ConfirmationDialogComponent,
+      {
+        width: '25rem',
+        height: '5rem',
+        hasBackdrop: true,
+        disableClose: true,
+        panelClass: 'confirmation-dialog',
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        if(permission.id === -1){
+          permission = this.arrayPermissions[0] ?? null;
+          this.updateFullForm(permission);
+        }
+        this.arrayPermissions = this.arrayPermissions.filter((p) => p.id !== -1);
+        this.newPermissionDiv.nativeElement.children[0].focus();
+        this.updateRolesAssociations(permission);
+        this.form.markAsPristine();
+        this.blurEventActive = true;
+      }else{
+        if(this.form.value.id){
+          this.hideNewPermissionField();
+        }
+      }
+    });
+  }
+  
 }

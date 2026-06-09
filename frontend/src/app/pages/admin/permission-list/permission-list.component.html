@@ -13,8 +13,8 @@
             }
         </mat-selection-list>
 
-        <div>
-            <div id="new-permission" #newPermissionDiv class="add-permission-div">
+        <div (mousedown)="clickedInside = true">
+            <div id="new-permission" #newPermissionDiv class="add-permission-div" >
                 <input type="text" id="new-permission-text-field" [(ngModel)]="newPermissionField" [ngModelOptions]="{ standalone: true }"> 
                 <div id="new-permission-buttons">
                     <button (click)="makeNewPermission()" [disabled]="!isNewPermissionNameValid">Confirm</button>
@@ -50,12 +50,16 @@
                 <mat-list-item>
                     <div class="role-display-list-items">
                         {{role.name}}
-                        @if (role.adminRole === true){
+                        @if (role.adminRole){
                             <span>(Admin)</span>
-                        }@if (role.defaultRole === true){
+                            <div id="admin-adjust-div"></div>
+                        }@if (role.defaultRole){
                             <span>(Default)</span>
                         }
-                        <input type="button" value="-" class="manage-role-button" (click)="toggleRole(role.name)">
+                        @if (!role.adminRole){
+                            <input type="button" value="-" class="manage-role-button" (click)="toggleRole(role.name)">
+                        }
+                        
                     </div>
                 </mat-list-item>
             }

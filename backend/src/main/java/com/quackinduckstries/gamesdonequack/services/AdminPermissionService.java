@@ -54,6 +54,7 @@ public class AdminPermissionService {
 	    }
 		
 		Permission createdPermission =  new Permission(name);
+		
 			
 		for(RoleNoRelationsDto role: permissionToCreate.getRoles()) {
 			Role completeRole = roleRepository.findById(role.getId()).orElseThrow(() -> new IllegalArgumentException("Error on permission creation : one of the roles was not found"));
@@ -64,7 +65,13 @@ public class AdminPermissionService {
 				roleConfig.setDefaultPermissionNames(newDefaultRolePermissionList);
 			}
 		}
-		addPermissionToAdminRole(createdPermission);
+		boolean hasAdminRole = permissionToCreate.getRoles()
+			    .stream()
+			    .anyMatch(RoleNoRelationsDto::isAdminRole);
+		if (!hasAdminRole) {
+		    Role adminRole = roleRepository.findByIsAdminRoleTrue().orElseThrow(() -> new IllegalStateException("Critical : no admin role in database"));
+		    createdPermission.addRole(adminRole);
+		}
 	    return permissionMapper.permissionToPermissionDto(permissionRepository.save(createdPermission));
 	}
 	
