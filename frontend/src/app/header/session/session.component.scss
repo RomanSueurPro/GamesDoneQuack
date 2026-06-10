@@ -18,8 +18,8 @@ a:hover{
 
 #img-holder{
     border-radius: 50%;
-    height: 1.5em;
-    width: 1.5em;
+    height:3rem;
+    width: 3rem;
     background-image: url("../../../assets/session-assets/default-pic-facing.png");
     background-size: cover;
     background-repeat: no-repeat;
@@ -29,6 +29,16 @@ a:hover{
 
 ::ng-deep .small-menu .mat-mdc-menu-item { //deprecated :D Would also work to cut paste into global styles without the ::ng-deep
   min-height: 0.5em;
-  font-size: 2em;
+  font-size: 2rem;
   padding: 0 12px;
+}
+
+#logged-in-username{
+    font-size: 3rem;
+    align-items: center;
+}
+
+#clickable-profile-elements{
+    display: flex;
+    justify-content: center;
 }

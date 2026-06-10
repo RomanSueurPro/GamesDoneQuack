@@ -1,3 +1,8 @@
+.role-list-component {
+  --mdc-list-list-item-label-text-size: 2rem;
+  --mdc-list-list-item-one-line-container-height: 3.5rem;
+}
+
 .role-list mat-list-option[aria-selected="true"]{
   background-color: rgb(88, 135, 161);
   color: rgb(231, 219, 194);
@@ -24,10 +29,23 @@
   border-radius: 5px;
   display: flex;
   flex-direction: column;
+  width: 30vw;
   
   & > *{
-    margin: 0 0.5em 1em 0.5em;
+    margin: 0 0.5rem 1rem 0.5rem;
   }
+}
+
+#associated-permissions-list{
+  font-size: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+#available-permissions-list{
+  font-size: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 #confirm-buttons{
@@ -35,65 +53,84 @@
   justify-content: space-around;
 }
 
- .permission-display-list-items{
+.permission-display-list-items{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   color: rgb(231, 219, 194);
- }
+  align-items: center;
+}
 
- mat-list{
+mat-list{
   border: 1px rgb(192, 201, 94) solid;
   border-radius: 5px;
- }
+}
  
 
- .role-display-list{
+.role-display-list{
   color: rgb(231, 219, 194);
- }
+}
 
- .manage-permission-button{
+.manage-permission-button{
   border-radius: 50%;
-  width: 1.8em;
-  height: 1.8em;
- }
+  width: 2.2rem;
+  height: 2.2rem;
+}
 
- .no-permission-message{
+.no-permission-message{
   display: flex;
   justify-content: center;
- }
+}
 
- #update-container h3{
+#update-container h3{
   margin-bottom: 0.5em;
- }
+  font-size: 2.2rem;
+  padding-top: 0.8rem
+}
 
- #add-permission {
+#role-name-textfield, #new-role-text-field, #permission-text-field{
+  margin-top: 0.5rem !important;
+  height: 3.5rem;
+  font-size: 1.75rem;
+}
+
+#add-permission {
   display: flex;
   flex-direction: column;
   padding: 0 1rem;
   border: 1px rgb(18, 39, 57) solid;
- }
+}
 
- #permission-text-field{
+#permission-text-field{
   margin-right: 0.4rem;
- }
+}
 
- #add-new-permission-button{
-  margin-right: 0.5em;
- }
+#add-new-permission-button{
+  margin-right: 1rem;
+}
 
- #new-default-role{
+#new-default-role{
   display: flex;
   justify-content: space-between;
   align-items: center;
   align-content: center;
- }
+}
 
- .round-radio{
-  width: 1.8em;
-  height: 1.8em;
-  margin-right: 1.25em;
- }
+.defaultrole-checkbox {
+  transform: scale(1.5);
+  transform-origin: left center;
+  padding-right: 0.85rem;
+}
+
+.text-button{
+  font-size: 2rem;
+}
+
+.round-radio{
+width: 1.8rem;
+height: 1.8rem;
+margin-right: 1.25rem;
+}
  
 #role-name-textfield{
   margin-top: 8px !important;
@@ -106,7 +143,7 @@
 
 .add-role-div{
   display: flex;
-  padding: 0.5em 1.25em 0 1.25em;
+  padding: 0.5rem 1.25rem 0 1.25rem;
 }
 
 #new-role-buttons{
@@ -121,12 +158,19 @@
 
 .warning{
   color: orange;
+  font-size: 1.9rem;
+  padding-bottom: 1rem;
 }
 
 .error{
   color:red;
+  max-width: 20vw;
+  font-size: 1.9rem;
+  line-height: 2.1rem;
+  padding-bottom: 1rem;
 }
 
 .defaultrole-checkbox{
-  margin-right: 0.5em;
+  margin-right: 1rem;
 }
+

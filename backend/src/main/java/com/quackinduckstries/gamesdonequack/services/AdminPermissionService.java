@@ -2,6 +2,7 @@ package com.quackinduckstries.gamesdonequack.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +15,13 @@ import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyPermissionNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.PermissionMapper;
 import com.quackinduckstries.gamesdonequack.mappers.RoleMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
+
 
 @Service
 public class AdminPermissionService {
@@ -188,7 +191,15 @@ public class AdminPermissionService {
 		if(finalName.equals(tailPattern)) {
 			throw new EmptyPermissionNameException("It is forbidden to create a permission without a name");
 		}
+		regexEnforcer(finalName);
 		return finalName;
+	}
+	
+	private void regexEnforcer(String permissionName){
+		Pattern pattern = Pattern.compile("^(?!_)[A-Za-z0-9_]{1,255}$");
+		if(!pattern.matcher(permissionName).matches()) {
+			throw new InvalidNameFormatException("Attempted permission name did not meet format requirements. Only letter, numbers and '_'(not at start) are allowed. Length cannot be more than 244 characters.");
+		}
 	}
 	
 	private void addPermissionToAdminRole(Permission permission) {

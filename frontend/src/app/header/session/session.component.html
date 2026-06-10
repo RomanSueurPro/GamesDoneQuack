@@ -20,9 +20,11 @@
 
     <ng-template #layoutLoggedIn>
         <div>
-             <div matButton [matMenuTriggerFor]="menu">
+             <div matButton [matMenuTriggerFor]="menu" id="clickable-profile-elements">
                 <div id="img-holder"></div>
-                {{this.authState.user()?.username}}
+                <div id="logged-in-username">
+                    {{this.authState.user()?.username}}
+                </div>
             </div>
             <mat-menu #menu="matMenu" class="small-menu">
                 <button mat-menu-item routerLink="profile">My profile</button>

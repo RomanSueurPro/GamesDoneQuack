@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,6 +13,7 @@ import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameExceptio
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyPermissionNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.ExistingPermissionDoesNotExistException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.MultipleErrorsException;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 
@@ -66,5 +66,10 @@ public class GlobalExceptionHandler {
     	Map<String, Object> body = new HashMap<>();
     	body.put("errors", e.getErrors());
     	return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(InvalidNameFormatException.class)
+    public ResponseEntity<?> handleInvalidNameFormat(InvalidNameFormatException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
     }
 }

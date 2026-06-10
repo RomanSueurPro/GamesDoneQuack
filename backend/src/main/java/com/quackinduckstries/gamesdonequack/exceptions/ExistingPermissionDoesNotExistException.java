@@ -4,7 +4,7 @@ public class ExistingPermissionDoesNotExistException extends RuntimeException  {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6731276279217013721L;
 
 	public ExistingPermissionDoesNotExistException(String message) {
         super(message);

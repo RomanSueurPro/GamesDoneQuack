@@ -86,7 +86,7 @@ export class RoleListComponent {
 
   get isNewRoleNameValid():boolean {
     const name = this.newRoleField.toUpperCase().replace(/\s/g, "");
-    return name !== "ROLE_" && name !== '';
+    return name !== '';
   }
 
   get selectedRole(): RoleAllFields | null {
@@ -418,9 +418,13 @@ export class RoleListComponent {
 
       const value = (control.value ?? '').toString().toUpperCase().replace(/\s/g, "");
 
+      const nameRegex = /^(?!_)[A-Za-z0-9_]{1,250}$/;
+      const isValid = nameRegex.test(value);
+
       const isInvalid =
-        value === '' ||
-        value === 'ROLE_';
+        value === '' 
+        || value === 'ROLE_'
+        || !isValid;
 
       return isInvalid ? { invalidRoleName: true } : null;
     };

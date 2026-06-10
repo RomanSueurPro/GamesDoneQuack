@@ -21,8 +21,8 @@ body {
 
 .mdc-checkbox__background{
   border-radius: 50% !important;
-  width: 1.5em !important;
-  height: 1.5em !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
 }
 
 .mdc-checkbox .mdc-checkbox__background {
@@ -275,3 +275,6 @@ body {
   --mat-tab-header-inactive-label-text-color: rgb(88, 135, 161);
 }
 
+// .mat-mdc-tab-list {
+//     --mat-tab-header-label-text-size: 10rem !important;
+// }

@@ -83,7 +83,7 @@ form = new FormGroup({
 
   get isNewPermissionNameValid():boolean {
     const name = this.newPermissionField.toUpperCase().replace(/\s/g, "");
-    return name !== "_PERMISSION" && name !== '';
+    return name !== '';
   }
 
   get selectedPermission(): PermissionAllFields | null {
@@ -399,9 +399,13 @@ form = new FormGroup({
 
       const value = (control.value ?? '').toString().toUpperCase().replace(/\s/g, "");
 
+      const nameRegex = /^(?!_)[A-Za-z0-9_]{1,244}$/;
+      const isValid = nameRegex.test(value);
+
       const isInvalid =
-        value === '' ||
-        value === '_PERMISSION';
+        value === '' 
+        || value === '_PERMISSION'
+        || !isValid;
 
       return isInvalid ? { invalidPermissionName: true } : null;
     };

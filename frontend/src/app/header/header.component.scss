@@ -8,15 +8,15 @@
  }
 
 #logo{
-    
     max-height: 14vh;
 }
 
 
 .banner{
-    width: 50vw;
+    width: 80vw;
+    height: 30vh;
     background-image: url('/../assets/header-assets/temp_banner.png');
-    background-size: contain;
+    background-size: auto;
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;

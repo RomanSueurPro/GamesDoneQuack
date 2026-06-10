@@ -1,99 +1,99 @@
+<div class="permission-list-component">
+    <form [formGroup]="form">
+        <div id="update-container">
+            <div>
+                <mat-selection-list #permissionList name="permissions" [multiple]="false" class="permission-list" [hideSingleSelectionIndicator]="true" (selectionChange)="onSelectionChange($event)" id="admin-permission-list">
+                    @for (permission of arrayPermissions; track permission) {
+                        <mat-list-option [value]="permission" [selected]="permission.id === selectedPermission?.id">
+                            <div class="permission-display-list">
+                                {{permission.name}}  
+                            </div>
+                        </mat-list-option>
+                    }
+                </mat-selection-list>
 
-<form [formGroup]="form">
-<div id="update-container">
-    
-    <div>
-        <mat-selection-list #permissionList name="permissions" [multiple]="false" class="permission-list" [hideSingleSelectionIndicator]="true" (selectionChange)="onSelectionChange($event)" id="admin-permission-list">
-            @for (permission of arrayPermissions; track permission) {
-                <mat-list-option [value]="permission" [selected]="permission.id === selectedPermission?.id">
-                    <div class="permission-display-list">
-                        {{permission.name}}  
+                <div (mousedown)="clickedInside = true">
+                    <div id="new-permission" #newPermissionDiv class="add-permission-div" >
+                        <input type="text" id="new-permission-text-field" [(ngModel)]="newPermissionField" [ngModelOptions]="{ standalone: true }"> 
+                        <div id="new-permission-buttons">
+                            <button (click)="makeNewPermission()" [disabled]="!isNewPermissionNameValid" class="text-button">Confirm</button>
+                            <button (click)="hideNewPermissionField()" class="text-button">Cancel</button>
+                        </div>
+                        @if (newPermissionField.includes(" ")) {
+                            <div class="warning">
+                                All blank spaces will be removed
+                            </div>
+                        }
                     </div>
-                </mat-list-option>
-            }
-        </mat-selection-list>
-
-        <div (mousedown)="clickedInside = true">
-            <div id="new-permission" #newPermissionDiv class="add-permission-div" >
-                <input type="text" id="new-permission-text-field" [(ngModel)]="newPermissionField" [ngModelOptions]="{ standalone: true }"> 
-                <div id="new-permission-buttons">
-                    <button (click)="makeNewPermission()" [disabled]="!isNewPermissionNameValid">Confirm</button>
-                    <button (click)="hideNewPermissionField()">Cancel</button>
+                    <div class="add-permission-div" #newPermissionButtonDiv id="add-new-permission-button-div">
+                        <input type="button" value="Add new permission" (click)="showNewPermissionField()" #buttonNewPermission class="text-button">
+                    </div>
                 </div>
-                @if (newPermissionField.includes(" ")) {
+            </div>
+
+            <div id="permission-update-form">
+                <input type="text" formControlName="name" id="permission-name-textfield">
+                @if (form.get('name')?.hasError('invalidPermissionName')) {
+                    <div class="error">
+                        Name cannot be empty or just "_PERMISSION". Format rules : only a-z, A-Z, 0-9, no special characters except '_' (not at start). Lower case letters will be changed to upper case.
+                    </div>
+                }
+                @if (form.get('name')?.value?.includes(" ")) {
                     <div class="warning">
                         All blank spaces will be removed
                     </div>
                 }
-            </div>
-            <div class="add-permission-div" #newPermissionButtonDiv id="add-new-permission-button-div">
-                <input type="button" value="Add new permission" (click)="showNewPermissionField()" #buttonNewPermission>
+                <h3>Associated roles</h3>
+                <mat-list role="list" id="associated-roles-list">
+                    @for (role of associatedRoles; track role) {
+                        <mat-list-item>
+                            <div class="role-display-list-items">
+                                
+                                {{role.name}}
+                                @if (role.adminRole){
+                                    <span>(Admin)</span>
+                                    <div id="admin-adjust-div"></div>
+                                }@if (role.defaultRole){
+                                    <span>(Default)</span>
+                                }
+                                @if (!role.adminRole){
+                                    <input type="button" value="-" class="manage-role-button" (click)="toggleRole(role.name)">
+                                }
+                                
+                            </div>
+                        </mat-list-item>
+                    }
+                </mat-list>
+
+                <h3>Available roles</h3>
+                <mat-list role="list" id="available-roles-list">
+                    @for (role of notAssociatedRoles; track role) {
+                        <mat-list-item>
+                            <div class="role-display-list-items">
+                                {{role.name}}
+                                @if (role.defaultRole === true){
+                                    <span>(Default)</span>
+                                }
+                                <input type="button" value="+" class="manage-role-button" (click)="toggleRole(role.name)">
+                            </div>
+                        </mat-list-item>
+                    }
+                    @if (notAssociatedRoles.length === 0){
+                        <span class="no-role-message">No more roles to associate</span>
+                    }
+                </mat-list>
+                <div id="confirm-buttons">
+                    @if(form.valid){
+                        <input type="button" value="Save" (click)="completeProcedure()" class="text-button">
+                    }@else{
+                        <input type="button" value="Save" disabled class="text-button">
+                    }
+                    
+                    <input type="button" value="Cancel" (click)="cancelChanges()" class="text-button"> 
+                    <input type="button" value="Delete" (click)="deletePermission()" class="text-button">
+                    
+                </div>
             </div>
         </div>
-    </div>
-
-    <div id="permission-update-form">
-        <input type="text" formControlName="name" id="permission-name-textfield">
-        @if (form.get('name')?.hasError('invalidPermissionName')) {
-            <div class="error">
-                Name cannot be empty or just "_PERMISSION"
-            </div>
-        }
-        @if (form.get('name')?.value?.includes(" ")) {
-            <div class="warning">
-                All blank spaces will be removed
-            </div>
-        }
-        <h3>Associated roles</h3>
-        <mat-list role="list" id="associated-roles-list">
-            @for (role of associatedRoles; track role) {
-                <mat-list-item>
-                    <div class="role-display-list-items">
-                        {{role.name}}
-                        @if (role.adminRole){
-                            <span>(Admin)</span>
-                            <div id="admin-adjust-div"></div>
-                        }@if (role.defaultRole){
-                            <span>(Default)</span>
-                        }
-                        @if (!role.adminRole){
-                            <input type="button" value="-" class="manage-role-button" (click)="toggleRole(role.name)">
-                        }
-                        
-                    </div>
-                </mat-list-item>
-            }
-        </mat-list>
-
-        <h3>Available roles</h3>
-        <mat-list role="list" id="available-roles-list">
-            @for (role of notAssociatedRoles; track role) {
-                <mat-list-item>
-                    <div class="role-display-list-items">
-                        {{role.name}}
-                        @if (role.defaultRole === true){
-                            <span>(Default)</span>
-                        }
-                        <input type="button" value="+" class="manage-role-button" (click)="toggleRole(role.name)">
-                    </div>
-                </mat-list-item>
-            }
-            @if (notAssociatedRoles.length === 0){
-                <span class="no-role-message">No more roles to associate</span>
-            }
-        </mat-list>
-        <div id="confirm-buttons">
-            @if(form.valid){
-                <input type="button" value="Save" (click)="completeProcedure()">
-            }@else{
-                <input type="button" value="Save" disabled>
-            }
-            
-            <input type="button" value="Cancel" (click)="cancelChanges()"> 
-            <input type="button" value="Delete" (click)="deletePermission()">
-             
-        </div>
-    </div>
+    </form>
 </div>
-
-</form>

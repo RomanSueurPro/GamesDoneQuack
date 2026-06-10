@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
@@ -20,6 +21,7 @@ import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.exceptions.AlreadyExistingRoleNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.mappers.RoleMapper;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
@@ -237,6 +239,14 @@ public class AdminRoleService {
 		if(finalName.equals(frontPattern)) {
 			throw new EmptyRoleNameException("It is forbidden to create a role without a name");
 		}
+		regexEnforcer(finalName);
 		return finalName;
+	}
+	
+	private void regexEnforcer(String roleName){
+		Pattern pattern = Pattern.compile("^(?!_)[A-Za-z0-9_]{1,255}$");
+		if(!pattern.matcher(roleName).matches()) {
+			throw new InvalidNameFormatException("Attempted role name did not meet format requirements. Only letter, numbers and '_'(not at start) are allowed. Length cannot be more than 250 characters.");
+		}
 	}
 }
