@@ -22,3 +22,13 @@
     cursor: pointer;
 }
 
+@media (min-height: 1305px) {
+  .banner{
+    width: 80vw;
+    height: 24vh;
+    background-image: url('/../assets/header-assets/temp_banner.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}

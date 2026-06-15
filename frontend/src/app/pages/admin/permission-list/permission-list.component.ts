@@ -12,7 +12,6 @@ import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component'
 import { RoleWithoutPermissions } from '../../../models/RoleWithoutPermissions';
 import { PermissionAllFields } from '../../../models/PermissionAllFields';
 import { SnackbarService } from '../../../services/snackbar.service';
-import { RoleAllFields } from '../../../models/RoleAllFields';
 
 @Component({
   selector: 'app-permission-list',
@@ -64,12 +63,8 @@ form = new FormGroup({
     this.hideNewPermissionField();
   }
 
-  // newPermissionFieldLostFocus(){
-  //   if(this.blurEventActive){
-  //     this.hideNewPermissionField();
-  //   }
-  // }
   private blurEventActive: boolean = true;
+  private dialogOptions = {width: '75rem', height: '15rem', hasBackdrop: true, disableClose: true};
 
   public arrayPermissions: PermissionAllFields[];
   public arrayRoles: RoleWithoutPermissions[] = [];
@@ -211,10 +206,10 @@ form = new FormGroup({
     const dialogRef = this.confirmDialog.open(
       ConfirmationDialogComponent,
       {
-        width: '25rem',
-        height: '5rem',
-        hasBackdrop: true,
-        disableClose: true,
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
         panelClass: 'confirmation-dialog',
       }
     );
@@ -358,10 +353,10 @@ form = new FormGroup({
     const dialogRef = this.deleteDialog.open(
       DeleteDialogComponent,
       {
-        width: '25rem',
-        height: '5rem',
-        hasBackdrop: true,
-        disableClose: true,
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
         panelClass: 'confirmation-dialog',
         data: 
           {
@@ -416,10 +411,10 @@ form = new FormGroup({
     const dialogRef = this.confirmDialog.open(
       ConfirmationDialogComponent,
       {
-        width: '25rem',
-        height: '5rem',
-        hasBackdrop: true,
-        disableClose: true,
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
         panelClass: 'confirmation-dialog',
       }
     );

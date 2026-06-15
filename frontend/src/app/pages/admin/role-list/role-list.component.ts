@@ -72,6 +72,7 @@ export class RoleListComponent {
   public notAssociatedPermissions: PermissionWithoutRoles[] = [];
 
   private blurEventActive: boolean = true;
+  private dialogOptions = {width: '75rem', height: '15rem', hasBackdrop: true, disableClose: true};
 
   newPermissionField: string = "";
   lastCreatedRoleId: number = -1;
@@ -219,10 +220,10 @@ export class RoleListComponent {
     const dialogRef = this.confirmDialog.open(
       ConfirmationDialogComponent,
       {
-        width: '25rem',
-        height: '5rem',
-        hasBackdrop: true,
-        disableClose: true,
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
         panelClass: 'confirmation-dialog',
       }
     );
@@ -377,10 +378,10 @@ export class RoleListComponent {
     const dialogRef = this.deleteDialog.open(
       DeleteDialogComponent,
       {
-        width: '25rem',
-        height: '5rem',
-        hasBackdrop: true,
-        disableClose: true,
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
         panelClass: 'confirmation-dialog',
         data: 
           {
@@ -435,10 +436,10 @@ export class RoleListComponent {
     const dialogRef = this.confirmDialog.open(
       ConfirmationDialogComponent,
       {
-        width: '25rem',
-        height: '5rem',
-        hasBackdrop: true,
-        disableClose: true,
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
         panelClass: 'confirmation-dialog',
       }
     );

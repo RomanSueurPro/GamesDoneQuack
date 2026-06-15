@@ -1,15 +1,26 @@
 .buttons{
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
+    margin-top: 2rem;
 }
 
 #root-div{
     display: flex;
     flex-direction: column;
+    font-size: 3rem;
     
     p{
+        margin-top: 2rem;
+        line-height: 3rem;
         align-self: center;
         text-align: center;
     }
+
+    .text-button{
+        font-size: 2rem;
+        min-width: 9rem;
+    }
 }
+
+
