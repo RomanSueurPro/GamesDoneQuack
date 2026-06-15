@@ -14,9 +14,65 @@ import { PermissionListComponent } from './permission-list/permission-list.compo
 export class AdminComponent {
   //reload logic so tabs are up to date with database
   selectedTab = 0;
+  previousTab = 0;
+  tabTransitionAuthorized = true;
+  weJustCanceled = false;
+
+  @ViewChild(PermissionListComponent)
+  private permissionList!: PermissionListComponent; 
+
+  @ViewChild(RoleListComponent)
+  private roleList!: RoleListComponent; 
 
   onTabChanged(event: MatTabChangeEvent): void {
-    this.selectedTab = event.index;
+
+  const requestedTab = event.index;
+
+  if(this.weJustCanceled){
+    this.weJustCanceled = false;
+    return;
   }
+  if (this.permissionList?.hasUnsavedChanges()) {
+
+    this.permissionList.canLeavePage().subscribe(canLeave => {
+
+      if (canLeave) {
+        this.selectedTab = requestedTab;
+        this.previousTab = requestedTab;
+        this.tabTransitionAuthorized = true;
+      } else {
+        this.selectedTab = this.previousTab;
+        this.tabTransitionAuthorized = false;
+        this.weJustCanceled = true;
+      }
+    });
+
+    return;
+  }
+
+  if (this.roleList?.hasUnsavedChanges()) {
+
+    this.roleList.canLeavePage().subscribe(canLeave => {
+
+      if (canLeave) {
+        this.selectedTab = requestedTab;
+        this.previousTab = requestedTab;
+        this.tabTransitionAuthorized = true;
+      } else {
+        this.selectedTab = this.previousTab;
+        this.tabTransitionAuthorized = false;
+        this.weJustCanceled = true;
+      }
+    });
+
+    return;
+  }
+  this.previousTab = requestedTab;
+  this.selectedTab = requestedTab;
+}
+
+  
+
+  
 
 }

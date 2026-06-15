@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, Input } from '@angular/core';
-import { concatMap, forkJoin, of, tap } from 'rxjs';
+import { concatMap, forkJoin, map, Observable, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { MatListModule, MatSelectionList } from '@angular/material/list';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn } from '@angular/forms';
@@ -29,7 +29,7 @@ form = new FormGroup({
     
   });
 
-  constructor(private http: HttpClient, private snackBarService: SnackbarService, private confirmDialog: MatDialog, private deleteDialog: MatDialog){
+  constructor(private http: HttpClient, private snackBarService: SnackbarService, private confirmDialog: MatDialog, private deleteDialog: MatDialog, private elementRef: ElementRef){
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayPermissions = [];
@@ -54,13 +54,23 @@ form = new FormGroup({
   @ViewChild('buttonNewPermissino') buttonNewPermission!: ElementRef;
   @ViewChild('newPermissionButtonDiv') newPermissionButtonDiv!: ElementRef;
 
-  @HostListener('document:mousedown', ['$event'])
-  onGlobalClick(event: MouseEvent) {
+  @HostListener('document:mousedown')
+  onGlobalClick() {
     if (this.clickedInside || !this.blurEventActive) {
       this.clickedInside = false;
       return;
     }
     this.hideNewPermissionField();
+  }
+
+  @HostListener('document:blur', ['$event'])
+  onDocumentClick(event: any): void {
+
+    if(!this.checkUnsavedModificationsOnPermission()){
+      const selected: PermissionAllFields = event.options[0]?.value;
+      // this.openUnsavedDialog(selected)
+      console.log(selected);
+    }
   }
 
   private blurEventActive: boolean = true;
@@ -84,6 +94,56 @@ form = new FormGroup({
   get selectedPermission(): PermissionAllFields | null {
     const id = this.form.get('id')?.value;
     return this.arrayPermissions.find(p => p.id === id) ?? null;
+  }
+
+  hasUnsavedChanges(){
+    return this.form.dirty;
+  }
+
+  canLeavePage(selected?: PermissionAllFields): Observable<boolean> {
+
+    if (!this.form.dirty) {
+      return of(true);
+    }
+
+    const dialogRef = this.confirmDialog.open(
+      ConfirmationDialogComponent,
+      {
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
+        panelClass: 'confirmation-dialog',
+      }
+    );
+
+    return dialogRef.afterClosed().pipe(
+      tap(result => {
+
+        if (result === true) {
+
+          this.arrayPermissions =
+            this.arrayPermissions.filter(p => p.id !== -1);
+
+          if (selected) {
+            this.updateFullForm(selected);
+          }
+
+          this.form.markAsPristine();
+
+        } else {
+
+          if (this.form.value.id) {
+            this.permissionList.options
+              .find(option => option.value.id === this.form.value.id)
+              ?.toggle();
+          }
+
+        }
+
+      }),
+      map(result => result === true)
+    );
   }
 
   ngOnInit(){
@@ -185,11 +245,11 @@ form = new FormGroup({
   }
 
   onSelectionChange(event: any) {
-    const selected: PermissionAllFields = event.options[0]?.value;
+    const newSelection: PermissionAllFields = event.options[0]?.value;
     if(!this.checkUnsavedModificationsOnPermission()){
-      this.updateFullForm(selected);
+      this.updateFullForm(newSelection);
     }else{
-      this.openUnsavedDialog(selected);
+      this.openUnsavedDialog(newSelection);
     } 
   }
 
@@ -202,7 +262,7 @@ form = new FormGroup({
       });
   }
 
-  openUnsavedDialog(selected: PermissionAllFields) {
+  openUnsavedDialog(selected: PermissionAllFields):void {
     const dialogRef = this.confirmDialog.open(
       ConfirmationDialogComponent,
       {
@@ -219,14 +279,15 @@ form = new FormGroup({
         //user confirms he wants to leave
         this.arrayPermissions = this.arrayPermissions.filter((p) => p.id !== -1);
         this.updateFullForm(selected);
+        this.form.markAsPristine();
       }
       else {
         if(this.form.value.id){
           this.permissionList.options.find(option => option.value.id === this.form.value.id)?.toggle();
-          this.form.markAsDirty();
         }
       }
     });
+    
   }
 
   toggleRole(roleName: string){
@@ -304,7 +365,6 @@ form = new FormGroup({
 
   checkUnsavedModificationsOnPermission(): boolean{
     if(this.form.dirty){
-      this.form.markAsPristine();
       return true;
     }
     return false;

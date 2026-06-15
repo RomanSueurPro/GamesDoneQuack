@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, Input } from '@angular/core';
-import { concatMap, forkJoin, of, tap } from 'rxjs';
+import { concatMap, forkJoin, map, Observable, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { RoleAllFields } from '../../../models/RoleAllFields';
 import { MatListModule, MatSelectionList } from '@angular/material/list';
@@ -50,6 +50,7 @@ export class RoleListComponent {
       });
     }
   }
+  
 
   @ViewChild('roleList') roleList!: MatSelectionList;
   @ViewChild('newRoleDiv') newRoleDiv!: ElementRef;
@@ -233,11 +234,11 @@ export class RoleListComponent {
         //user confirms he wants to leave
         this.arrayRoles = this.arrayRoles.filter((r) => r.id !== -1);
         this.updateFullForm(selected);
+        this.form.markAsPristine();
       }
       else {
         if(this.form.value.id){
           this.roleList.options.find(option => option.value.id === this.form.value.id)?.toggle();
-          this.form.markAsDirty();
         }
       }
     });
@@ -335,7 +336,6 @@ export class RoleListComponent {
 
   checkUnsavedModificationsOnRole(): boolean{
     if(this.form.dirty){
-      this.form.markAsPristine();
       return true;
     }
     return false;
@@ -463,4 +463,53 @@ export class RoleListComponent {
     });
   }
 
+  hasUnsavedChanges(){
+    return this.form.dirty;
+  }
+
+  canLeavePage(selected?: RoleAllFields): Observable<boolean> {
+  
+    if (!this.form.dirty) {
+      return of(true);
+    }
+  
+    const dialogRef = this.confirmDialog.open(
+      ConfirmationDialogComponent,
+      {
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
+        panelClass: 'confirmation-dialog',
+      }
+    );
+  
+    return dialogRef.afterClosed().pipe(
+      tap(result => {
+  
+        if (result === true) {
+  
+          this.arrayRoles =
+            this.arrayRoles.filter(r => r.id !== -1);
+  
+          if (selected) {
+            this.updateFullForm(selected);
+          }
+  
+          this.form.markAsPristine();
+  
+        } else {
+  
+          if (this.form.value.id) {
+            this.roleList.options
+              .find(option => option.value.id === this.form.value.id)
+              ?.toggle();
+          }
+  
+        }
+  
+      }),
+      map(result => result === true)
+    );
+  }
 }
