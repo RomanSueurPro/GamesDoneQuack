@@ -8,7 +8,11 @@ import { adminGuard } from './guards/admin.guard';
 export const routes: Routes = [
     
     { path: "", title: "home", component: HomeComponent},
-    { path: "profile", title: "profile", component: ProfileComponentComponent},
+    { 
+        path: "profile",
+        title: "profile",
+        component: ProfileComponentComponent,
+    },
     { path: 'login', component: LoginRouteComponent },
     { 
         path: 'admin', 

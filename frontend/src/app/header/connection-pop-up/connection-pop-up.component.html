@@ -1,44 +1,96 @@
-<div>
-    @if (isModeLogin){
-        <div @modeSwitch>
-            <ng-container *ngTemplateOutlet="layoutA"></ng-container>
-        </div>
-    }@else {
-        <div @modeSwitch>
-            <ng-container *ngTemplateOutlet="layoutB"></ng-container>
-        </div>
-    }
-
-    <ng-template #layoutA>
-        <label for="login-field">login</label>
-        <input type="text" id="login-field" [(ngModel)]="loginUsername">
-        <label for="password-field">password</label>
-        <input type="text" id="password-field" [(ngModel)]="loginPassword">
-    <div>
-        <button (click)="login()">Log in</button>
-        <button (click)="superLogMe()">SuperLogin</button>
+<div id="root-div">
+    <div class="animation-container">
+        @if (isModeLogin){
+            <div class="panel" @modeSwitch>
+                <ng-container *ngTemplateOutlet="layoutLogin"></ng-container>
+            </div>
+        }@else {
+            <div class="panel" @modeSwitch>
+                <ng-container *ngTemplateOutlet="layoutRegister"></ng-container>
+            </div>
+        }
+        
     </div>
-    
-    
+
+    <ng-template #layoutLogin>
+        <div class="container-layout">
+            <h1>Log in</h1>
+            <div class="field-and-label">
+                <label for="login-field" class="login-label">Login or Email :</label>
+                <input type="text" [(ngModel)]="loginUsername">
+            </div>
+            <div class="field-and-label">
+                <label for="password-field" class="login-label">Password :</label>
+                <input type="password" [(ngModel)]="loginPassword">
+            </div>
+            <div class="buttons">
+                <button (click)="login()" class="text-button">Log in</button>
+                <button mat-button (click)="onNoClick()" class="text-button">Cancel</button>
+            </div>
+        </div>
+        
+        <div class="login-register">
+            <p (click)="toggleModeLogin()" class="text-button hover-pointer">Create account</p>
+        </div>
     </ng-template>
 
-    <ng-template #layoutB>
-        <div>
-            <label for="registerUserName">Nom utilisateur</label>
-            <input type="text" id="registerUserName" [(ngModel)]="registerUsername">
-            <label for="registerUserPassword">Mot de passe</label>
-            <input type="text" id="registerUserPassword" [(ngModel)]="passwordUsername">
+    <ng-template #layoutRegister>
+        <div class="container-layout">
+            <h1>Register</h1>
+            <div class="field-and-label">
+                <label for="registerUserName" class="register-label">Username :</label>
+                <input type="text" [(ngModel)]="registerUsername" [formControl]="usernameFormatControl" (input)="checkUserNameAvailability()">
+            </div>
+            @if(usernameFormatControl.invalid){
+                <div class="error">
+                    @if(usernameFormatControl.hasError('minlength') || registerUsername === ""){
+                        <div>Username must be at least 3 characters long</div>
+                    }@if(usernameFormatControl.hasError('maxlength')){
+                        <div>Username cannot exceed 255 characters</div>
+                    }@if(usernameFormatControl.hasError('pattern')){
+                        <div>Username can only contain uppercase letters, lowercase letters, numbers, '_' and '-'</div>
+                }
+                </div>
+            }
+            @if(!usernameIsAvailable){
+                <div class="error">
+                    Username already exists
+                </div>
+            }@else if(!usernameFormatControl.invalid){
+                <div class="success">
+                    Username available and valid
+                </div>
+            }
+            <div class="field-and-label">
+                <label for="registerUserPassword" class="register-label">Password :</label>
+                <input type="password" [(ngModel)]="registerPassword" [formControl]="passwordFormatControl">
+            </div>
+            @if(passwordFormatControl.invalid){
+                <div class="error">
+                    @if(passwordFormatControl.hasError('minlength') || registerPassword === ""){
+                        <div>Password must be at least 8 characters long</div>
+                    }@if(passwordFormatControl.hasError('maxlength')){
+                        <div>Password cannot exceed 64 characters</div>
+                    }@if(passwordFormatControl.hasError('pattern') || registerPassword === ""){
+                        <div>Password must contain each of the following : a lowercase letter, an uppercase letter, a number and a special character</div>
+                }
+                </div>
+            }@else {
+                <div class="success">
+                    Password is valid
+                </div>
+            }
+            
+            <div class="buttons">
+                <button (click)="register()" class="text-button">Register</button>
+                <button mat-button (click)="onNoClick()" class="text-button">Cancel</button>
+            </div>
         </div>
-        <div>
-            <button (click)="tryRegister2()">Register</button>
+        <div class="block">
+            <p (click)="toggleModeLogin()" class="text-button hover-pointer">Log in</p>
         </div>
     </ng-template>
 
-
-        <div>
-            <p (click)="toggleModeLogin()" #toggleButton>Créer un compte</p>
-        </div>
         <app-loading-dots [isLoading]="isLoading"/>
-        <button (click)="toggleLoading()">{{ buttonText }}</button>
-        <button mat-button (click)="onNoClick()">No Thanks</button>
+        
 </div>

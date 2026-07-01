@@ -1,0 +1,105 @@
+h1{
+    font-size: 5rem;
+    line-height: 5rem;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.field-and-label{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    line-height: 3rem;
+    margin-bottom: 1.2rem;
+
+    input{
+        font-size: 3rem;
+        
+    }
+}
+
+.login-label{
+    width: 21rem;
+    text-align: end;
+}
+
+.register-label{
+    width: 16rem;
+    text-align: end;
+}
+
+.hover-pointer{
+    cursor: pointer;
+}
+
+.login-register{
+    display: flex;
+    justify-content: center;
+    p{
+        width: fit-content;
+    }
+}
+
+.container-layout{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 2rem;
+}
+
+#root-div{
+    display: flex;
+    flex-direction: column;
+    font-size: 3rem;
+    overflow: hidden;
+    height: 100%;
+    
+    p{
+        margin-top: 2rem;
+        line-height: 3rem;
+        align-self: center;
+        text-align: center;
+    }
+
+    .text-button{
+        font-size: 2rem;
+        min-width: 9rem;
+    }
+}
+
+//animation
+.animation-container {
+    position: relative;
+    min-height: 30rem;
+}
+
+.panel {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.error{
+    font-size: 2rem;
+    line-height: 2rem;
+    color: red;
+    width: 70%;
+    margin-bottom: 1.2rem;
+}
+
+.success{
+    font-size: 2rem;
+    line-height: 2rem;
+    color: green;
+    width: 70%;
+    margin-bottom: 1.2rem;
+}

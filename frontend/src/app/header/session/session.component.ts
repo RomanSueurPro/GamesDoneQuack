@@ -31,18 +31,17 @@ constructor(public dialog: MatDialog, public authState: AuthStateService, public
     // this.router.navigate(['/login'], {skipLocationChange: true});
     this.location.go('/login');
     const dialogRef = this.dialog.open(ConnectionPopUpComponent, {
-      height: '200px',
-      width: '300px',
       disableClose: false,
       hasBackdrop: true,
-      panelClass: 'connection-pop-up',
+      panelClass: 'dialog',
+      data: {
+        loginMode: true
+      }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      console.log(result);
-      this.location.go('/');
-    });
+    dialogRef.afterClosed().subscribe({
+      next: () => this.location.go('/')
+     });
   }
 
   logout(){

@@ -1,16 +1,20 @@
 import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
 import {
+  MAT_DIALOG_DATA,
   MatDialogRef,
   } from '@angular/material/dialog';
 import { BackendService } from '../../services/backend.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from "@angular/forms";
+import { FormControl, FormsModule, Validators, ReactiveFormsModule } from "@angular/forms";
 import { concatMap } from 'rxjs/operators';
 import { of, tap } from 'rxjs';
 import { LoadingDotsComponent } from '../../animations/loading-dots/loading-dots.component';
 import { modeSwitchAnimation } from './connection-pop-up-animation';
+import { UsernameAvailabilityCheckerService } from '../../services/username-availability-checker.service';
 
-
+export interface DialogData {
+  loginMode: boolean;
+}
 
 @Component({
   selector: 'app-connection-pop-up',
@@ -18,43 +22,81 @@ import { modeSwitchAnimation } from './connection-pop-up-animation';
   imports: [
     CommonModule,
     FormsModule,
-    LoadingDotsComponent
+    LoadingDotsComponent,
+    ReactiveFormsModule
 ],
   templateUrl: './connection-pop-up.component.html',
   styleUrls: ['./connection-pop-up.component.scss'],
   animations: [modeSwitchAnimation],
 })
+
+
 export class ConnectionPopUpComponent {
+
+  
+  loginWidth:string = '65rem';
+  loginHeight:string = '35rem';
+  RegisterWidth:string = '60rem';
+  RegisterHeight:string = '45rem';
+
+  passwordFormatControl = new FormControl('', [
+    Validators.required,
+    Validators.minLength(8),
+    Validators.maxLength(64),
+    Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).*$/)
+  ]);
+
+  usernameFormatControl = new FormControl('', [
+    Validators.required,
+    Validators.minLength(3),
+    Validators.maxLength(255),
+    Validators.pattern(/^[A-Za-z0-9_-]+$/)
+  ]);
+
   constructor(
-  public dialogRef: MatDialogRef<ConnectionPopUpComponent>,
-  // @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  private backendService: BackendService,
-  ) {}
+  
+    public dialogRef: MatDialogRef<ConnectionPopUpComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private backendService: BackendService, 
+    private usernameCheckerService: UsernameAvailabilityCheckerService
+  ){
+    if(this.data.loginMode){
+      this.dialogRef.updateSize(this.loginWidth, this.loginHeight);
+    }else{
+      this.dialogRef.updateSize(this.RegisterWidth, this.RegisterHeight);
+    }
+    
+  }
 
   public isModeLogin: boolean = true;
+  public usernameIsAvailable = true;
 
   onNoClick(): void {
     this.dialogRef.close();
   }
 
-  @ViewChild('toggleButton') toggleButton!: ElementRef<HTMLButtonElement>;
-
   toggleModeLogin(): void{
     this.isModeLogin = (this.isModeLogin === true) ? false : true;
-    this.toggleButton.nativeElement.innerText = this.isModeLogin ? 'Créer un compte' : 'Se connecter';
+    if(this.isModeLogin){
+      this.dialogRef.updateSize(this.loginWidth, this.loginHeight);
+    }else{
+      this.dialogRef.updateSize(this.RegisterWidth, this.RegisterHeight);
+    }
   }
 
   registerUsername:string = '';
-  passwordUsername:string = '';
+  registerPassword:string = '';
+
   registerNewAndApprovedUser(){
     const username = this.registerUsername;
-    const password = this.passwordUsername;
+    const password = this.registerPassword;
     //this.backendService.sendRegisterRequest(username, password);
     return this.backendService.sendRegisterRequestFromAuth(username, password);
   }
 
   loginUsername:string = '';
   loginPassword:string = '';
+
   sendLoginForm(){
     const username = this.loginUsername;
     const password = this.loginPassword;
@@ -64,16 +106,11 @@ export class ConnectionPopUpComponent {
 
 
   isLoading = false;
-  buttonText = 'Start Loading';
+  
   setLoading(state: boolean) {
     this.isLoading = state;
-    this.buttonText = state ? 'Stop Loading' : 'Start Loading';
   }   
 
-  toggleLoading(){
-    this.isLoading = !this.isLoading;
-    this.buttonText = this.isLoading ? 'Stop Loading' : 'Start Loading'; 
-  }
 
   login() {
     of(null).pipe(
@@ -95,7 +132,7 @@ export class ConnectionPopUpComponent {
   }
 
 
-  tryRegister2() {
+  register() {
     of(null).pipe(
           tap(() => this.setLoading(true)),
           concatMap(() => this.registerNewAndApprovedUser()),
@@ -118,4 +155,15 @@ export class ConnectionPopUpComponent {
     this.backendService.superLogMe();
   }
 
+  checkUserNameAvailability(){
+    const name: string = this.registerUsername;
+    if(name === ""){
+      return;
+    }
+    this.usernameCheckerService.checkUserNameAvailability(name).subscribe({
+      next: (result) => {
+        this.usernameIsAvailable = result as boolean;
+      }
+    });
+  }
 }

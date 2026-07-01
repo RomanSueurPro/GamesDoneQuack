@@ -25,11 +25,12 @@ export class LoginRouteComponent implements OnInit {
     
         }else{
           const dialogRef = this.dialog.open(ConnectionPopUpComponent, {
-          height: '200px',
-          width: '300px',
+          data: {
+            loginMode: true
+          },
           disableClose: false,
           hasBackdrop: true,
-          panelClass: 'connection-pop-up',
+          panelClass: 'dialog',
         });
 
           // when the popup closes, navigate back to home

@@ -53,10 +53,10 @@
                 <mat-list role="list" id="associated-permissions-list">
                     @for (permission of associatedPermissions; track permission) {
                         <mat-list-item>
-                            <div class="permission-display-list-items">
+                            <div class="permission-display-list-items"  (click)="togglePermission(permission.name)">
                                 {{permission.name}}
                                 @if(!selectedRole?.adminRole || permission.id < 0){
-                                    <input type="button" value="-" class="manage-permission-button" (click)="togglePermission(permission.name)">
+                                    <input type="button" value="-" class="manage-permission-button">
                                 }@else{
                                     <input type="button" value="-" class="manage-permission-button" disabled="true">
                                 }
@@ -72,9 +72,9 @@
                 <mat-list role="list" id="available-permissions-list">
                     @for (permission of notAssociatedPermissions; track permission) {
                         <mat-list-item>
-                            <div class="permission-display-list-items">
+                            <div class="permission-display-list-items" (click)="togglePermission(permission.name)">
                                 {{permission.name}}
-                                <input type="button" value="+" class="manage-permission-button" (click)="togglePermission(permission.name)">
+                                <input type="button" value="+" class="manage-permission-button" >
                             </div>
                         </mat-list-item>
                     }

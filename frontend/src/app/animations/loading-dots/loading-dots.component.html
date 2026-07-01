@@ -1,9 +1,7 @@
-@if (isLoading){
-    <div>
-    Loading{{ dots }}
-    </div>
-}
-<button (click)="toggleLoading()">
-  {{ testButtonText }}
-</button>
-
+<div class="loading">
+    @if (isLoading){
+        <div>
+        Loading{{ dots }}
+        </div>
+    }
+</div>

@@ -30,7 +30,8 @@ export const API_ENDPOINTS = {
         logout: `${BASE}/logout`,
         register: `${BASE}/register`,
         login: `${BASE}/login`,
-        csrf: `${BASE}/csrf`
+        csrf: `${BASE}/csrf`,
+        checkusername: `${BASE}/api/check-username-availability`,
     },
 
     kaamelott:{

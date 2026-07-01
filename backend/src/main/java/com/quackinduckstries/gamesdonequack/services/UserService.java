@@ -3,6 +3,7 @@ package com.quackinduckstries.gamesdonequack.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.entities.User;
 import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidPasswordFormatException;
 import com.quackinduckstries.gamesdonequack.mappers.UserMapper;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
@@ -42,6 +45,9 @@ public class UserService {
 	
 	@Transactional
 	public void registerNewUser(RegisterRequestDTO request) throws IllegalStateException, DuplicateUsernameException {
+		usernameValidation(request.getRequestedUsername());
+		passwordValidation(request.getRequestedPassword());
+			
 		User newUser = new User();
 		newUser.setUsername(request.getRequestedUsername());
 		newUser.setPassword(passwordEncoder.encode(request.getRequestedPassword()));
@@ -102,5 +108,21 @@ public class UserService {
 		return dto;
 	}
 	
+	public boolean checkUsernameExistence(String name) {
+		return userRepository.existsByUsername(name);
+	}
 	
+	private void usernameValidation(String name) {
+		Pattern pattern = Pattern.compile("^[A-Za-z0-9_-]{3,255}$");
+		if(!pattern.matcher(name).matches()) {
+			throw new InvalidNameFormatException("Attempted user name did not meet format requirements. Only letter, numbers, '_' and '-' are allowed. Length must be between 3 and 255 characters.");
+		}
+	}
+	
+	private void passwordValidation(String password) {
+		Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,64}$");
+		if(!pattern.matcher(password).matches()) {
+			throw new InvalidPasswordFormatException("Attempted account password did not meet format requirements. Password must contain at least one of each of the following : lower case letter, upper case letter, number, special character. Length must be between 8 and 64 characters.");
+		}
+	}
 }

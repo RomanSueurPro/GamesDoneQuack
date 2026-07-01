@@ -15,13 +15,12 @@ export const adminGuard: CanActivateFn = (route, state) => {
   }
 
   if(authStateService.isLoggedIn()){
+    console.log(state);
     return router.createUrlTree(
       ['/'],
-      { queryParams: { redirect: state.url } }
     );
   }
   return router.createUrlTree(
     ['/login'],
-    { queryParams: { redirect: state.url } }
   );
 };

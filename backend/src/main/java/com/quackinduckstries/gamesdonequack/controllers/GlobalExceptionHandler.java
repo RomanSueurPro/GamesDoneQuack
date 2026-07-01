@@ -14,6 +14,7 @@ import com.quackinduckstries.gamesdonequack.exceptions.EmptyPermissionNameExcept
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.ExistingPermissionDoesNotExistException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidPasswordFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.MultipleErrorsException;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 
@@ -72,4 +73,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleInvalidNameFormat(InvalidNameFormatException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
     }
+    
+    @ExceptionHandler(InvalidPasswordFormatException.class)
+    public ResponseEntity<?> handleInvalidPasswordFormat(InvalidPasswordFormatException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+    }    
 }

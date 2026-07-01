@@ -225,7 +225,7 @@ export class RoleListComponent {
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
       }
     );
 
@@ -382,7 +382,7 @@ export class RoleListComponent {
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
         data: 
           {
             name: this.form.value.name,
@@ -440,7 +440,7 @@ export class RoleListComponent {
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
       }
     );
 
@@ -480,7 +480,7 @@ export class RoleListComponent {
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
       }
     );
   

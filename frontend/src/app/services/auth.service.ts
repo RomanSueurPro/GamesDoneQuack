@@ -106,7 +106,7 @@ export class AuthService {
       );
   }
 
-  sendLoginRequest(username: string, password: string){
+  sendLoginRequest(username: string, password: string):Observable<any>{
     const loginUrl = API_ENDPOINTS.auth.login;
     const csrfToken = this.getCSRFTokenFromCookies();
 

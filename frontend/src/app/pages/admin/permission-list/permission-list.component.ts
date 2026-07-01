@@ -113,7 +113,7 @@ form = new FormGroup({
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
       }
     );
 
@@ -270,7 +270,7 @@ form = new FormGroup({
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
       }
     );
 
@@ -417,7 +417,7 @@ form = new FormGroup({
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
         data: 
           {
             name: this.form.value.name,
@@ -475,7 +475,7 @@ form = new FormGroup({
         height: this.dialogOptions.height,
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
-        panelClass: 'confirmation-dialog',
+        panelClass: ['confirmation-dialog', 'dialog'],
       }
     );
 

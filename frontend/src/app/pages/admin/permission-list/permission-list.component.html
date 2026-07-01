@@ -47,7 +47,7 @@
                 <mat-list role="list" id="associated-roles-list">
                     @for (role of associatedRoles; track role) {
                         <mat-list-item>
-                            <div class="role-display-list-items">
+                            <div class="role-display-list-items" (click)="toggleRole(role.name)">
                                 
                                 {{role.name}}
                                 @if (role.adminRole){
@@ -57,7 +57,7 @@
                                     <span>(Default)</span>
                                 }
                                 @if (!role.adminRole){
-                                    <input type="button" value="-" class="manage-role-button" (click)="toggleRole(role.name)">
+                                    <input type="button" value="-" class="manage-role-button">
                                 }
                                 
                             </div>
@@ -69,12 +69,12 @@
                 <mat-list role="list" id="available-roles-list">
                     @for (role of notAssociatedRoles; track role) {
                         <mat-list-item>
-                            <div class="role-display-list-items">
+                            <div class="role-display-list-items" (click)="toggleRole(role.name)">
                                 {{role.name}}
                                 @if (role.defaultRole === true){
                                     <span>(Default)</span>
                                 }
-                                <input type="button" value="+" class="manage-role-button" (click)="toggleRole(role.name)">
+                                <input type="button" value="+" class="manage-role-button">
                             </div>
                         </mat-list-item>
                     }

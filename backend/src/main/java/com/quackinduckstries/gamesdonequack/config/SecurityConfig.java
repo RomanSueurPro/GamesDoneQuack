@@ -52,21 +52,23 @@ public class SecurityConfig {
             .sessionRegistry(sessionRegistry())
         );
     	    	
-		http
+	http
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(
             authorizeHttp -> {
                 	authorizeHttp.requestMatchers("/admin").hasRole("ADMIN");
-                    authorizeHttp.requestMatchers("/home").permitAll();
-                    authorizeHttp.requestMatchers("/login").permitAll();
-                    authorizeHttp.requestMatchers("/register").permitAll();
-                    authorizeHttp.requestMatchers("/csrf").permitAll();
-                    authorizeHttp.requestMatchers("/favicon.svg").permitAll();
-                    authorizeHttp.requestMatchers("/error").permitAll();
-                    authorizeHttp.requestMatchers("/api/me").permitAll();
-                    authorizeHttp.requestMatchers("/adminrolename").permitAll();
-                    authorizeHttp.requestMatchers("/dev-login").permitAll();
-                    authorizeHttp.anyRequest().authenticated();
+                authorizeHttp.requestMatchers("/home").permitAll();
+                authorizeHttp.requestMatchers("/login").permitAll();
+                authorizeHttp.requestMatchers("/register").permitAll();
+                authorizeHttp.requestMatchers("/csrf").permitAll();
+                authorizeHttp.requestMatchers("/favicon.svg").permitAll();
+                authorizeHttp.requestMatchers("/error").permitAll();
+                authorizeHttp.requestMatchers("/api/me").permitAll();
+                authorizeHttp.requestMatchers("/adminrolename").permitAll();
+                //TODO this should be dev - profile only
+                authorizeHttp.requestMatchers("/dev-login").permitAll();
+                authorizeHttp.requestMatchers("/api/check-username-availability").permitAll();
+                authorizeHttp.anyRequest().authenticated();
             }
         );
 		

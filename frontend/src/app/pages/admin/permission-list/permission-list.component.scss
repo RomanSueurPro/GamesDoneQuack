@@ -23,6 +23,7 @@
   border: 1px rgb(192, 201, 94) solid;
   border-radius: 5px;
   display: flex;
+  width: 30vw;
   flex-direction: column;
   
   & > *{
@@ -126,7 +127,6 @@ mat-list{
 
 .error{
   color:red;
-  max-width: 20vw;
   font-size: 1.9rem;
   line-height: 2.1rem;
   padding-bottom: 1rem;
