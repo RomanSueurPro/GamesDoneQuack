@@ -11,6 +11,7 @@ import { of, tap } from 'rxjs';
 import { LoadingDotsComponent } from '../../animations/loading-dots/loading-dots.component';
 import { modeSwitchAnimation } from './connection-pop-up-animation';
 import { UsernameAvailabilityCheckerService } from '../../services/username-availability-checker.service';
+import { SnackbarService } from '../../services/snackbar.service';
 
 export interface DialogData {
   loginMode: boolean;
@@ -58,7 +59,8 @@ export class ConnectionPopUpComponent {
     public dialogRef: MatDialogRef<ConnectionPopUpComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private backendService: BackendService, 
-    private usernameCheckerService: UsernameAvailabilityCheckerService
+    private usernameCheckerService: UsernameAvailabilityCheckerService,
+    private snackBarService: SnackbarService
   ){
     if(this.data.loginMode){
       this.dialogRef.updateSize(this.loginWidth, this.loginHeight);
@@ -124,9 +126,10 @@ export class ConnectionPopUpComponent {
         this.backendService.getRequest();
         this.onNoClick();
       },
-      error: (err) => {
-        console.log('Login failed', err);
+      error: (error) => {
+        console.log('Login failed', error);
         this.setLoading(false);
+        this.snackBarService.showErrorSnackBar(error);
       }
     });
   }
@@ -143,9 +146,10 @@ export class ConnectionPopUpComponent {
         this.backendService.getRequest();
         this.onNoClick();
       },
-      error: (err) => {
-        console.log('Register error', err);
+      error: (error) => {
+        console.log('Register error', error);
         this.setLoading(false);
+        this.snackBarService.showErrorSnackBar(error);
       }
     });
   }

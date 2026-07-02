@@ -32,6 +32,7 @@
         <div class="login-register">
             <p (click)="toggleModeLogin()" class="text-button hover-pointer">Create account</p>
         </div>
+        <app-loading-dots [isLoading]="isLoading"/>
     </ng-template>
 
     <ng-template #layoutRegister>
@@ -82,15 +83,20 @@
             }
             
             <div class="buttons">
-                <button (click)="register()" class="text-button">Register</button>
+                @if(passwordFormatControl.invalid || usernameFormatControl.invalid || !usernameIsAvailable){
+                    <button disabled class="text-button">Register</button>
+                }@else {
+                    <button (click)="register()" class="text-button">Register</button>
+                }
+                
                 <button mat-button (click)="onNoClick()" class="text-button">Cancel</button>
             </div>
         </div>
-        <div class="block">
+        <div class="login-register">
             <p (click)="toggleModeLogin()" class="text-button hover-pointer">Log in</p>
         </div>
-    </ng-template>
 
         <app-loading-dots [isLoading]="isLoading"/>
-        
+    </ng-template>
+
 </div>

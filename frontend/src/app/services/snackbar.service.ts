@@ -10,33 +10,40 @@ export class SnackbarService {
 
   showErrorSnackBar(error:any):void{
     this.snackbar.open(
-          'Code status : ' + error.status + ', ' + error.error.error,
-          'Close',
-          {
-            panelClass: ['failure-snackbar'],
-          }
-        );
+      'Code status : ' + error.status + ', ' + error.error.error,
+      'Close',
+      {
+        panelClass: ['failure-snackbar'],
+      }
+    );
   }
 
   showSuccessResponseSnackBar(response:any):void{
     this.snackbar.open(
-              response.message,
-              'Close',
-              {
-                duration: 3000,
-                panelClass: ['success-snackbar'],
-              }
-            );
+      response.message,
+      'Close',
+      {
+        duration: 3000,
+        panelClass: ['success-snackbar'],
+      }
+    );
   }
 
   showSuccessMessageSnackBar(successMessage:string):void{
     this.snackbar.open(
-              successMessage,
-              'Close',
-              {
-                duration: 3000,
-                panelClass: ['success-snackbar'],
-              }
-            );
+      successMessage,
+      'Close',
+      {
+        duration: 3000,
+        panelClass: ['success-snackbar'],
+      }
+    );
+  }
+
+  showTestSnackBar(){
+    this.snackbar.open(
+      "coucou",
+    )
+    
   }
 }
