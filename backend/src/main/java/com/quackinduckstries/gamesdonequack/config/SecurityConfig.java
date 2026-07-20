@@ -34,10 +34,13 @@ public class SecurityConfig {
 
 	@Value("${security.disable-csrf:false}")
 	private boolean disableCsrf;
+	
+	@Value("${security.enable-super-login:false}")
+	private boolean enableSuperLogin;
     
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        
+
     	if(disableCsrf) {
     		http.csrf((csrf) -> csrf.disable());
     	}else {
@@ -65,10 +68,14 @@ public class SecurityConfig {
                 authorizeHttp.requestMatchers("/error").permitAll();
                 authorizeHttp.requestMatchers("/api/me").permitAll();
                 authorizeHttp.requestMatchers("/adminrolename").permitAll();
-                //TODO this should be dev - profile only
-                authorizeHttp.requestMatchers("/dev-login").permitAll();
                 authorizeHttp.requestMatchers("/api/check-username-availability").permitAll();
+                
+                if(enableSuperLogin) {
+        				authorizeHttp.requestMatchers("/dev-login").permitAll();
+                }
+                //do not put requestMatchers after this line
                 authorizeHttp.anyRequest().authenticated();
+                
             }
         );
 		
