@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: gamesdonequack-postgres
+    environment:
+      POSTGRES_DB: gamesdonequack_db
+      POSTGRES_USER: dev_db_user
+      POSTGRES_PASSWORD: temp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_db_user -d gamesdonequack_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gamesdonequack-backend
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gamesdonequack-frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+
+volumes:
+  postgres_data:
