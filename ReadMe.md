@@ -26,6 +26,13 @@ Lombok : 1.18.32
 Mapstruct : 1.5.5
 
 
+###Lancement rapide avec Docker
+
+-Ouvrez un terminal
+-Se placer dans le dossier `GamesDoneQuack`
+-Entrez la commande `docker compose up` 
+-Vous avez accès à l'application depuis votre navigateur avec l'URL : `http://localhost:4200/`
+
 
 #Presentation in English
 
@@ -33,4 +40,11 @@ Welcome!
 You are reading the documentation of the GamesDoneQuack project, a website inspired by GoodReads, ImDB, LetterBox and other places reuniting communities around a cultural interest. The idea is to conceive a place for discussion, recommandations, and sometimes coordination around video games.
 
 The application is built on a classic Java SpringBoot / Angular stack. Backend Code is stored in sub-project 'Backend' and Frontend Angular code can be found in sub-project 'Frontend'.
+
+#QuickStart
+
+-Open a terminal
+-Go in the `GamesDoneQuack` directory
+-Run the command `docker compose up`
+-You can now access the application from your browser with the URL : `http://localhost:4200/`
 
