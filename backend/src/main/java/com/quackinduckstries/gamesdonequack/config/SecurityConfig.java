@@ -21,14 +21,13 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import com.quackinduckstries.gamesdonequack.services.CustomUserDetailsService;
 
 @EnableMethodSecurity
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	@Value("${security.enable-basic:false}")
 	private boolean enableBasic;
 
@@ -37,6 +36,9 @@ public class SecurityConfig {
 	
 	@Value("${security.enable-super-login:false}")
 	private boolean enableSuperLogin;
+	
+	
+
     
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -73,6 +75,7 @@ public class SecurityConfig {
                 if(enableSuperLogin) {
         				authorizeHttp.requestMatchers("/dev-login").permitAll();
                 }
+
                 //do not put requestMatchers after this line
                 authorizeHttp.anyRequest().authenticated();
                 
@@ -90,6 +93,7 @@ public class SecurityConfig {
         http.logout(l -> l.logoutSuccessUrl("/home")
         		.deleteCookies("JSESSIONID"));
 
+        
         return http.build();              
     }
     

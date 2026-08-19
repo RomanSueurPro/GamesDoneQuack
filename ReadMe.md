@@ -32,6 +32,7 @@ Mapstruct : 1.5.5
 -Se placer dans le dossier `GamesDoneQuack`
 -Entrez la commande `docker compose up` 
 -Vous avez accès à l'application depuis votre navigateur avec l'URL : `http://localhost:4200/`
+-Vous pouvez vous connecter avec les identifiants "admin" mot de passe : "admin" pour accéder à toutes les fonctionnalités de l'application
 
 
 #Presentation in English
@@ -47,4 +48,4 @@ The application is built on a classic Java SpringBoot / Angular stack. Backend C
 -Go in the `GamesDoneQuack` directory
 -Run the command `docker compose up`
 -You can now access the application from your browser with the URL : `http://localhost:4200/`
-
+-You can connect with the credentials "admin" password : "admin" to access every features as admin user.

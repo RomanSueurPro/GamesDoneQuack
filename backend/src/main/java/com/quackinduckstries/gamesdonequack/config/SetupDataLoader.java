@@ -7,34 +7,43 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.config.RoleConfig.RoleDefinition;
-import com.quackinduckstries.gamesdonequack.controllers.AdminController;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
+import com.quackinduckstries.gamesdonequack.entities.User;
 import com.quackinduckstries.gamesdonequack.repositories.PermissionRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
+import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent>{
-
-    private final AdminController adminController;
+	
+	@Value("${docker.mode-enabled:false}")
+	private boolean dockerEnabled;
+	
 
 	boolean alreadySetup = false;
 	private final RoleRepository roleRepository;
 	private final PermissionRepository permissionRepository;
 	private final RoleConfig roleConfig;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 	
-	SetupDataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository, RoleConfig roleConfig, AdminController adminController){
+	
+	SetupDataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository, RoleConfig roleConfig, UserRepository userRepository, PasswordEncoder passwordEncoder){
 		this.roleRepository = roleRepository;
 		this.permissionRepository = permissionRepository;
 		this.roleConfig = roleConfig;
-		this.adminController = adminController;
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	@Override
@@ -43,9 +52,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 		if(alreadySetup) {
 			return;
 		}
-		
 		if(roleRepository.existsByIsDefaultRoleTrue()) {
 			roleConfig.setDefaultRoleName(roleRepository.findByIsDefaultRoleTrue().orElseThrow(() -> new IllegalArgumentException("No default role in database")).getName());
+			alreadySetup = true;
 			return;
 		}
 		
@@ -59,7 +68,14 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 					.toList();
 			createRoleIfNotFound(def, permissions);
 		}
-
+		Role roleAdmin = roleRepository.findByIsAdminRoleTrue().get();
+		if(dockerEnabled && roleAdmin != null) {
+			User newAdmin = new User();
+			newAdmin.setUsername("admin");
+			newAdmin.setPassword(passwordEncoder.encode("admin"));
+			newAdmin.setRole(roleAdmin);
+			userRepository.save(newAdmin);
+		}
 		alreadySetup = true;
 	}
 	

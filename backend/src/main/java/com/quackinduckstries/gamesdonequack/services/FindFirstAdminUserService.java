@@ -22,7 +22,7 @@ public class FindFirstAdminUserService {
 	}
 	
 	public Optional<User> getFirstAdminIfExists(){
-		Role roleAdmin = roleRepository.findFirstByIsAdminRoleTrue().orElseThrow();
+		Role roleAdmin = roleRepository.findByIsAdminRoleTrue().orElseThrow();
 		
 		return roleAdmin.getUsers().stream().findFirst();
 	}

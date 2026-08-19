@@ -1,6 +1,5 @@
 package com.quackinduckstries.gamesdonequack.services;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
@@ -14,8 +13,6 @@ public class AdminRoleNameFinderService {
 		this.roleRepository = roleRepository;
 	}
 	
-//	@Value("${}")
-//	String adminRoleName;
 	
 	public String getAdminRoleName() {
 		return roleRepository.findByIsAdminRoleTrue().orElseThrow(()-> new IllegalStateException("There is no admin role in database and it is critical")).getName();
