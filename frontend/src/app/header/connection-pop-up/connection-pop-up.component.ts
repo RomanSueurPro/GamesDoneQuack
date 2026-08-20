@@ -123,7 +123,7 @@ export class ConnectionPopUpComponent {
     ).subscribe({
       next: (response) => {
         console.log('Login success', response);
-        this.backendService.getRequest();
+        this.backendService.fetchCsrf();
         this.onNoClick();
       },
       error: (error) => {
@@ -143,7 +143,7 @@ export class ConnectionPopUpComponent {
     ).subscribe({
       next: (response) => {
         console.log('Successfully registered', response);
-        this.backendService.getRequest();
+        this.backendService.fetchCsrf();
         this.onNoClick();
       },
       error: (error) => {

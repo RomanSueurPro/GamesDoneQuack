@@ -15,7 +15,6 @@ export const adminGuard: CanActivateFn = (route, state) => {
   }
 
   if(authStateService.isLoggedIn()){
-    console.log(state);
     return router.createUrlTree(
       ['/'],
     );

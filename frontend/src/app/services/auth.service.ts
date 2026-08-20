@@ -6,6 +6,7 @@ import { Observable, of, tap } from 'rxjs';
 import { AuthStateService } from './auth-state.service';
 import { User } from '../models/User';
 import { API_ENDPOINTS } from '../config/api-endpoints';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,9 @@ import { API_ENDPOINTS } from '../config/api-endpoints';
 export class AuthService {
 
   constructor(private http: HttpClient,
-     private csrfService: CsrfService,
-      private authState: AuthStateService) { }
+    private csrfService: CsrfService,
+    private authState: AuthStateService,
+    private router: Router) { }
 
 
   loadUser(){
@@ -57,10 +59,18 @@ export class AuthService {
     of(null).pipe(
       concatMap(() => this.checkCSRFObservable()),
       concatMap(() => this.logoutObservable()),
-      concatMap(() => this.checkLoginObservable())
+      concatMap(() => this.checkLoginObservable()),
+      concatMap(() => this.router.navigateByUrl('/')),
+      concatMap(() => this.csrfService.loadUpObservable()),
+
     ).subscribe({
-      next: () => console.log('Logout successful'),
-      error: () => console.log('Error on logout')
+      next: () => {
+        console.log('Logout successful');
+        
+      },
+      error: (error) => {
+        console.log(error);
+      }
     })
   };
 

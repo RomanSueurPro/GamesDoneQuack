@@ -23,6 +23,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.quackinduckstries.gamesdonequack.services.CustomUserDetailsService;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @EnableMethodSecurity
 @Configuration
 @EnableWebSecurity
@@ -90,7 +92,11 @@ public class SecurityConfig {
 				.httpBasic(Customizer.withDefaults());
 		}
 		
-        http.logout(l -> l.logoutSuccessUrl("/home")
+        http.logout(logout -> logout
+        	    .logoutUrl("/logout")
+        	    .logoutSuccessHandler((request, response, authentication) -> {
+        	        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        	    })
         		.deleteCookies("JSESSIONID"));
 
         

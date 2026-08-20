@@ -20,7 +20,7 @@ export class BackendService {
     }
 
     //load csrf
-    getRequest(){
+    fetchCsrf(){
         this.csrfService.loadUp();
     }
 
