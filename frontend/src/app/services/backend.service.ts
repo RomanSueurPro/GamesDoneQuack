@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { CsrfService } from "./csrf.service";
 import { API_ENDPOINTS } from "../config/api-endpoints";
+import { FormGroup } from "@angular/forms";
 
 @Injectable({
     providedIn : 'root'
@@ -31,30 +32,12 @@ export class BackendService {
         });
     }
 
-    sendRegisterRequest(username: string, pass: string): void{
-        const registerUrl: string = API_ENDPOINTS.auth.register;
-        let requestBody: URLSearchParams = new URLSearchParams();
-        const csrfToken = this.getCSRFTokenFromCookies('XSRF-TOKEN');
-
-        requestBody.set('username', username);
-        requestBody.set('password', pass);
-        requestBody.set('_csrf', csrfToken || '');
-        this.http.post(registerUrl, requestBody,
-            {withCredentials: true, headers: new HttpHeaders({
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }),}
-         ).subscribe({
-            next: () => console.log('request was sent'),
-            error: () => console.log('error was occured yes')
-        });
+    sendRegisterRequestFromAuth(group: FormGroup){
+        return this.auth.sendRegisterRequest(group);
     }
 
-    sendRegisterRequestFromAuth(username: string, pass: string){
-        return this.auth.sendRegisterRequest(username, pass);
-    }
-
-    sendLoginRequestFromAuth(username: string, pass: string){
-        return this.auth.sendLoginRequest(username, pass);
+    sendLoginRequestFromAuth(group : FormGroup){
+        return this.auth.sendLoginRequest(group);
     }
 
     checkLoginBackendObservable(){

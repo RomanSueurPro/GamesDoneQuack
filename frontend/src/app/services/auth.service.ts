@@ -7,6 +7,7 @@ import { AuthStateService } from './auth-state.service';
 import { User } from '../models/User';
 import { API_ENDPOINTS } from '../config/api-endpoints';
 import { Router } from '@angular/router';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -84,12 +85,9 @@ export class AuthService {
   }
 
   logoutObservable(): Observable<any>{
-    const body = new URLSearchParams();
-    const csrfToken = this.getCSRFTokenFromCookies();
-    body.set('_csrf', csrfToken || '');
+    
 
-    return this.http.post(API_ENDPOINTS.auth.logout, body, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    return this.http.post(API_ENDPOINTS.auth.logout,{
       withCredentials: true
     });
   }
@@ -101,35 +99,16 @@ export class AuthService {
     return match ? decodeURIComponent(match[2]) : null;
   }
 
-  sendRegisterRequest(username: string, pass: string){
+  sendRegisterRequest(group: FormGroup){
       const registerUrl: string = API_ENDPOINTS.auth.register;
-      let requestBody: URLSearchParams = new URLSearchParams();
-      const csrfToken = this.getCSRFTokenFromCookies();
-
-      requestBody.set('username', username);
-      requestBody.set('password', pass);
-      requestBody.set('_csrf', csrfToken || '');
-      return this.http.post(registerUrl, requestBody,
-          {withCredentials: true, headers: new HttpHeaders({
-              'Content-Type': 'application/x-www-form-urlencoded',
-          }),}
+      return this.http.post(registerUrl, group.value,
+          {withCredentials: true}
       );
   }
 
-  sendLoginRequest(username: string, password: string):Observable<any>{
+  sendLoginRequest(group: FormGroup):Observable<any>{
     const loginUrl = API_ENDPOINTS.auth.login;
-    const csrfToken = this.getCSRFTokenFromCookies();
-
-    const body = new URLSearchParams();
-    body.set('username', username);
-    body.set('password', password);
-    body.set('_csrf', csrfToken || '');
-
-    return this.http.post(loginUrl, body.toString(), {
-        headers: new HttpHeaders({
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }),
-        withCredentials: true,
-    });
+    
+    return this.http.post(loginUrl, group.value, {withCredentials: true});
   }
 }

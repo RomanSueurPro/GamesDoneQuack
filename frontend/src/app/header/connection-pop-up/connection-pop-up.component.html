@@ -15,18 +15,21 @@
     <ng-template #layoutLogin>
         <div class="container-layout">
             <h1>Log in</h1>
-            <div class="field-and-label">
-                <label for="login-field" class="login-label">Login or Email :</label>
-                <input type="text" [(ngModel)]="loginUsername">
-            </div>
-            <div class="field-and-label">
-                <label for="password-field" class="login-label">Password :</label>
-                <input type="password" [(ngModel)]="loginPassword">
-            </div>
-            <div class="buttons">
-                <button (click)="login()" class="text-button">Log in</button>
-                <button mat-button (click)="onNoClick()" class="text-button">Cancel</button>
-            </div>
+            <form [formGroup]="formLogin">
+                <div class="field-and-label">
+                    <label for="login-field" class="login-label">Login or Email :</label>
+                    <input type="text" formControlName="username">
+                </div>
+                <div class="field-and-label">
+                    <label for="password-field" class="login-label">Password :</label>
+                    <input type="password" formControlName="password">
+                </div>
+                
+                <div class="buttons">
+                    <button (click)="login()" class="text-button">Log in</button>
+                    <button mat-button (click)="onNoClick()" class="text-button">Cancel</button>
+                </div>
+            </form>
         </div>
         
         <div class="login-register">
@@ -36,62 +39,66 @@
     </ng-template>
 
     <ng-template #layoutRegister>
-        <div class="container-layout">
-            <h1>Register</h1>
-            <div class="field-and-label">
-                <label for="registerUserName" class="register-label">Username :</label>
-                <input type="text" [(ngModel)]="registerUsername" [formControl]="usernameFormatControl" (input)="checkUserNameAvailability()">
-            </div>
-            @if(usernameFormatControl.invalid){
-                <div class="error">
-                    @if(usernameFormatControl.hasError('minlength') || registerUsername === ""){
-                        <div>Username must be at least 3 characters long</div>
-                    }@if(usernameFormatControl.hasError('maxlength')){
-                        <div>Username cannot exceed 255 characters</div>
-                    }@if(usernameFormatControl.hasError('pattern')){
-                        <div>Username can only contain uppercase letters, lowercase letters, numbers, '_' and '-'</div>
-                }
-                </div>
-            }
-            @if(!usernameIsAvailable){
-                <div class="error">
-                    Username already exists
-                </div>
-            }@else if(!usernameFormatControl.invalid){
-                <div class="success">
-                    Username available and valid
-                </div>
-            }
-            <div class="field-and-label">
-                <label for="registerUserPassword" class="register-label">Password :</label>
-                <input type="password" [(ngModel)]="registerPassword" [formControl]="passwordFormatControl">
-            </div>
-            @if(passwordFormatControl.invalid){
-                <div class="error">
-                    @if(passwordFormatControl.hasError('minlength') || registerPassword === ""){
-                        <div>Password must be at least 8 characters long</div>
-                    }@if(passwordFormatControl.hasError('maxlength')){
-                        <div>Password cannot exceed 64 characters</div>
-                    }@if(passwordFormatControl.hasError('pattern') || registerPassword === ""){
-                        <div>Password must contain each of the following : a lowercase letter, an uppercase letter, a number and a special character</div>
-                }
-                </div>
-            }@else {
-                <div class="success">
-                    Password is valid
-                </div>
-            }
-            
-            <div class="buttons">
-                @if(passwordFormatControl.invalid || usernameFormatControl.invalid || !usernameIsAvailable){
-                    <button disabled class="text-button">Register</button>
-                }@else {
-                    <button (click)="register()" class="text-button">Register</button>
-                }
+        <form [formGroup]="formRegister">
+            <div class="container-layout">
+                <h1>Register</h1>
                 
-                <button mat-button (click)="onNoClick()" class="text-button">Cancel</button>
+                    <div class="field-and-label">
+                        <label for="registerUserName" class="register-label">Username :</label>
+                        <input type="text" formControlName="username" (input)="checkUserNameAvailability()">
+                    </div>
+                    @if(formRegister.get('username')?.hasError){
+                        <div class="error">
+                            @if(formRegister.get('username')?.hasError('minlength') || formRegister.get('username')?.value === ''){
+                                <div>Username must be at least 3 characters long</div>
+                            }@if(formRegister.get('username')?.hasError('maxlength')){
+                                <div>Username cannot exceed 255 characters</div>
+                            }@if(formRegister.get('username')?.hasError('pattern')){
+                                <div>Username can only contain uppercase letters, lowercase letters, numbers, '_' and '-'</div>
+                        }
+                        </div>
+                    }
+                    @if(!usernameIsAvailable){
+                        <div class="error">
+                            Username already exists
+                        </div>
+                    }@else if(!formRegister.get('username')?.hasError){
+                        <div class="success">
+                            Username available and valid
+                        </div>
+                    }
+                    <div class="field-and-label">
+                        <label for="registerUserPassword" class="register-label">Password :</label>
+                        <input type="password" formControlName="password" >
+                    </div>
+                    @if(formRegister.get('password')?.hasError){
+                        <div class="error">
+                            @if(formRegister.get('password')?.hasError('minlength') || formRegister.get('password')?.value === ""){
+                                <div>Password must be at least 8 characters long</div>
+                            }@if(formRegister.get('password')?.hasError('maxlength')){
+                                <div>Password cannot exceed 64 characters</div>
+                            }@if(formRegister.get('password')?.hasError('pattern') || formRegister.get('password')?.value === ""){
+                                <div>Password must contain each of the following : a lowercase letter, an uppercase letter, a number and a special character</div>
+                        }
+                        </div>
+                    }@else {
+                        <div class="success">
+                            Password is valid
+                        </div>
+                    }
+                    
+                    <div class="buttons">
+                        @if(formRegister.invalid || !usernameIsAvailable){
+                            <button disabled class="text-button">Register</button>
+                        }@else {
+                            <button (click)="register()" class="text-button">Register</button>
+                        }
+                        
+                        <button mat-button (click)="onNoClick()" class="text-button">Cancel</button>
+                    </div>
+                
             </div>
-        </div>
+        </form>
         <div class="login-register">
             <p (click)="toggleModeLogin()" class="text-button hover-pointer">Log in</p>
         </div>

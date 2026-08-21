@@ -29,7 +29,7 @@ form = new FormGroup({
     
   });
 
-  constructor(private http: HttpClient, private snackBarService: SnackbarService, private confirmDialog: MatDialog, private deleteDialog: MatDialog, private elementRef: ElementRef){
+  constructor(private http: HttpClient, private snackBarService: SnackbarService, private confirmDialog: MatDialog, private deleteDialog: MatDialog){
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayPermissions = [];
