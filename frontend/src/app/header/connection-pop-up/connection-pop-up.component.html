@@ -22,7 +22,11 @@
                 </div>
                 <div class="field-and-label">
                     <label for="password-field" class="login-label">Password :</label>
-                    <input type="password" formControlName="password">
+                    <div class="div-password">
+                        <input [type]="visiblePass ? 'text' : 'password'" formControlName="password">
+                        <div (click)="togglePasswordVisibility()" class="{{passwordClass}} toggle-password-visibility">
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="buttons">
@@ -69,7 +73,11 @@
                     }
                     <div class="field-and-label">
                         <label for="registerUserPassword" class="register-label">Password :</label>
-                        <input type="password" formControlName="password" >
+                        <div class="div-password">
+                            <input [type]="visiblePass ? 'text' : 'password'" formControlName="password">
+                            <div (click)="togglePasswordVisibility()" class="{{passwordClass}} toggle-password-visibility">
+                        </div>
+                    </div>
                     </div>
                     @if(formRegister.get('password')?.hasError){
                         <div class="error">

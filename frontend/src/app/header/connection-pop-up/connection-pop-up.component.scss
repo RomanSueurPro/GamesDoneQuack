@@ -103,3 +103,27 @@ h1{
     width: 70%;
     margin-bottom: 1.2rem;
 }
+
+.toggle-password-visibility{
+    display: flex;
+    position: absolute;
+    right: 0.5rem;
+    top: 25%;
+    
+    height: 50%;
+    width : 2rem;
+}
+
+.div-password{
+    position: relative;
+}
+
+.hide-pass-icon{
+    background: url("../../../assets/header-assets/connection-pop-up-assets/eye-off-svgrepo-com.svg");
+    background-size: cover;
+}
+
+.show-pass-icon{
+    background: url("../../../assets/header-assets/connection-pop-up-assets/eye-show-svgrepo-com.svg");
+    background-size: cover;
+}

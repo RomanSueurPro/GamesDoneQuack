@@ -177,4 +177,12 @@ export class ConnectionPopUpComponent {
       }
     });
   }
+  
+  public passwordClass: String = "show-pass-icon";
+  public visiblePass: boolean = false;
+
+  togglePasswordVisibility(){
+    this.passwordClass = (this.passwordClass === "show-pass-icon" ? "hide-pass-icon" : "show-pass-icon");
+    this.visiblePass = !this.visiblePass;
+  }
 }
