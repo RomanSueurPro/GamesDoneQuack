@@ -25,13 +25,6 @@ export class BackendService {
         this.csrfService.loadUp();
     }
 
-    visitLogin(){
-        this.http.get(API_ENDPOINTS.auth.login, {withCredentials: true}).subscribe({
-            next: () => console.log('oui'),
-            error: () => console.log('error. error. red alert')  
-        });
-    }
-
     sendRegisterRequestFromAuth(group: FormGroup){
         return this.auth.sendRegisterRequest(group);
     }
