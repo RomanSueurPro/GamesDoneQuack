@@ -15,15 +15,15 @@
     <ng-template #layoutLogin>
         <div class="container-layout">
             <h1>Log in</h1>
-            <form [formGroup]="formLogin">
+            <form [formGroup]="formLogin" class="form">
                 <div class="field-and-label">
-                    <label for="login-field" class="login-label">Login or Email :</label>
-                    <input type="text" formControlName="username">
+                    <label for="login-username-field" class="login-label">Login or Email :</label>
+                    <input type="text" formControlName="username" id="login-username-field">
                 </div>
                 <div class="field-and-label">
-                    <label for="password-field" class="login-label">Password :</label>
+                    <label for="login-password-field" class="login-label">Password :</label>
                     <div class="div-password">
-                        <input [type]="visiblePass ? 'text' : 'password'" formControlName="password">
+                        <input [type]="visiblePass ? 'text' : 'password'" formControlName="password" class="password-input" id="login-password-field">
                         <div (click)="togglePasswordVisibility()" class="{{passwordClass}} toggle-password-visibility">
                         </div>
                     </div>
@@ -43,13 +43,13 @@
     </ng-template>
 
     <ng-template #layoutRegister>
-        <form [formGroup]="formRegister">
+        <form [formGroup]="formRegister" class="form">
             <div class="container-layout">
                 <h1>Register</h1>
                 
                     <div class="field-and-label">
-                        <label for="registerUserName" class="register-label">Username :</label>
-                        <input type="text" formControlName="username" (input)="checkUserNameAvailability()">
+                        <label for="register-user-name" class="register-label">Username :</label>
+                        <input type="text" formControlName="username" (input)="checkUserNameAvailability()" id="register-user-name">
                     </div>
                     @if(formRegister.get('username')?.hasError){
                         <div class="error">
@@ -72,9 +72,9 @@
                         </div>
                     }
                     <div class="field-and-label">
-                        <label for="registerUserPassword" class="register-label">Password :</label>
+                        <label for="register-user-password" class="register-label">Password :</label>
                         <div class="div-password">
-                            <input [type]="visiblePass ? 'text' : 'password'" formControlName="password">
+                            <input [type]="visiblePass ? 'text' : 'password'" formControlName="password" id="register-user-password" class="password-input">
                             <div (click)="togglePasswordVisibility()" class="{{passwordClass}} toggle-password-visibility">
                         </div>
                     </div>
