@@ -3,8 +3,8 @@ package com.quackinduckstries.gamesdonequack.Dtos;
 import lombok.Data;
 
 @Data
-public class RegisterRequestDto {
-	
+public class LoginRequestDto {
+
 	private String username;
 	private String password;
 }

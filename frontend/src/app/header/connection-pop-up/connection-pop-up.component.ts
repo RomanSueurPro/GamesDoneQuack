@@ -5,13 +5,15 @@ import {
   } from '@angular/material/dialog';
 import { BackendService } from '../../services/backend.service';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormsModule, Validators, ReactiveFormsModule } from "@angular/forms";
+import { FormControl, FormsModule, Validators, ReactiveFormsModule,AbstractControl, FormGroup,
+   ValidationErrors, ValidatorFn } from "@angular/forms";
 import { concatMap } from 'rxjs/operators';
 import { of, tap } from 'rxjs';
 import { LoadingDotsComponent } from '../../animations/loading-dots/loading-dots.component';
 import { modeSwitchAnimation } from './connection-pop-up-animation';
 import { UsernameAvailabilityCheckerService } from '../../services/username-availability-checker.service';
 import { SnackbarService } from '../../services/snackbar.service';
+
 
 export interface DialogData {
   loginMode: boolean;
@@ -34,11 +36,18 @@ export interface DialogData {
 
 export class ConnectionPopUpComponent {
 
-  
-  loginWidth:string = '65rem';
-  loginHeight:string = '35rem';
-  RegisterWidth:string = '60rem';
-  RegisterHeight:string = '45rem';
+  formLogin  = new FormGroup({
+      username: new FormControl<string>(''),
+      password: new FormControl<string>(''),
+      
+    });
+
+  usernameFormatControl = new FormControl('', [
+    Validators.required,
+    Validators.minLength(3),
+    Validators.maxLength(255),
+    Validators.pattern(/^[A-Za-z0-9_-]+$/)
+  ]);
 
   passwordFormatControl = new FormControl('', [
     Validators.required,
@@ -47,12 +56,20 @@ export class ConnectionPopUpComponent {
     Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).*$/)
   ]);
 
-  usernameFormatControl = new FormControl('', [
-    Validators.required,
-    Validators.minLength(3),
-    Validators.maxLength(255),
-    Validators.pattern(/^[A-Za-z0-9_-]+$/)
-  ]);
+  formRegister  = new FormGroup({
+      username: this.usernameFormatControl,
+      password: this.passwordFormatControl,
+      
+    });  
+  
+  loginWidth:string = '65rem';
+  loginHeight:string = '35rem';
+  RegisterWidth:string = '60rem';
+  RegisterHeight:string = '45rem';
+
+  
+
+  
 
   constructor(
   
@@ -86,25 +103,15 @@ export class ConnectionPopUpComponent {
     }
   }
 
-  registerUsername:string = '';
-  registerPassword:string = '';
 
   registerNewAndApprovedUser(){
-    const username = this.registerUsername;
-    const password = this.registerPassword;
-    //this.backendService.sendRegisterRequest(username, password);
-    return this.backendService.sendRegisterRequestFromAuth(username, password);
+    console.log(this.formRegister.value);
+    return this.backendService.sendRegisterRequestFromAuth(this.formRegister);
   }
-
-  loginUsername:string = '';
-  loginPassword:string = '';
 
   sendLoginForm(){
-    const username = this.loginUsername;
-    const password = this.loginPassword;
-    return this.backendService.sendLoginRequestFromAuth(username, password);
+    return this.backendService.sendLoginRequestFromAuth(this.formLogin);
   }
-  //TODO pipe it up : 1 start animation 2 trylogin 3 stop animation close popup
 
 
   isLoading = false;
@@ -160,8 +167,8 @@ export class ConnectionPopUpComponent {
   }
 
   checkUserNameAvailability(){
-    const name: string = this.registerUsername;
-    if(name === ""){
+    const name: string | null | undefined = this.formRegister.value.username;
+    if(name === "" || name === undefined || name === null){
       return;
     }
     this.usernameCheckerService.checkUserNameAvailability(name).subscribe({
@@ -169,5 +176,13 @@ export class ConnectionPopUpComponent {
         this.usernameIsAvailable = result as boolean;
       }
     });
+  }
+  
+  public passwordClass: String = "show-pass-icon";
+  public visiblePass: boolean = false;
+
+  togglePasswordVisibility(){
+    this.passwordClass = (this.passwordClass === "show-pass-icon" ? "hide-pass-icon" : "show-pass-icon");
+    this.visiblePass = !this.visiblePass;
   }
 }

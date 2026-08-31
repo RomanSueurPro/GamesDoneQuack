@@ -3,10 +3,8 @@ package com.quackinduckstries.gamesdonequack.controllers;
 
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,11 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quackinduckstries.gamesdonequack.Dtos.LoggedInUserDto;
-import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDTO;
+import com.quackinduckstries.gamesdonequack.Dtos.LoginRequestDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
 import com.quackinduckstries.gamesdonequack.config.CustomUserDetails;
 import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameException;
 import com.quackinduckstries.gamesdonequack.services.UserService;
@@ -64,20 +63,17 @@ public class AuthController {
 	
 	@PostMapping("/register")
     public ResponseEntity<?> registerUser(
-    		@RequestParam("username") String username,
-            @RequestParam("password") String password) throws DuplicateUsernameException {
+    		@RequestBody RegisterRequestDto registerRequestDto) throws DuplicateUsernameException {
 
-        RegisterRequestDTO request = new RegisterRequestDTO(username, password);
-        userService.registerNewUser(request);
+        userService.registerNewUser(registerRequestDto);
         
         return ResponseEntity.ok(Map.of("message", "New user insertion procedure completed."));
     }
 	
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestParam("username") String username,
-            @RequestParam("password") String password, HttpServletRequest request){
+	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request){
 		
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword());
 		
 			Authentication authentication = authManager.authenticate(authToken);
 			SecurityContext securityContext = SecurityContextHolder.getContext();

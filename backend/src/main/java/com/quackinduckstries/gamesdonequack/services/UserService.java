@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDTO;
+import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
@@ -44,13 +44,13 @@ public class UserService {
 	
 	
 	@Transactional
-	public void registerNewUser(RegisterRequestDTO request) throws IllegalStateException, DuplicateUsernameException {
-		usernameValidation(request.getRequestedUsername());
-		passwordValidation(request.getRequestedPassword());
+	public void registerNewUser(RegisterRequestDto request) throws IllegalStateException, DuplicateUsernameException {
+		usernameValidation(request.getUsername());
+		passwordValidation(request.getPassword());
 			
 		User newUser = new User();
-		newUser.setUsername(request.getRequestedUsername());
-		newUser.setPassword(passwordEncoder.encode(request.getRequestedPassword()));
+		newUser.setUsername(request.getUsername());
+		newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 		
 		if(userRepository.existsByUsername(newUser.getUsername())) {
 			throw new DuplicateUsernameException("Username " + newUser.getUsername() + " already exists.");

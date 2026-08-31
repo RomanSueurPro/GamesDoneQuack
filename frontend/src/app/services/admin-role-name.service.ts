@@ -24,10 +24,6 @@ export class AdminRoleNameService {
   setRoleName(name:string){
     this.adminRoleName.set(name);
   }
-
-  testRoleName(){
-    console.log(this.adminRoleName());
-  }
   
   getRoleName(){
     return this.adminRoleName();

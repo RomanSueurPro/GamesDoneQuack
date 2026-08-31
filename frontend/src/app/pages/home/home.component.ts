@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule} from '@angular/common/http';
-import { SteamService } from '../../services/steam.service';
 import { KaamelottService } from '../../services/kaamelott.service';
 import { NgIf } from '@angular/common';
+
 import { BackendService } from '../../services/backend.service';
 import { HeaderComponent } from "../../header/header.component";
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { AdminRoleNameService } from '../../services/admin-role-name.service';
 import { API_ENDPOINTS } from '../../config/api-endpoints';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -22,9 +23,9 @@ export class HomeComponent {
     response: string = 'empty';
     messages: string[] = [];
     kaamelottData: string | undefined;
-    steamData: string | undefined;
+    adminRoleName: string | undefined;
   
-    constructor(private http: HttpClient, private kaamelottService: KaamelottService, private steamService: SteamService, private backendService: BackendService, private authService: AuthService, public authState: AuthStateService, private adminRoleName: AdminRoleNameService){}
+    constructor(private http: HttpClient, private kaamelottService: KaamelottService, private backendService: BackendService, private authService: AuthService, public authState: AuthStateService, private adminRoleNameService: AdminRoleNameService, private router: Router){}
   
     ngOnInit(): void{
       //just checking we can reach backend
@@ -44,13 +45,6 @@ export class HomeComponent {
       });
     }
   
-    fetchSteamData(){
-      this.steamService.getSteamData().subscribe({
-        next: (data) => this.kaamelottData = JSON.stringify(data),
-        error: (err) => this.kaamelottData = 'Error fetching steam data'
-      });
-    }
-  
     logout(){
       this.authService.logout();
     }
@@ -59,16 +53,20 @@ export class HomeComponent {
       this.backendService.fetchCsrf();
     }
   
-    visitLogin(){
-      this.backendService.visitLogin();
-    }
   
     updateLoginStatus(){
       this.authState.isLoggedIn();
     }
 
     callRoleNameServiceTest(){
-      this.adminRoleName.testRoleName();
+      this.adminRoleName = this.adminRoleNameService.getRoleName();
     }
     
+    goAdminPage(){
+      this.router.navigate(['admin']);
+    }
+
+    goProfilePage(){
+      console.log("profile page");
+    }
 }

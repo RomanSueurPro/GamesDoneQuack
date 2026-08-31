@@ -15,13 +15,14 @@ h1{
 
     input{
         font-size: 3rem;
-        
+        max-width: 37rem;
     }
 }
 
 .login-label{
     width: 21rem;
     text-align: end;
+    flex: 0 0 21rem;
 }
 
 .register-label{
@@ -102,4 +103,41 @@ h1{
     color: green;
     width: 70%;
     margin-bottom: 1.2rem;
+}
+
+.toggle-password-visibility{
+    display: flex;
+    position: absolute;
+    right: 0.5rem;
+    top: 0;
+    height: 100%;
+    width : 2rem;
+}
+
+.div-password {
+    position: relative;
+}
+
+.hide-pass-icon{
+    background: url("../../../assets/header-assets/connection-pop-up-assets/eye-off-svgrepo-com.svg");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.show-pass-icon{
+    background: url("../../../assets/header-assets/connection-pop-up-assets/eye-show-svgrepo-com.svg");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.password-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 2.5rem;
+}
+
+.form{
+    width: 100%;
 }
