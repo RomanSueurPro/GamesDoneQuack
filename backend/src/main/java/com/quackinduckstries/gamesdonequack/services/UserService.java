@@ -16,6 +16,7 @@ import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.entities.User;
 import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidEmailFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidPasswordFormatException;
 import com.quackinduckstries.gamesdonequack.mappers.UserMapper;
@@ -123,6 +124,19 @@ public class UserService {
 		Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,64}$");
 		if(!pattern.matcher(password).matches()) {
 			throw new InvalidPasswordFormatException("Attempted account password did not meet format requirements. Password must contain at least one of each of the following : lower case letter, upper case letter, number, special character. Length must be between 8 and 64 characters.");
+		}
+	}
+
+	public boolean checkEmailExistence(String email) {
+		return userRepository.existsByEmail(email);
+	}
+	
+	public void emailValidation(String email) {
+		Pattern pattern = Pattern.compile(
+			    "^(?=.{1,64}$)((?!\\.)[\\w\\-_.]*[^.])(@\\w+)(\\.\\w+(\\.\\w+)?[^.\\W])$"
+			);
+		if(!pattern.matcher(email).matches()) {
+			throw new InvalidEmailFormatException("You must enter a valid email address. Length must be below 64 characters.");
 		}
 	}
 }

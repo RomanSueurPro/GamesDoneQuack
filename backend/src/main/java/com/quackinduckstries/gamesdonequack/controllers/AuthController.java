@@ -73,7 +73,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request){
 		
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword());
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getIdentifier(), loginRequestDto.getPassword());
 		
 			Authentication authentication = authManager.authenticate(authToken);
 			SecurityContext securityContext = SecurityContextHolder.getContext();

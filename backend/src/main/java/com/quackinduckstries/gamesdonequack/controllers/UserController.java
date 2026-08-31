@@ -27,4 +27,14 @@ public class UserController {
 		
 		return ResponseEntity.ok(true);
 	}
+	
+	@PostMapping("/api/check-email-availability")
+	public ResponseEntity<Boolean> checkEmailAvailability(@RequestBody String email){
+		
+		if(userService.checkEmailExistence(email)) {
+			return ResponseEntity.ok(false);
+		}
+		
+		return ResponseEntity.ok(true);
+	}
 }

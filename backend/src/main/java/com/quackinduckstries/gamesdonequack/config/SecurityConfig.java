@@ -73,6 +73,7 @@ public class SecurityConfig {
                 authorizeHttp.requestMatchers("/api/me").permitAll();
                 authorizeHttp.requestMatchers("/adminrolename").permitAll();
                 authorizeHttp.requestMatchers("/api/check-username-availability").permitAll();
+                authorizeHttp.requestMatchers("/api/check-email-availability").permitAll();
                 
                 if(enableSuperLogin) {
         				authorizeHttp.requestMatchers("/dev-login").permitAll();

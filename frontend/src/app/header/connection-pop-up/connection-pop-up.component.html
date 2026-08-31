@@ -17,8 +17,8 @@
             <h1>Log in</h1>
             <form [formGroup]="formLogin" class="form">
                 <div class="field-and-label">
-                    <label for="login-username-field" class="login-label">Login or Email :</label>
-                    <input type="text" formControlName="username" id="login-username-field">
+                    <label for="login-identifier-field" class="login-label">Login or Email :</label>
+                    <input type="text" formControlName="identifier" id="login-identifier-field">
                 </div>
                 <div class="field-and-label">
                     <label for="login-password-field" class="login-label">Password :</label>
@@ -72,12 +72,35 @@
                         </div>
                     }
                     <div class="field-and-label">
+                        <label for="register-email" class="register-label">email : </label>
+                        <input type="text" id="register-email" formControlName="email" (input)="checkEmailAvailability()">
+                    </div>
+                    @if(formRegister.get('email')?.hasError || formRegister.get('email')?.value === ''){
+                        <div class="error">
+                            @if(formRegister.get('email')?.hasError('maxlength')){
+                                <div>Email cannot exceed 64 characters</div>
+                            }@if(formRegister.get('email')?.hasError('pattern') || formRegister.get('email')?.value === ''){
+                                <div>Email format invalid</div>
+                        }
+                        </div>
+                    }
+                    @if(!emailIsAvailable){
+                        <div class="error">
+                            Email already exists
+                        </div>
+                    }@else if(!formRegister.get('email')?.hasError){
+                        <div class="success">
+                            Email available and valid
+                        </div>
+                    }
+                    
+                    <div class="field-and-label">
                         <label for="register-user-password" class="register-label">Password :</label>
                         <div class="div-password">
                             <input [type]="visiblePass ? 'text' : 'password'" formControlName="password" id="register-user-password" class="password-input">
                             <div (click)="togglePasswordVisibility()" class="{{passwordClass}} toggle-password-visibility">
+                            </div>
                         </div>
-                    </div>
                     </div>
                     @if(formRegister.get('password')?.hasError){
                         <div class="error">

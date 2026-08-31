@@ -13,6 +13,7 @@ import { LoadingDotsComponent } from '../../animations/loading-dots/loading-dots
 import { modeSwitchAnimation } from './connection-pop-up-animation';
 import { UsernameAvailabilityCheckerService } from '../../services/username-availability-checker.service';
 import { SnackbarService } from '../../services/snackbar.service';
+import { EmailAvailabilityCheckerServiceService } from '../../services/email-availability-checker-service.service';
 
 
 export interface DialogData {
@@ -37,9 +38,8 @@ export interface DialogData {
 export class ConnectionPopUpComponent {
 
   formLogin  = new FormGroup({
-      username: new FormControl<string>(''),
+      identifier: new FormControl<string>(''),
       password: new FormControl<string>(''),
-      
     });
 
   usernameFormatControl = new FormControl('', [
@@ -56,20 +56,23 @@ export class ConnectionPopUpComponent {
     Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).*$/)
   ]);
 
+  emailFormatControl = new FormControl('', [
+    Validators.required,
+    Validators.maxLength(64),
+    Validators.pattern(/^((?!\.)[\w\-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/)
+  ]);
+
   formRegister  = new FormGroup({
       username: this.usernameFormatControl,
       password: this.passwordFormatControl,
+      email: this.emailFormatControl,
       
     });  
   
   loginWidth:string = '65rem';
   loginHeight:string = '35rem';
   RegisterWidth:string = '60rem';
-  RegisterHeight:string = '45rem';
-
-  
-
-  
+  RegisterHeight:string = '65rem';
 
   constructor(
   
@@ -77,6 +80,7 @@ export class ConnectionPopUpComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private backendService: BackendService, 
     private usernameCheckerService: UsernameAvailabilityCheckerService,
+    private emailCheckerService: EmailAvailabilityCheckerServiceService,
     private snackBarService: SnackbarService
   ){
     if(this.data.loginMode){
@@ -89,6 +93,7 @@ export class ConnectionPopUpComponent {
 
   public isModeLogin: boolean = true;
   public usernameIsAvailable = true;
+  public emailIsAvailable = true;
 
   onNoClick(): void {
     this.dialogRef.close();
@@ -184,5 +189,18 @@ export class ConnectionPopUpComponent {
   togglePasswordVisibility(){
     this.passwordClass = (this.passwordClass === "show-pass-icon" ? "hide-pass-icon" : "show-pass-icon");
     this.visiblePass = !this.visiblePass;
+  }
+
+
+  checkEmailAvailability(){
+    const email: string | null | undefined = this.formRegister.value.email;
+    if(email === "" || email === undefined || email === null){
+      return;
+    }
+    this.emailCheckerService.checkEmailAvailability(email).subscribe({
+      next: (result) => {
+        this.emailIsAvailable = result as boolean;
+      }
+    });
   }
 }

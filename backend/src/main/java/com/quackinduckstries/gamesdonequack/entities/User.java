@@ -32,6 +32,14 @@ public class User {
     @JoinColumn(
     	name = "id_role", nullable = false, referencedColumnName = "id")
     private Role role;
+    
+    @Column(nullable = false)
+    private boolean toDelete = false;
+    
+    @Column(nullable = false, unique = true)
+    private String email;
+    
+    
 
 }
 

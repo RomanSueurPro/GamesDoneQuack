@@ -32,6 +32,7 @@ export const API_ENDPOINTS = {
         login: `${BASE}/login`,
         csrf: `${BASE}/csrf`,
         checkusername: `${BASE}/api/check-username-availability`,
+        checkemail: `${BASE}/api/check-email-availability`,
     },
 
     kaamelott:{
