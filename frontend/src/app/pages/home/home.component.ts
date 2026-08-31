@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient, HttpClientModule} from '@angular/common/http';
 import { KaamelottService } from '../../services/kaamelott.service';
 import { NgIf } from '@angular/common';
+
 import { BackendService } from '../../services/backend.service';
 import { HeaderComponent } from "../../header/header.component";
 import { AuthService } from '../../services/auth.service';

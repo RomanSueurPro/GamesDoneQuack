@@ -15,7 +15,9 @@
             <hr>
             
             <p *ngIf="kaamelottData">{{kaamelottData}}</p>
-            <p *ngIf="adminRoleName">{{adminRoleName}}</p>
+            @if(adminRoleName !== undefined && adminRoleName !== null && adminRoleName !== ''){
+                <p>{{adminRoleName}}</p>
+            }
         </div>
 
         <div class="nav-scaffold">
