@@ -48,9 +48,9 @@ public class UserService {
 	public void registerNewUser(RegisterRequestDto request) throws IllegalStateException, DuplicateUsernameException {
 		usernameValidation(request.getUsername());
 		passwordValidation(request.getPassword());
+		emailValidation(request.getEmail());
 			
-		User newUser = new User();
-		newUser.setUsername(request.getUsername());
+		User newUser = userMapper.registerRequestDtoToUser(request);
 		newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 		
 		if(userRepository.existsByUsername(newUser.getUsername())) {
