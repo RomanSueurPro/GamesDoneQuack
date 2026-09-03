@@ -63,15 +63,6 @@ form = new FormGroup({
     this.hideNewPermissionField();
   }
 
-  @HostListener('document:blur', ['$event'])
-  onDocumentClick(event: any): void {
-
-    if(!this.checkUnsavedModificationsOnPermission()){
-      const selected: PermissionAllFields = event.options[0]?.value;
-      // this.openUnsavedDialog(selected)
-      console.log(selected);
-    }
-  }
 
   private blurEventActive: boolean = true;
   private dialogOptions = {width: '75rem', height: '15rem', hasBackdrop: true, disableClose: true};

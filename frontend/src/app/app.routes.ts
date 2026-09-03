@@ -4,6 +4,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginRouteComponent } from './header/session/login-route.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { adminGuard } from './guards/admin.guard';
+import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 
 export const routes: Routes = [
     
@@ -18,6 +19,7 @@ export const routes: Routes = [
         path: 'admin', 
         title: "admin", 
         component: AdminComponent,
-        canActivate: [adminGuard]
+        canActivate: [adminGuard],
+        canDeactivate: [unsavedChangesGuard]
     },
 ];
