@@ -5,12 +5,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quackinduckstries.gamesdonequack.Dtos.PageableDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
+import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
@@ -138,5 +144,22 @@ public class UserService {
 		if(!pattern.matcher(email).matches()) {
 			throw new InvalidEmailFormatException("You must enter a valid email address. Length must be below 64 characters.");
 		}
+	}
+	
+	public List<UserNoRelationsDto>fetchAllUsersNoRelations(){
+		return userRepository.findAll()
+				.stream()
+				.map((user)-> userMapper.userToUserNoRelationsDto(user))
+				.toList();
+	}
+	
+	public Page<UserNoRelationsDto> fetch10Users(PageableDto dto){
+		
+		Pageable pageable = PageRequest.of(
+				dto.getPageNumber(),
+				dto.getPageSize()
+		    );
+		
+		return userRepository.findAll(pageable).map(userMapper::userToUserNoRelationsDto);
 	}
 }

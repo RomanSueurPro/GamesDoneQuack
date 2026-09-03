@@ -6,6 +6,7 @@ import org.mapstruct.Mapping;
 import com.quackinduckstries.gamesdonequack.Dtos.LoggedInUserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRoleDto;
 import com.quackinduckstries.gamesdonequack.entities.User;
 
@@ -22,4 +23,6 @@ public interface UserMapper {
     LoggedInUserDto userToLoggedInUserDto(User user);
     
     User registerRequestDtoToUser(RegisterRequestDto dto);
+    
+    UserNoRelationsDto userToUserNoRelationsDto(User user);
 }

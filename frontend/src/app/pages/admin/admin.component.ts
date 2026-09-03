@@ -1,16 +1,24 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RoleListComponent } from './role-list/role-list.component';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { HeaderComponent } from '../../header/header.component';
 import { PermissionListComponent } from './permission-list/permission-list.component';
-import { MatDialog } from '@angular/material/dialog';
+import { UserListComponent } from './user-list/user-list.component';
 import { Observable, of } from 'rxjs';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [RoleListComponent, MatTabsModule, HeaderComponent, PermissionListComponent],
+  imports: [
+    RoleListComponent,
+    MatTabsModule,
+    HeaderComponent,
+    PermissionListComponent,
+    UserListComponent
+  ],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -103,4 +111,5 @@ export class AdminComponent {
 
     return dialogRef.afterClosed();
   }
+
 }

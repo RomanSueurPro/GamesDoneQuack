@@ -11,6 +11,8 @@ export const API_ENDPOINTS = {
         fetchAllRolesNoPermissionField: `${BASE}/${ADMIN_BASE}/fetchallrolesnopermissionfield`,
         fetchAllPermissions: `${BASE}/${ADMIN_BASE}/fetchallpermissions`,
         fetchAllPermissionsNoRoleField: `${BASE}/${ADMIN_BASE}/fetchallpermissionsnorolefield`,
+        fetchAllUsers: `${BASE}/${ADMIN_BASE}/fetchallusersnorelations`,
+        fetch10Users: `${BASE}/${ADMIN_BASE}/fetch10users`,
         updateRole: `${BASE}/${ADMIN_BASE}/updaterole`,
         createRole: `${BASE}/${ADMIN_BASE}/createrole`,
         deleteRole: `${BASE}/${ADMIN_BASE}/deleterole`,

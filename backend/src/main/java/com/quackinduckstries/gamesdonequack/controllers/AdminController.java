@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.quackinduckstries.gamesdonequack.Dtos.PageableDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionWithoutRoleDto;
 
@@ -23,6 +23,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoUserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
 import com.quackinduckstries.gamesdonequack.services.UserService;
@@ -155,11 +156,26 @@ public class AdminController {
 		return ResponseEntity.ok(roles);
 	}
 	
-	
 	@DeleteMapping("/deleterole")
 	public ResponseEntity<?> deleteRole(@RequestBody RoleCompleteDto roleToDelete){
 		
 		String roleName = adminRoleService.deleteRole(roleToDelete.getId());
 		return ResponseEntity.ok(Map.of("message", "Role " + roleName + " was deleted successfully"));
 	}
+	
+	@GetMapping("/fetchallusersnorelations")
+	public ResponseEntity<?> fetchAllUsersNoRelations(){
+		
+		 List<UserNoRelationsDto> users = userService.fetchAllUsersNoRelations();
+		
+		return ResponseEntity.ok(users);
+	}
+	
+	@PostMapping("/fetch10users")
+	public ResponseEntity<?> fetch10Users(@RequestBody PageableDto pageableDto){
+		
+		
+		 return ResponseEntity.ok(userService.fetch10Users(pageableDto));
+	}
+	
 }
