@@ -35,6 +35,9 @@ export class AdminComponent {
   @ViewChild(RoleListComponent)
   private roleList!: RoleListComponent;
 
+  @ViewChild(UserListComponent)
+  private userList!: UserListComponent;
+
   constructor(
     private confirmDialog: MatDialog
   ) { }
@@ -84,12 +87,30 @@ export class AdminComponent {
 
       return;
     }
+
+    if (this.userList?.hasUnsavedChanges()) {
+
+      this.userList.canLeavePage().subscribe(canLeave => {
+
+        if (canLeave) {
+          this.selectedTab = requestedTab;
+          this.previousTab = requestedTab;
+          this.tabTransitionAuthorized = true;
+        } else {
+          this.selectedTab = this.previousTab;
+          this.tabTransitionAuthorized = false;
+          this.weJustCanceled = true;
+        }
+      });
+
+      return;
+    }
     this.previousTab = requestedTab;
     this.selectedTab = requestedTab;
   }
 
   hasUnsavedChanges(): boolean {
-    return this.roleList.hasUnsavedChanges() || this.permissionList.hasUnsavedChanges();
+    return this.roleList.hasUnsavedChanges() || this.permissionList.hasUnsavedChanges() || this.userList.hasUnsavedChanges();
   }
 
   canLeavePage(): Observable<boolean> {

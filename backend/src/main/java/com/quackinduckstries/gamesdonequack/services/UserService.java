@@ -1,6 +1,8 @@
 package com.quackinduckstries.gamesdonequack.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -8,15 +10,16 @@ import java.util.regex.Pattern;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.Dtos.PageableDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
-import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserPageResponseDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
@@ -153,13 +156,31 @@ public class UserService {
 				.toList();
 	}
 	
-	public Page<UserNoRelationsDto> fetch10Users(PageableDto dto){
+	
+	public UserPageResponseDto fetchPaginatedUsers(PageableDto dto){
 		
 		Pageable pageable = PageRequest.of(
 				dto.getPageNumber(),
-				dto.getPageSize()
+				dto.getPageSize(),
+				Sort.by("username").ascending()
 		    );
 		
-		return userRepository.findAll(pageable).map(userMapper::userToUserNoRelationsDto);
+		Page<UserNoRelationsDto> page = userRepository.findAll(pageable).map(userMapper::userToUserNoRelationsDto);
+		
+		UserPageResponseDto userPageResponseDto = new UserPageResponseDto();
+		userPageResponseDto.setUsers(page.getContent());
+		userPageResponseDto.setPageNumber(page.getNumber());
+		userPageResponseDto.setPageSize(page.getSize());
+		userPageResponseDto.setTotalElements(page.getTotalElements());
+		userPageResponseDto.setTotalPages(page.getTotalPages());
+		
+		return userPageResponseDto;
+	}
+	
+	public int getPageForUser(String username, int pageSize) {
+
+	    long usersBefore = userRepository.countByUsernameLessThan(username);
+
+	    return (int) (usersBefore / pageSize);
 	}
 }

@@ -1,39 +1,104 @@
-<div class="research-input">
-    <label for="input-research">Search by username :</label>
-    <input type="text" id="input-research" [(ngModel)]="searchInput" [ngModelOptions]="{ standalone: true }"
-        (input)="testSearch()">
-</div>
+<div class="user-list-component">
+    <form [formGroup]="form">
+        <div class="update-container">
+            <div class="left-side">
+                <div class="research-input">
+                    <label for="input-research">Search by username :</label>
+                    <input type="text" id="input-research" [(ngModel)]="searchInput"
+                        [ngModelOptions]="{ standalone: true }" (input)="testSearch()">
+                </div>
 
-<button (click)="testload()">Test 10 users</button>
+                <div class="user-list">
+                    <table mat-table [dataSource]="this.arrayUsers" class="mat-shadow-2">
 
-<div class="user-list">
-    <table mat-table [dataSource]="this.arrayUsers" class="mat-shadow-2">
+                        <ng-container matColumnDef="username">
+                            <th mat-header-cell *matHeaderCellDef> Username </th>
+                            <td mat-cell *matCellDef="let user"> {{user.username}} </td>
+                        </ng-container>
 
-        <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> Id </th>
-            <td mat-cell *matCellDef="let user"> {{user.id}} </td>
-        </ng-container>
+                        <ng-container matColumnDef="role">
+                            <th mat-header-cell *matHeaderCellDef> Role </th>
+                            <td mat-cell *matCellDef="let user"> {{user.role.name}} </td>
+                        </ng-container>
 
-        <ng-container matColumnDef="username">
-            <th mat-header-cell *matHeaderCellDef> Username </th>
-            <td mat-cell *matCellDef="let user"> {{user.username}} </td>
-        </ng-container>
+                        <ng-container matColumnDef="deleteDate">
+                            <th mat-header-cell *matHeaderCellDef> Deletion date </th>
+                            <td mat-cell *matCellDef="let user"> {{this.deleteDateFormatter(user.deleteDate)}} </td>
+                        </ng-container>
 
-        <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef> Email </th>
-            <td mat-cell *matCellDef="let user"> {{user.email}} </td>
-        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onSelectionChange(row)"
+                            [class.selected-row]="selectedUser?.id === row.id">
+                        </tr>
 
-        <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef> Role </th>
-            <td mat-cell *matCellDef="let user"> {{user.role.name}} </td>
-        </ng-container>
+                    </table>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    <div class="pagination-container">
 
-    </table>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Go to page</mat-label>
 
-    <mat-paginator [pageSizeOptions]="[2, 3, 5]" showFirstLastButtons aria-label="Select page of users" (page)="onPageChange($event)">
-    </mat-paginator>
+                            <mat-select [value]="currentPageIndex + 1" #pageSelect
+                                (valueChange)="goToPage(pageSelect.value)">
+                                @for (page of pages; track page) {
+                                <mat-option [value]="page">
+                                    {{ page }}
+                                </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-paginator [pageSizeOptions]="[2, 3, 5]" [pageSize]="defaultPageSize" showFirstLastButtons
+                            aria-label="Select page" (page)="onPageChange($event)" [length]="totalUsers">
+                        </mat-paginator>
+
+                    </div>
+                </div>
+            </div>
+            <div id="user-update-form">
+                <label for="user-id">Id</label>
+                <input type="text" readonly formControlName="id" id="user-id">
+                <label for="username">Username</label>
+                <input type="text" formControlName="username" id="username">
+                <label for="email">Email</label>
+                <input type="text" formControlName="email" id="email">
+                <label for="role-select">Role</label>
+                <mat-select [value]="selectedRole" #roleSelect id="role-select" formControlName="role"
+                    [compareWith]="compareRoles">
+                    @for (role of arrayRoles; track role) {
+                    <mat-option [value]="role">
+                        {{ role.name }}
+                    </mat-option>
+                    }
+                </mat-select>
+                <div class="deletion-div">
+                    <div class="deletion-date">
+                        <label for="deleteDate">deletion Date</label>
+                        <input type="text" id="deleteDate" readonly #inputDate>
+                    </div>
+                    <div class="deletion-buttons">
+                        @if (form.value.deleteDate !== null) {
+                        <input type="button" value="Cancel deletion" (click)="cancelDeletion()" class="text-button">
+                        }@else {
+                        <input type="button"  (click)="setDeleteDate()" value="Delete in 7 days" class="text-button">
+                        }
+                    </div>
+
+
+                </div>
+                <div id="confirm-buttons">
+                    @if(form.valid){
+                    <input type="button" value="Save" (click)="completeProcedure()" class="text-button">
+                    }@else{
+                    <input type="button" value="Save" disabled class="text-button">
+                    }
+
+                    <input type="button" value="Cancel" (click)="cancelChanges()" class="text-button">
+
+
+                </div>
+            </div>
+
+        </div>
+    </form>
 </div>

@@ -22,14 +22,14 @@ import { SnackbarService } from '../../../services/snackbar.service';
 })
 export class PermissionListComponent {
 
-form = new FormGroup({
+  form = new FormGroup({
     id: new FormControl<number | null>(-1),
     name: new FormControl<string>('', [this.permissionNameValidator()]),
     roles: new FormControl<RoleWithoutPermissions[]>([]),
-    
+
   });
 
-  constructor(private http: HttpClient, private snackBarService: SnackbarService, private confirmDialog: MatDialog, private deleteDialog: MatDialog){
+  constructor(private http: HttpClient, private snackBarService: SnackbarService, private confirmDialog: MatDialog, private deleteDialog: MatDialog) {
     this.hideSingleSelectionIndicator = false;
     this.selected = false;
     this.arrayPermissions = [];
@@ -65,11 +65,11 @@ form = new FormGroup({
 
 
   private blurEventActive: boolean = true;
-  private dialogOptions = {width: '75rem', height: '15rem', hasBackdrop: true, disableClose: true};
+  private dialogOptions = { width: '75rem', height: '15rem', hasBackdrop: true, disableClose: true };
 
   public arrayPermissions: PermissionAllFields[];
   public arrayRoles: RoleWithoutPermissions[] = [];
-  
+
   public associatedRoles: RoleWithoutPermissions[] = [];
   public notAssociatedRoles: RoleWithoutPermissions[] = [];
 
@@ -77,7 +77,7 @@ form = new FormGroup({
   lastCreatedPermissionId: number = -1;
   clickedInside: boolean = false;
 
-  get isNewPermissionNameValid():boolean {
+  get isNewPermissionNameValid(): boolean {
     const name = this.newPermissionField.toUpperCase().replace(/\s/g, "");
     return name !== '';
   }
@@ -87,7 +87,7 @@ form = new FormGroup({
     return this.arrayPermissions.find(p => p.id === id) ?? null;
   }
 
-  hasUnsavedChanges(){
+  hasUnsavedChanges() {
     return this.form.dirty;
   }
 
@@ -110,18 +110,14 @@ form = new FormGroup({
 
     return dialogRef.afterClosed().pipe(
       tap(result => {
-
         if (result === true) {
 
           this.arrayPermissions =
             this.arrayPermissions.filter(p => p.id !== -1);
-
           if (selected) {
             this.updateFullForm(selected);
           }
-
           this.form.markAsPristine();
-
         } else {
 
           if (this.form.value.id) {
@@ -129,23 +125,21 @@ form = new FormGroup({
               .find(option => option.value.id === this.form.value.id)
               ?.toggle();
           }
-
         }
-
       }),
       map(result => result === true)
     );
   }
 
-  ngOnInit(){
+  ngOnInit() {
     this.loadDataObservable().subscribe({
-      error: (error) => console.log(error), 
+      error: (error) => console.log(error),
     });
-  } 
+  }
 
-  loadDataObservable(){
+  loadDataObservable() {
     const previousId = this.form.get('id')?.value;
-    
+
     return forkJoin({
       roles: this.fetchRolesObservable(),
       permissions: this.fetchPermissionsObservable(),
@@ -160,7 +154,7 @@ form = new FormGroup({
         let permission = this.arrayPermissions.find(p => p.id === previousId);
 
         //we did create an element before
-        if(!permission && this.lastCreatedPermissionId !== -1){
+        if (!permission && this.lastCreatedPermissionId !== -1) {
           permission = this.arrayPermissions.find(p => p.id === this.lastCreatedPermissionId);
         }
 
@@ -177,20 +171,20 @@ form = new FormGroup({
     );
   }
 
-  fetchRolesObservable(){
-    return this.http.get<RoleWithoutPermissions[]>(API_ENDPOINTS.admin.fetchAllRolesNoPermissionField, {withCredentials: true});
+  fetchRolesObservable() {
+    return this.http.get<RoleWithoutPermissions[]>(API_ENDPOINTS.admin.fetchAllRolesNoPermissionField, { withCredentials: true });
   }
 
-  fetchPermissionsObservable(){
-    return this.http.get<PermissionAllFields[]>(API_ENDPOINTS.admin.fetchAllPermissions, {withCredentials: true});
+  fetchPermissionsObservable() {
+    return this.http.get<PermissionAllFields[]>(API_ENDPOINTS.admin.fetchAllPermissions, { withCredentials: true });
   }
 
   //elements of the array must have a name property
-  sortAlphabetically(array: Array<any>){
+  sortAlphabetically(array: Array<any>) {
     array.sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  insertRole(role: RoleWithoutPermissions, roleList: RoleWithoutPermissions[]){
+  insertRole(role: RoleWithoutPermissions, roleList: RoleWithoutPermissions[]) {
     let low = 0;
     let high = roleList.length;
 
@@ -207,23 +201,23 @@ form = new FormGroup({
     roleList.splice(low, 0, role);
   }
 
-  updateRolesAssociations(permission: PermissionAllFields){
-  
+  updateRolesAssociations(permission: PermissionAllFields) {
+
     this.arrayRoles = this.arrayRoles.filter((r) => r.id !== -1);
-    if(permission === null){
+    if (permission === null) {
       return;
     }
     this.associatedRoles = [];
     this.notAssociatedRoles = [];
 
     const ids = [];
-    for(let permissionRole of permission.roles){
+    for (let permissionRole of permission.roles) {
       ids.push(permissionRole.id);
     }
-    for(let role of this.arrayRoles){
-      if(ids.includes(role.id)){
+    for (let role of this.arrayRoles) {
+      if (ids.includes(role.id)) {
         this.insertRole(role, this.associatedRoles);
-      }else{       
+      } else {
         this.insertRole(role, this.notAssociatedRoles);
       }
     }
@@ -231,29 +225,29 @@ form = new FormGroup({
     this.sortAlphabetically(this.associatedRoles);
     this.sortAlphabetically(this.notAssociatedRoles);
     this.form.patchValue({
-          roles: this.associatedRoles
-        });
+      roles: this.associatedRoles
+    });
   }
 
   onSelectionChange(event: any) {
     const newSelection: PermissionAllFields = event.options[0]?.value;
-    if(!this.checkUnsavedModificationsOnPermission()){
+    if (!this.checkUnsavedModificationsOnPermission()) {
       this.updateFullForm(newSelection);
-    }else{
+    } else {
       this.openUnsavedDialog(newSelection);
-    } 
+    }
   }
 
-  updateFullForm(selected: PermissionAllFields){
+  updateFullForm(selected: PermissionAllFields) {
     this.updateRolesAssociations(selected);
-      this.form.patchValue({
-          id: selected.id,
-          name: selected.name,
-          roles: selected.roles,
-      });
+    this.form.patchValue({
+      id: selected.id,
+      name: selected.name,
+      roles: selected.roles,
+    });
   }
 
-  openUnsavedDialog(selected: PermissionAllFields):void {
+  openUnsavedDialog(selected: PermissionAllFields): void {
     const dialogRef = this.confirmDialog.open(
       ConfirmationDialogComponent,
       {
@@ -273,26 +267,26 @@ form = new FormGroup({
         this.form.markAsPristine();
       }
       else {
-        if(this.form.value.id){
+        if (this.form.value.id) {
           this.permissionList.options.find(option => option.value.id === this.form.value.id)?.toggle();
         }
       }
     });
-    
+
   }
 
-  toggleRole(roleName: string){
+  toggleRole(roleName: string) {
     const roleObject: RoleWithoutPermissions = this.arrayRoles.filter((role) => role.name === roleName)[0];
-    if(this.associatedRoles.includes(roleObject)){
+    if (this.associatedRoles.includes(roleObject)) {
       const index = this.associatedRoles.indexOf(roleObject, 0);
-      if(index > -1){
+      if (index > -1) {
         this.associatedRoles.splice(index, 1);
         this.insertRole(roleObject, this.notAssociatedRoles);
       }
     }
-    else{
+    else {
       const index = this.notAssociatedRoles.indexOf(roleObject, 0);
-      if(index > -1){
+      if (index > -1) {
         this.notAssociatedRoles.splice(index, 1);
         this.insertRole(roleObject, this.associatedRoles);
       }
@@ -303,17 +297,17 @@ form = new FormGroup({
       roles: this.associatedRoles,
     });
     this.form.markAsDirty();
-    
+
   }
 
-  cancelChanges():void{
+  cancelChanges(): void {
     let permission = undefined;
-    if(this.form.value.id){
+    if (this.form.value.id) {
       permission = this.arrayPermissions.find((p) => p.id === this.form.value.id);
     }
-      
-    if(permission){
-      if(permission.id === -1){
+
+    if (permission) {
+      if (permission.id === -1) {
         this.arrayPermissions = this.arrayPermissions.filter((p) => p.id !== -1);
         permission = this.arrayPermissions[0];
       }
@@ -323,17 +317,17 @@ form = new FormGroup({
     }
   }
 
-  saveChangesObservable(){
+  saveChangesObservable() {
     //validation
-    if(this.form.value.id !== null && this.form.value.id !== undefined && this.form.value.id >= 0){
-      return this.http.patch(API_ENDPOINTS.admin.updatePermission, this.form.value, 
-      {withCredentials: true});
+    if (this.form.value.id !== null && this.form.value.id !== undefined && this.form.value.id >= 0) {
+      return this.http.patch(API_ENDPOINTS.admin.updatePermission, this.form.value,
+        { withCredentials: true });
     }
-    return this.http.post(API_ENDPOINTS.admin.createPermission, this.form.value, 
-      {withCredentials: true});
+    return this.http.post(API_ENDPOINTS.admin.createPermission, this.form.value,
+      { withCredentials: true });
   }
 
-  completeProcedure(){
+  completeProcedure() {
     let savedPermission: any;
     of(null).pipe(
       concatMap(() => this.saveChangesObservable()),
@@ -354,15 +348,15 @@ form = new FormGroup({
     })
   }
 
-  checkUnsavedModificationsOnPermission(): boolean{
-    if(this.form.dirty){
+  checkUnsavedModificationsOnPermission(): boolean {
+    if (this.form.dirty) {
       return true;
     }
     return false;
   }
 
-  showNewPermissionField(){
-    if(this.selectedPermission !==  null && this.form.dirty){
+  showNewPermissionField() {
+    if (this.selectedPermission !== null && this.form.dirty) {
       this.openUnsavedDialogForCreation(this.selectedPermission);
     }
 
@@ -372,21 +366,21 @@ form = new FormGroup({
     this.newPermissionDiv.nativeElement.children[0].focus();
   }
 
-  hideNewPermissionField(){
+  hideNewPermissionField() {
     this.newPermissionDiv.nativeElement.style.display = 'none';
     this.newPermissionButtonDiv.nativeElement.style.display = 'flex';
     this.newPermissionField = "";
   }
 
-  makeNewPermission(){
-    
-    let roleAdmin: RoleWithoutPermissions|undefined = this.arrayRoles.find((r) => r.adminRole);
+  makeNewPermission() {
+
+    let roleAdmin: RoleWithoutPermissions | undefined = this.arrayRoles.find((r) => r.adminRole);
     let permission: PermissionAllFields = {
       id: -1,
       name: this.newPermissionField,
       roles: [],
     };
-    if(roleAdmin !== undefined){
+    if (roleAdmin !== undefined) {
       permission.roles.push(roleAdmin);
     }
     this.arrayPermissions.push(permission);
@@ -396,11 +390,11 @@ form = new FormGroup({
     this.form.markAsDirty();
   }
 
-  deletePermission():void{
+  deletePermission(): void {
     this.openDeleteDialog();
   }
-  
-  openDeleteDialog(){
+
+  openDeleteDialog() {
     const dialogRef = this.deleteDialog.open(
       DeleteDialogComponent,
       {
@@ -409,10 +403,10 @@ form = new FormGroup({
         hasBackdrop: this.dialogOptions.hasBackdrop,
         disableClose: this.dialogOptions.disableClose,
         panelClass: ['confirmation-dialog', 'dialog'],
-        data: 
-          {
-            name: this.form.value.name,
-          }
+        data:
+        {
+          name: this.form.value.name,
+        }
       }
     );
 
@@ -423,10 +417,10 @@ form = new FormGroup({
           withCredentials: true,
           body: this.form.value
         }).subscribe({
-          next: (response:any) => {
+          next: (response: any) => {
             this.arrayPermissions = this.arrayPermissions.filter((p) => p.id !== this.form.value.id);
             this.loadDataObservable().subscribe({
-              error: (error) => console.log(error),         
+              error: (error) => console.log(error),
             });
             this.snackBarService.showSuccessResponseSnackBar(response);
             this.form.markAsPristine();
@@ -449,7 +443,7 @@ form = new FormGroup({
       const isValid = nameRegex.test(value);
 
       const isInvalid =
-        value === '' 
+        value === ''
         || value === '_PERMISSION'
         || !isValid;
 
@@ -472,7 +466,7 @@ form = new FormGroup({
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        if(permission.id === -1){
+        if (permission.id === -1) {
           permission = this.arrayPermissions[0] ?? null;
           this.updateFullForm(permission);
         }
@@ -481,12 +475,12 @@ form = new FormGroup({
         this.updateRolesAssociations(permission);
         this.form.markAsPristine();
         this.blurEventActive = true;
-      }else{
-        if(this.form.value.id){
+      } else {
+        if (this.form.value.id) {
           this.hideNewPermissionField();
         }
       }
     });
   }
-  
+
 }

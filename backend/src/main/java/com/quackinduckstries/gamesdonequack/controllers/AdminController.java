@@ -22,10 +22,12 @@ import com.quackinduckstries.gamesdonequack.Dtos.PermissionWithoutRoleDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoUserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UpdateUserRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
+import com.quackinduckstries.gamesdonequack.services.AdminUserService;
 import com.quackinduckstries.gamesdonequack.services.UserService;
 
 
@@ -38,13 +40,14 @@ public class AdminController {
 	private final AdminRoleService adminRoleService;
 	private final UserService userService;
 	private final AdminPermissionService adminPermissionService;
-	
+	private final AdminUserService adminUserService;
 
 	
-	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService) {
+	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService, AdminUserService adminUserService) {
 		this.userService = userService;
 		this.adminRoleService = adminRoleService;
 		this.adminPermissionService = adminPermissionService;
+		this.adminUserService = adminUserService;
 	}
 	
 	
@@ -102,9 +105,9 @@ public class AdminController {
 	@PatchMapping("/updatepermission")
 	public ResponseEntity<?> updatePermission(@RequestBody PermissionDto permissionToUpdate) {
 		
-		PermissionDto permission = adminPermissionService.updatePermission(permissionToUpdate);
+		adminPermissionService.updatePermission(permissionToUpdate);
 		
-		return ResponseEntity.ok(Map.of("message", "Update of permission " + permission.getName() + " went fine"));
+		return ResponseEntity.ok(Map.of("message", "Update of permission " + permissionToUpdate.getName() + " went fine"));
 	}
 	
 	
@@ -171,11 +174,19 @@ public class AdminController {
 		return ResponseEntity.ok(users);
 	}
 	
-	@PostMapping("/fetch10users")
-	public ResponseEntity<?> fetch10Users(@RequestBody PageableDto pageableDto){
+	@PostMapping("/fetchpaginatedusers")
+	public ResponseEntity<?> fetchPaginatedUsers(@RequestBody PageableDto pageableDto){
 		
+		 return ResponseEntity.ok(userService.fetchPaginatedUsers(pageableDto));
+	}
+	
+	@PatchMapping("/updateuser")
+	public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequestDto requestDto) {
+
+		adminUserService.updateUser(requestDto.getUser());
+		int pageNumber = userService.getPageForUser(requestDto.getUser().getUsername(), requestDto.getPageNumber());
 		
-		 return ResponseEntity.ok(userService.fetch10Users(pageableDto));
+		return ResponseEntity.ok(Map.of("message", "Update of user " + requestDto.getUser().getUsername() + " went fine", "page", pageNumber));
 	}
 	
 }

@@ -1,6 +1,6 @@
 <div class="permission-list-component">
     <form [formGroup]="form">
-        <div id="update-container">
+        <div class="update-container">
             <div>
                 <mat-selection-list #permissionList name="permissions" [multiple]="false" class="permission-list" [hideSingleSelectionIndicator]="true" (selectionChange)="onSelectionChange($event)" id="admin-permission-list">
                     @for (permission of arrayPermissions; track permission) {

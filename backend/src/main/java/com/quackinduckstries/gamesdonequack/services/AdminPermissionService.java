@@ -127,7 +127,7 @@ public class AdminPermissionService {
 
 
 	@Transactional
-	public PermissionDto updatePermission(PermissionDto permissionToUpdate) {
+	public void updatePermission(PermissionDto permissionToUpdate) {
 		
 		String name = permissionNameValidator(permissionToUpdate.getName());
 		permissionToUpdate.setName(name);
@@ -162,7 +162,6 @@ public class AdminPermissionService {
 			);
 		roleConfig.setDefaultPermissionNames(newDefaultRolePermissionList);
 		addPermissionToAdminRole(toUpdate);
-		return permissionMapper.permissionToPermissionDto(toUpdate);
 	}
 	
 	public List<PermissionDto> fetchAllPermissions() {

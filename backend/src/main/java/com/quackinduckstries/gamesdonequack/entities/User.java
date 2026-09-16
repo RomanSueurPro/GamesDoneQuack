@@ -1,5 +1,8 @@
 package com.quackinduckstries.gamesdonequack.entities;
 
+
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -33,8 +36,8 @@ public class User {
     	name = "id_role", nullable = false, referencedColumnName = "id")
     private Role role;
     
-    @Column(nullable = false)
-    private boolean toDelete = false;
+    @Column(nullable = true)
+    private Date deleteDate = null;
     
     @Column(nullable = false, unique = true)
     private String email;

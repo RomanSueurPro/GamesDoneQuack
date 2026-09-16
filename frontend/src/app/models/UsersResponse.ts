@@ -2,5 +2,7 @@ import { UserNoRelations } from "./UserNoRelations";
 
 
 export interface UsersResponse {
-  content: UserNoRelations[];
+  users: UserNoRelations[];
+  totalElements: number;
+  totalPages: number;
 }

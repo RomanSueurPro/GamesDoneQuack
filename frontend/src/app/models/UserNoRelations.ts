@@ -5,4 +5,5 @@ export interface UserNoRelations{
     username: string;
     email: string;
     role: RoleWithoutPermissions;
+    deleteDate: Date;
 }

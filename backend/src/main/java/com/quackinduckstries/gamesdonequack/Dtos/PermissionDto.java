@@ -8,6 +8,7 @@ import lombok.Data;
 public class PermissionDto {
 
 	private long id;
+	
 	private String name;
 	
 	private List<RoleNoRelationsDto> roles;

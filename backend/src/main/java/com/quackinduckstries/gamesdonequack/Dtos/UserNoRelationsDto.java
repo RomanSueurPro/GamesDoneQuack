@@ -1,23 +1,19 @@
 package com.quackinduckstries.gamesdonequack.Dtos;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.util.Date;
 
-@RequiredArgsConstructor
-@NoArgsConstructor
+import lombok.Data;
+
 @Data
 public class UserNoRelationsDto {
 
 	private Long id;
 	
-	@NonNull
 	private String username;
 	
-	@NonNull
 	private String email;
 	
 	private RoleNoRelationsDto role;
 	
+	private Date deleteDate;
 }

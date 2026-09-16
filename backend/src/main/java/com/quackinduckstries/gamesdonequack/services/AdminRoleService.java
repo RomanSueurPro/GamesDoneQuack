@@ -106,7 +106,7 @@ public class AdminRoleService {
 	}
 
 	@Transactional
-	public RoleCompleteDto updateRole(RoleNoUserDto roleToUpdate) {                         
+	public void updateRole(RoleNoUserDto roleToUpdate) {                         
 				
 		Role role = roleRepository.findById(roleToUpdate.getId()).orElseThrow(() -> new IllegalArgumentException("Could not find Role to update."));
 		
@@ -122,7 +122,7 @@ public class AdminRoleService {
 			//refresh current admin session and log off all other admins
 			InvalidateAllSessionsWithRole(role.getName());
 			role.setName(roleToUpdate.getName());
-			return roleMapper.roleToRoleCompleteDto(role);
+			return;
 		}
 		
 		Optional<Role> defaultRole = role.isDefaultRole() ? Optional.ofNullable(role) : getDefaultRole();
@@ -164,7 +164,6 @@ public class AdminRoleService {
 		}
 		
 		role.setName(roleToUpdate.getName());
-		return roleMapper.roleToRoleCompleteDto(role);
 	}
 	
 	

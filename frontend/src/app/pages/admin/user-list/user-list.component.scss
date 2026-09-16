@@ -1,15 +1,58 @@
-.user-list{
-    max-width: 50%;
-    margin: 5%;
+.user-list-component {
+    margin: 1%;
 }
 
-.research-input{
-    margin-left: 5%;
-    margin-top: 5%;
+.research-input {
     font-size: 3rem;
+    line-height: 3rem;
 
-    input{
+    input {
         line-height: 3rem;
         font-size: 3rem;
     }
+}
+
+.pagination-container {
+    display: flex;
+    background-color: white;
+}
+
+.selected-row {
+    background-color: red !important;
+}
+
+#role-select {
+    background-color: white;
+}
+
+.update-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 1%;
+}
+
+#user-update-form {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.75rem;
+
+    input {
+        height: 3.5rem;
+        height: 3.5rem;
+        font-size: 1.75rem;
+    }
+}
+
+.left-side {
+    max-width: 50%;
+}
+
+#role-select {
+    line-height: 3rem;
+    font-size: 1.75rem;
+}
+
+.deletion-div{
+    display: flex;
+    flex-direction: column;
 }
