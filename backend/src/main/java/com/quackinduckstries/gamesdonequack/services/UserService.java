@@ -3,6 +3,7 @@ package com.quackinduckstries.gamesdonequack.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -182,5 +183,11 @@ public class UserService {
 	    long usersBefore = userRepository.countByUsernameLessThan(username);
 
 	    return (int) (usersBefore / pageSize);
+	}
+	
+	@Transactional
+	public void ScheduledUserDelete() {
+		List<User> usersToDelete = userRepository.findByDeleteDateLessThanEqual(new Date());
+		usersToDelete.forEach(u -> userRepository.delete(u));
 	}
 }

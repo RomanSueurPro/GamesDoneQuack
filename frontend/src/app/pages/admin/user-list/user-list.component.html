@@ -38,11 +38,11 @@
                         <mat-form-field appearance="outline">
                             <mat-label>Go to page</mat-label>
 
-                            <mat-select [value]="currentPageIndex + 1" #pageSelect
-                                (valueChange)="goToPage(pageSelect.value)">
+                            <mat-select [value]="currentPageIndex"
+                                (valueChange)="selectOtherPage($event)">
                                 @for (page of pages; track page) {
                                 <mat-option [value]="page">
-                                    {{ page }}
+                                    {{ page + 1 }}
                                 </mat-option>
                                 }
                             </mat-select>
@@ -94,8 +94,6 @@
                     }
 
                     <input type="button" value="Cancel" (click)="cancelChanges()" class="text-button">
-
-
                 </div>
             </div>
 

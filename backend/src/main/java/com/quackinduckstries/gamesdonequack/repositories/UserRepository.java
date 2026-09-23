@@ -1,5 +1,7 @@
 package com.quackinduckstries.gamesdonequack.repositories;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,5 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	Optional<User> findByEmail(String email);
 	
 	long countByUsernameLessThan(String username);
-
+	
+	List<User> findByDeleteDateLessThanEqual(Date date);
 }

@@ -59,6 +59,7 @@ export class UserListComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('inputDate') inputDate!: ElementRef;
+  @ViewChild('pageSelect') pageSelect!: ElementRef;
 
   deleteDateFormatter(deleteDate: Date | null): String {
     let dateString: String = '';
@@ -97,12 +98,6 @@ export class UserListComponent {
     private http: HttpClient, private confirmDialog: MatDialog, private datepipe: DatePipe,
     private snackBarService: SnackbarService
   ) { }
-
-  // get selectedUser(){
-
-  // }
-
-
 
   @Input()
   set active(value: boolean) {
@@ -144,23 +139,11 @@ export class UserListComponent {
   }
 
   onPageChange(event: PageEvent) {
-    this.currentPageIndex = event.pageIndex;
-    this.currentPageSize = event.pageSize;
-
-    this.fetchUsersObservable(
-      event.pageIndex,
-      event.pageSize
-    ).subscribe({
-      next: (response) => {
-        this.arrayUsers = response.users;
-        this.totalUsers = response.totalElements;
-        this.totalPages = response.totalPages;
-        this.updatePages(response.totalPages);
-      },
-      error: error => {
-        console.error(error);
-      }
-    });
+    if (!this.checkUnsavedModificationsOnUser()) {
+      this.goToPage(event.pageIndex);
+    } else {
+      this.openPageChangeDialog(event.pageIndex, this.currentPageIndex);
+    }
 
   }
 
@@ -180,38 +163,47 @@ export class UserListComponent {
 
   requestedPage: number = 1;
 
-  goToPage(page: number) {
-    const pageIndex = page - 1;
 
-    this.currentPageIndex = pageIndex;
+  selectOtherPage(pageNumber: any){
+    if (!this.checkUnsavedModificationsOnUser()) {
+      this.goToPage(pageNumber);
+    } else {
+      this.openPageChangeDialog(pageNumber, this.currentPageIndex);
+    }
+  }
+
+
+  goToPage(page: number) {
+    this.currentPageIndex = page;
 
     this.fetchUsersObservable(
-      pageIndex,
+      page,
       this.currentPageSize
     ).subscribe({
       next: response => {
         this.arrayUsers = response.users;
         this.totalUsers = response.totalElements;
         this.totalPages = response.totalPages;
+        if (this.arrayUsers.length > 0) {
+          this.selectUser(this.arrayUsers[0]);
+          this.updateFullForm(this.arrayUsers[0]);
+        }
       },
       error: error => console.error(error)
     });
-    this.paginator.pageIndex = pageIndex;
+    this.paginator.pageIndex = page;
   }
 
   updatePages(n: number) {
     this.pages = [];
-    for (let i = 1; i <= n; i++) {
+    for (let i = 0; i < n; i++) {
       this.pages.push(i);
     }
   }
 
-  test(row: UserNoRelations) {
-    this.selectedUser = row;
-  }
 
   onSelectionChange(row: UserNoRelations) {
-    if (!this.checkUnsavedModificationsOnPermission()) {
+    if (!this.checkUnsavedModificationsOnUser()) {
       this.selectedUser = row;
       this.updateFullForm(row);
     } else {
@@ -220,7 +212,7 @@ export class UserListComponent {
 
   }
 
-  checkUnsavedModificationsOnPermission(): boolean {
+  checkUnsavedModificationsOnUser(): boolean {
     if (this.form.dirty) {
       return true;
     }
@@ -298,10 +290,6 @@ export class UserListComponent {
     );
   }
 
-  cancelChanges() {
-    //Todo
-  }
-
   setDeleteDate() {
     let deletionDate: Date = new Date(Date.now());
     deletionDate.setDate(deletionDate.getDate() + 7);
@@ -340,7 +328,47 @@ export class UserListComponent {
   }
 
   saveChangesObservable(): Observable<any> {
-    return this.http.patch(API_ENDPOINTS.admin.updateUser, {"user": this.form.value, "pageNumber": 3}, { withCredentials: true });
+    return this.http.patch(API_ENDPOINTS.admin.updateUser, { "user": this.form.value, "pageNumber": 3 }, { withCredentials: true });
   }
+
+  cancelChanges(): void {
+    let user = undefined;
+    if (this.form.value.id) {
+      user = this.arrayUsers.find((u) => u.id === this.form.value.id);
+    }
+
+    if (user) {
+      this.updateFullForm(user);
+      this.form.markAsPristine();
+    }
+  }
+
+  openPageChangeDialog(futurePageIndex: number, previousIndex: number): void {
+    const dialogRef = this.confirmDialog.open(
+      ConfirmationDialogComponent,
+      {
+        width: this.dialogOptions.width,
+        height: this.dialogOptions.height,
+        hasBackdrop: this.dialogOptions.hasBackdrop,
+        disableClose: this.dialogOptions.disableClose,
+        panelClass: ['confirmation-dialog', 'dialog'],
+      }
+    );
+
+    //this is required for the select page to work properly. Otherwise it will fail because at this point currentPageIndex is not updated to the select value. Therefore the code in the afterClosed will not make any change to the value from Angular's point of view and it will not update it back.
+    this.currentPageIndex = futurePageIndex;
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        //user confirms he wants to leave
+        this.goToPage(futurePageIndex);
+        this.form.markAsPristine();
+      }
+      if (result === false){ 
+        this.paginator.pageIndex = previousIndex;
+        this.currentPageIndex = previousIndex;
+      }
+    });
+  }
+
 
 }
