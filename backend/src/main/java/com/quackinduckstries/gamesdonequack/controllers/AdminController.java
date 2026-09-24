@@ -22,6 +22,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.PermissionWithoutRoleDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoUserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.SearchUserAdminInputDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UpdateUserRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
@@ -187,6 +188,12 @@ public class AdminController {
 		int pageNumber = userService.getPageForUser(requestDto.getUser().getUsername(), requestDto.getPageNumber());
 		
 		return ResponseEntity.ok(Map.of("message", "Update of user " + requestDto.getUser().getUsername() + " went fine", "page", pageNumber));
+	}
+	
+	@PostMapping("/searchusersbyusername")
+	public ResponseEntity<?> searchUsersByUsername(@RequestBody SearchUserAdminInputDto searchInput){
+		
+		 return ResponseEntity.ok(adminUserService.searchUsersByUsername(searchInput.getInput(), searchInput.getPageable()));
 	}
 	
 }

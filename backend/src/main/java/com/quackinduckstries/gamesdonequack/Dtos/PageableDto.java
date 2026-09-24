@@ -8,6 +8,4 @@ public class PageableDto {
 	private int pageNumber;
 	
 	private int pageSize;
-	
-	private int offset;
 }

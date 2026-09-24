@@ -5,7 +5,7 @@
                 <div class="research-input">
                     <label for="input-research">Search by username :</label>
                     <input type="text" id="input-research" [(ngModel)]="searchInput"
-                        [ngModelOptions]="{ standalone: true }" (input)="testSearch()">
+                        [ngModelOptions]="{ standalone: true }" (input)="userSearch(defaultPageNumber)">
                 </div>
 
                 <div class="user-list">
@@ -48,7 +48,7 @@
                             </mat-select>
                         </mat-form-field>
 
-                        <mat-paginator [pageSizeOptions]="[2, 3, 5]" [pageSize]="defaultPageSize" showFirstLastButtons
+                        <mat-paginator [pageSizeOptions]="[2, 3, 5]" [pageSize]="currentPageSize" showFirstLastButtons
                             aria-label="Select page" (page)="onPageChange($event)" [length]="totalUsers">
                         </mat-paginator>
 

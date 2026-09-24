@@ -134,13 +134,43 @@ export class UserListComponent {
   }
 
   //useful for Search by Username for future selves <3
-  testSearch() {
-    console.log(this.searchInput);
+  userSearch(pagenumber: number) {
+    this.searchUsersByUsernameObservable(pagenumber, this.currentPageSize).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.arrayUsers = response.users;
+        this.totalUsers = response.totalElements;
+        this.totalPages = response.totalPages;
+        this.updatePages(response.totalPages);
+        if (this.arrayUsers.length > 0) {
+          this.selectUser(this.arrayUsers[0]);
+          this.updateFullForm(this.arrayUsers[0]);
+        }
+      },
+    });
+
   }
+
+  searchUsersByUsernameObservable(pageNumber: number, pageSize: number) {
+    return this.http.post<UsersResponse>(
+      API_ENDPOINTS.admin.searchUserAdmin,
+      {
+        input: this.searchInput,
+        pageable: {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+        }
+      },
+      {
+        withCredentials: true
+      }
+    );
+  }
+
 
   onPageChange(event: PageEvent) {
     if (!this.checkUnsavedModificationsOnUser()) {
-      this.goToPage(event.pageIndex);
+      this.goToPage(event.pageIndex, event.pageSize);
     } else {
       this.openPageChangeDialog(event.pageIndex, this.currentPageIndex);
     }
@@ -160,37 +190,39 @@ export class UserListComponent {
     );
   }
 
-
-  requestedPage: number = 1;
-
-
-  selectOtherPage(pageNumber: any){
+  selectOtherPage(pageNumber: any) {
     if (!this.checkUnsavedModificationsOnUser()) {
-      this.goToPage(pageNumber);
+      this.goToPage(pageNumber, this.currentPageSize);
     } else {
       this.openPageChangeDialog(pageNumber, this.currentPageIndex);
     }
   }
 
 
-  goToPage(page: number) {
+  goToPage(page: number, pageSize: number) {
     this.currentPageIndex = page;
+    this.currentPageSize = pageSize;
 
-    this.fetchUsersObservable(
-      page,
-      this.currentPageSize
-    ).subscribe({
-      next: response => {
-        this.arrayUsers = response.users;
-        this.totalUsers = response.totalElements;
-        this.totalPages = response.totalPages;
-        if (this.arrayUsers.length > 0) {
-          this.selectUser(this.arrayUsers[0]);
-          this.updateFullForm(this.arrayUsers[0]);
-        }
-      },
-      error: error => console.error(error)
-    });
+    if (this.searchInput === '') {
+      this.fetchUsersObservable(
+        page,
+        this.currentPageSize
+      ).subscribe({
+        next: response => {
+          this.arrayUsers = response.users;
+          this.totalUsers = response.totalElements;
+          this.totalPages = response.totalPages;
+          if (this.arrayUsers.length > 0) {
+            this.selectUser(this.arrayUsers[0]);
+            this.updateFullForm(this.arrayUsers[0]);
+          }
+        },
+        error: error => console.error(error)
+      });
+    } else {
+      this.userSearch(page);
+    }
+
     this.paginator.pageIndex = page;
   }
 
@@ -360,15 +392,14 @@ export class UserListComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
         //user confirms he wants to leave
-        this.goToPage(futurePageIndex);
+        this.goToPage(futurePageIndex, this.currentPageSize);
         this.form.markAsPristine();
       }
-      if (result === false){ 
+      if (result === false) {
         this.paginator.pageIndex = previousIndex;
         this.currentPageIndex = previousIndex;
       }
     });
   }
-
 
 }

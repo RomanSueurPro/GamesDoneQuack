@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
         createPermission: `${BASE}/${ADMIN_BASE}/createpermission`,
         deletePermission: `${BASE}/${ADMIN_BASE}/deletepermission`,
         updateUser: `${BASE}/${ADMIN_BASE}/updateuser`,
+        searchUserAdmin: `${BASE}/${ADMIN_BASE}/searchusersbyusername`,
     },
 
     homePage: {
