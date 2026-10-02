@@ -1,11 +1,11 @@
 <div class="main">
-    <app-header/>
+    <app-header />
     <main>
         <div class="dev-misc">
             <h1>Dev & tests</h1>
             <h2>Bonjour à tous. Voici le message qui nous est parvenu : </h2>
             <p>{{ response }}</p>
-            
+
             <hr>
 
             <button (click)="fetchKaamelottData()">Kaamelott quote</button>
@@ -13,27 +13,32 @@
 
             <button (click)="callRoleNameServiceTest()">test Admin Role Name</button>
             <hr>
-            
+
             <p *ngIf="kaamelottData">{{kaamelottData}}</p>
             @if(adminRoleName !== undefined && adminRoleName !== null && adminRoleName !== ''){
-                <p>{{adminRoleName}}</p>
+            <p>{{adminRoleName}}</p>
             }
         </div>
 
         <div class="nav-scaffold">
             <h1>Navigation scaffold</h1>
+            
             @if(this.authState.isAdmin()){
-                <span >Admin page : </span>
-                <button (click)="goAdminPage()">Admin</button>
-                <br><br>
+            <span>Admin page : </span>
+            <button (click)="goAdminPage()">Admin</button>
+            <br><br>
             }
 
             @if(this.authState.isLoggedIn()){
-                <span>Go to profile page : </span>
-                <button (click)="goProfilePage()">Profile</button>
-                <br><br>
+            <span>Go to profile page : </span>
+            <button (click)="goProfilePage()">Profile</button>
+            <br><br>
             }
+            @if(this.authState.isLoggedIn()){
+            <p>banned : {{this.authState.user()?.banned}}</p>
             
+            }
+
         </div>
     </main>
 </div>

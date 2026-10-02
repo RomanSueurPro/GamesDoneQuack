@@ -38,8 +38,7 @@
                         <mat-form-field appearance="outline">
                             <mat-label>Go to page</mat-label>
 
-                            <mat-select [value]="currentPageIndex"
-                                (valueChange)="selectOtherPage($event)">
+                            <mat-select [value]="currentPageIndex" (valueChange)="selectOtherPage($event)">
                                 @for (page of pages; track page) {
                                 <mat-option [value]="page">
                                     {{ page + 1 }}
@@ -48,8 +47,9 @@
                             </mat-select>
                         </mat-form-field>
 
-                        <mat-paginator [pageSizeOptions]="[2, 3, 5]" [pageSize]="currentPageSize" showFirstLastButtons
-                            aria-label="Select page" (page)="onPageChange($event)" [length]="totalUsers">
+                        <mat-paginator [pageSizeOptions]="[10, 20, 50]" [pageSize]="currentPageSize"
+                            showFirstLastButtons aria-label="Select page" (page)="onPageChange($event)"
+                            [length]="totalUsers">
                         </mat-paginator>
 
                     </div>
@@ -80,10 +80,26 @@
                         @if (form.value.deleteDate !== null) {
                         <input type="button" value="Cancel deletion" (click)="cancelDeletion()" class="text-button">
                         }@else {
-                        <input type="button"  (click)="setDeleteDate()" value="Delete in 7 days" class="text-button">
+                        <input type="button" (click)="setDeleteDate()" value="Delete in 7 days" class="text-button">
                         }
                     </div>
-
+                    <div>
+                        <label for="">ban status : </label>
+                        <input type="text" [value]="this.BanForUser !== null? 'banned' : 'not banned'" readonly>
+                        @if(this.BanForUser !== null){
+                        <label for="">Ban start date : </label>
+                        <input type="date" [value]="this.BanForUser.startDate">
+                        <label for="">Ban end date : </label>
+                        <input type="date" [value]="this.BanForUser.endDate">
+                        <input type="button" value="Unban now" (click)="unbanSelectedUser()">
+                        }@else {
+                        <label for="">Ban duration in days</label>
+                        <input type="number" [(ngModel)]="newBanDuration" [ngModelOptions]="{standalone: true}">
+                        <input type="button" value="Ban this user" (click)="banSelectedUser()">
+                        }
+                        <label for="">Ban reason</label>
+                        <input type="text" [(ngModel)]="newBanReason" [ngModelOptions]="{standalone: true}">
+                    </div>
 
                 </div>
                 <div id="confirm-buttons">
@@ -94,6 +110,7 @@
                     }
 
                     <input type="button" value="Cancel" (click)="cancelChanges()" class="text-button">
+
                 </div>
             </div>
 

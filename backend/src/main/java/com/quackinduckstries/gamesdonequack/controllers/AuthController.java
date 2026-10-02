@@ -3,6 +3,7 @@ package com.quackinduckstries.gamesdonequack.controllers;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,10 +54,15 @@ public class AuthController {
 		
 		returnedUser.setId(userDetails.getId());
 		returnedUser.setUsername(userDetails.getUsername());
+		returnedUser.setBanned(userDetails.isBanned());
 		returnedUser.setRoleName(userDetails.getAuthorities()
 				.stream().findFirst()
 				.orElseThrow(() -> new IllegalStateException("User did not have a role"))
 				.getAuthority());
+		
+		if(userDetails.getUnbanDate() != null) {
+			returnedUser.setUnbanDate(userDetails.getUnbanDate());
+		}
 		
         return ResponseEntity.ok(returnedUser);
 	}
@@ -76,6 +82,9 @@ public class AuthController {
 		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getIdentifier(), loginRequestDto.getPassword());
 		
 			Authentication authentication = authManager.authenticate(authToken);
+			
+			CustomUserDetails  userDetails = (CustomUserDetails) authentication.getPrincipal();
+			
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			securityContext.setAuthentication(authentication);
 			
@@ -87,6 +96,9 @@ public class AuthController {
 		        authentication.getPrincipal()
 		    );
 			
+		if(userDetails.isBanned()) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ACCOUNT_BANNED", "message", "Your account has been banned."));
+		}
 		return ResponseEntity.ok(Map.of("message", "login successful"));
 	}
 }

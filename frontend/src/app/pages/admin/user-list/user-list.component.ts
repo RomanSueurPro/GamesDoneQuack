@@ -16,6 +16,10 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { MatTab } from '@angular/material/tabs';
 import { DatePipe } from '@angular/common';
 import { SnackbarService } from '../../../services/snackbar.service';
+import { Ban } from '../../../models/Ban';
+import { AuthService } from '../../../services/auth.service';
+import { AuthStateService } from '../../../services/auth-state.service';
+import { LoggedInUser } from '../../../models/LoggedInUser';
 
 
 @Component({
@@ -42,9 +46,9 @@ import { SnackbarService } from '../../../services/snackbar.service';
 export class UserListComponent {
 
   defaultPageNumber: number = 0;
-  defaultPageSize: number = 3;
+  defaultPageSize: number = 10;
   currentPageIndex: number = 0;
-  currentPageSize: number = 3;
+  currentPageSize: number = 10;
   totalPages: number = 0;
   pages: number[] = [];
 
@@ -56,10 +60,18 @@ export class UserListComponent {
   selectedUser: UserNoRelations | null = null;
   selectedRole: RoleWithoutPermissions | null = null;
   arrayRoles: RoleWithoutPermissions[] = [];
+  BanForUser: Ban | null = null;
+  newBanDuration: number = 0;
+  newBanReason: string = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('inputDate') inputDate!: ElementRef;
   @ViewChild('pageSelect') pageSelect!: ElementRef;
+
+  constructor(
+    private http: HttpClient, private confirmDialog: MatDialog, private datepipe: DatePipe,
+    private snackBarService: SnackbarService, private authStateService: AuthStateService
+  ) { }
 
   deleteDateFormatter(deleteDate: Date | null): String {
     let dateString: String = '';
@@ -77,6 +89,12 @@ export class UserListComponent {
   }
 
   selectUser(user: UserNoRelations) {
+    this.fetchBanObservable(user).subscribe({
+      next: (ban) => {
+        this.BanForUser = ban;
+        console.log(ban);
+      }
+    })
     this.selectedUser = user;
   }
 
@@ -94,10 +112,7 @@ export class UserListComponent {
     email: new FormControl<string>(''),
   });
 
-  constructor(
-    private http: HttpClient, private confirmDialog: MatDialog, private datepipe: DatePipe,
-    private snackBarService: SnackbarService
-  ) { }
+
 
   @Input()
   set active(value: boolean) {
@@ -122,7 +137,7 @@ export class UserListComponent {
         this.arrayRoles = roles;
         if (usersResponse.users.length > 0 && this.selectedUser === null) {
           const firstUser = usersResponse.users[0];
-          this.selectedUser = firstUser;
+          this.selectUser(firstUser);
           this.updateFullForm(firstUser);
         }
       })
@@ -236,7 +251,7 @@ export class UserListComponent {
 
   onSelectionChange(row: UserNoRelations) {
     if (!this.checkUnsavedModificationsOnUser()) {
-      this.selectedUser = row;
+      this.selectUser(row);
       this.updateFullForm(row);
     } else {
       this.openUnsavedDialog(row);
@@ -400,6 +415,53 @@ export class UserListComponent {
         this.currentPageIndex = previousIndex;
       }
     });
+  }
+
+  fetchBanObservable(user: UserNoRelations): Observable<Ban> {
+    return this.http.post<Ban>(API_ENDPOINTS.admin.fetchUserLastBan, user, { withCredentials: true });
+  }
+
+  unbanUserObservable(user: UserNoRelations): Observable<any> {
+    return this.http.post(API_ENDPOINTS.admin.unbanUser, user, { withCredentials: true });
+  }
+
+  unbanSelectedUser(): void {
+    if (this.selectedUser !== null) {
+      this.unbanUserObservable(this.selectedUser).subscribe({
+
+      });
+    }
+
+  }
+
+  banUserObservable(ban: Ban): Observable<any> {
+    return this.http.post(API_ENDPOINTS.admin.banUser, ban, { withCredentials: true });
+  }
+
+  banSelectedUser(): void {
+    const user: LoggedInUser | null = this.authStateService.user();
+    const startDate = new Date(Date.now());
+    const endDate = new Date(Date.now());
+    endDate.setDate(endDate.getDate() + this.newBanDuration);
+
+    //Plus 2 hours to adjust for GMT
+    //TODO : handle GMT properly
+    startDate.setHours(2, 0, 0, 0);
+    if (this.selectedUser !== null && user !== null) {
+      const ban: Ban = {
+        id: -1,
+        user: this.selectedUser,
+        moderator: user,
+        startDate: startDate,
+        endDate: endDate,
+        reason: this.newBanReason,
+      }
+
+      this.banUserObservable(ban).subscribe({
+        next: () => { },
+        error: (error) => console.log(error)
+      })
+    }
   }
 
 }

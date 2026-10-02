@@ -4,7 +4,7 @@ import { map, switchMap, concatMap, catchError } from 'rxjs/operators';
 import { CsrfService } from './csrf.service';
 import { Observable, of, tap } from 'rxjs';
 import { AuthStateService } from './auth-state.service';
-import { User } from '../models/User';
+import { LoggedInUser } from '../models/LoggedInUser';
 import { API_ENDPOINTS } from '../config/api-endpoints';
 import { Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
@@ -21,7 +21,7 @@ export class AuthService {
 
 
   loadUser(){
-    return this.http.get<User>(API_ENDPOINTS.auth.me,
+    return this.http.get<LoggedInUser>(API_ENDPOINTS.auth.me,
     {withCredentials: true});
   }
 

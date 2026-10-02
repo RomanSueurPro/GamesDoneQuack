@@ -15,7 +15,7 @@ export class CsrfService {
 
   loadUp(){
     this.http.get(API_ENDPOINTS.auth.csrf, {withCredentials: true}).subscribe({      
-        error: () => console.log('Csrf load did not work as intended (it is not OK)')  
+        error: (error) => console.log(error)  
     });
   }
 

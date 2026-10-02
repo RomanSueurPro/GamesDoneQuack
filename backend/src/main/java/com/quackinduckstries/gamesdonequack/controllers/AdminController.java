@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.quackinduckstries.gamesdonequack.Dtos.BanDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PageableDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionWithoutRoleDto;
@@ -26,6 +27,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.SearchUserAdminInputDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UpdateUserRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
+import com.quackinduckstries.gamesdonequack.entities.Ban;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
 import com.quackinduckstries.gamesdonequack.services.AdminUserService;
@@ -194,6 +196,27 @@ public class AdminController {
 	public ResponseEntity<?> searchUsersByUsername(@RequestBody SearchUserAdminInputDto searchInput){
 		
 		 return ResponseEntity.ok(adminUserService.searchUsersByUsername(searchInput.getInput(), searchInput.getPageable()));
+	}
+	
+	@PostMapping("/fetchuserlastban")
+	public ResponseEntity<?> fetchUserLastBan(@RequestBody UserNoRelationsDto user){
+		
+		System.out.println("user : " + user);
+		return ResponseEntity.ok(adminUserService.fetchUserLastBan(user));
+	}
+	
+	@PostMapping("/unbanuser")
+	public ResponseEntity<?> unbanUser(@RequestBody UserNoRelationsDto user){
+		
+		adminUserService.unBanUser(user);
+		return ResponseEntity.ok(Map.of("message", "User " + user.getUsername() + " was unbanned successfully"));
+	}
+	
+	@PostMapping("/banuser")
+	public ResponseEntity<?> banUser(@RequestBody BanDto newBan){
+		
+		Ban ban = adminUserService.banUser(newBan);
+		return ResponseEntity.ok(Map.of("message", "User was banned successfully "));
 	}
 	
 }

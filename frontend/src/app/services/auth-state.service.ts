@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { User } from '../models/User'; 
+import { LoggedInUser } from '../models/LoggedInUser'; 
 import { AdminRoleNameService } from './admin-role-name.service';
 
 @Injectable({
@@ -9,7 +9,7 @@ export class AuthStateService {
   
   constructor(private adminRoleNameService: AdminRoleNameService){}
 
-  user = signal<User | null>(null);
+  user = signal<LoggedInUser | null>(null);
   readonly isLoggedIn = computed(() => this.user() !== null);
   readonly isAdmin = computed(() => this.user()?.roleName === this.adminRoleNameService.getRoleName());
 
@@ -23,7 +23,7 @@ export class AuthStateService {
     return true;
   }
 
-  setUser(user: User){
+  setUser(user: LoggedInUser){
     this.user.set(user);
   }
 

@@ -5,6 +5,7 @@ import { LoginRouteComponent } from './header/session/login-route.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { adminGuard } from './guards/admin.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
+import { BannedPageComponent } from './pages/banned-page/banned-page.component';
 
 export const routes: Routes = [
     
@@ -22,4 +23,5 @@ export const routes: Routes = [
         canActivate: [adminGuard],
         canDeactivate: [unsavedChangesGuard]
     },
+    { path: 'banned', component: BannedPageComponent },
 ];

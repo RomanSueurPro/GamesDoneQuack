@@ -1,5 +1,6 @@
 package com.quackinduckstries.gamesdonequack.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,6 +23,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserPageResponseDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
+import com.quackinduckstries.gamesdonequack.entities.Ban;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.entities.User;
@@ -30,6 +32,7 @@ import com.quackinduckstries.gamesdonequack.exceptions.InvalidEmailFormatExcepti
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidPasswordFormatException;
 import com.quackinduckstries.gamesdonequack.mappers.UserMapper;
+import com.quackinduckstries.gamesdonequack.repositories.BanRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
@@ -43,14 +46,16 @@ public class UserService {
 	private final RoleConfig roleConfig;
 	private final UserMapper userMapper;
 	private final AdminPermissionService adminPermissionService;
+	private final BanRepository banRepository;
 	
-	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RoleConfig roleConfig, UserMapper userMapper, AdminPermissionService adminPermissionService) {
+	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RoleConfig roleConfig, UserMapper userMapper, AdminPermissionService adminPermissionService, BanRepository banRepository) {
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.roleConfig = roleConfig;
 		this.userMapper = userMapper;
 		this.adminPermissionService = adminPermissionService;
+		this.banRepository = banRepository;
 	}
 	
 	
@@ -189,5 +194,20 @@ public class UserService {
 	public void ScheduledUserDelete() {
 		List<User> usersToDelete = userRepository.findByDeleteDateLessThanEqual(new Date());
 		usersToDelete.forEach(u -> userRepository.delete(u));
+	}
+	
+	public LocalDate getUnbanDateForUser(long userId) {
+		Pageable firstResult = PageRequest.of(
+			    0,
+			    1,
+			    Sort.by("endDate").descending()
+			);
+		List<Ban> bans = banRepository.findActiveBansForUser(userId, LocalDate.now(), firstResult);
+		
+		if (bans.isEmpty()) {
+	        return null;
+	    }
+
+	    return bans.get(0).getEndDate();
 	}
 }
