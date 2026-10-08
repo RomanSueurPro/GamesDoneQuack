@@ -28,6 +28,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.UpdateUserRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.entities.Ban;
+import com.quackinduckstries.gamesdonequack.services.AdminBanService;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
 import com.quackinduckstries.gamesdonequack.services.AdminUserService;
@@ -40,17 +41,19 @@ import com.quackinduckstries.gamesdonequack.services.UserService;
 @RestController
 public class AdminController {
 
-	private final AdminRoleService adminRoleService;
 	private final UserService userService;
+	private final AdminRoleService adminRoleService;
 	private final AdminPermissionService adminPermissionService;
 	private final AdminUserService adminUserService;
+	private final AdminBanService adminBanService;
 
 	
-	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService, AdminUserService adminUserService) {
+	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService, AdminUserService adminUserService, AdminBanService adminBanService) {
 		this.userService = userService;
 		this.adminRoleService = adminRoleService;
 		this.adminPermissionService = adminPermissionService;
 		this.adminUserService = adminUserService;
+		this.adminBanService = adminBanService;
 	}
 	
 	
@@ -83,6 +86,7 @@ public class AdminController {
 	public ResponseEntity<?> createRole(@RequestBody RoleNoUserDto roleToCreate) {
 		
 		RoleCompleteDto role = adminRoleService.createRole(roleToCreate);
+		
 		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created", "id", role.getId()));
 	}
 	
@@ -187,6 +191,15 @@ public class AdminController {
 	public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequestDto requestDto) {
 
 		adminUserService.updateUser(requestDto.getUser());
+		BanDto ban = requestDto.getBan();
+		if(ban != null) {
+			if(ban.getId() == -1) {
+				adminBanService.createBan(ban);
+			}else {
+				adminBanService.updateBan(ban);	
+			}
+			
+		}
 		int pageNumber = userService.getPageForUser(requestDto.getUser().getUsername(), requestDto.getPageNumber());
 		
 		return ResponseEntity.ok(Map.of("message", "Update of user " + requestDto.getUser().getUsername() + " went fine", "page", pageNumber));
@@ -201,22 +214,7 @@ public class AdminController {
 	@PostMapping("/fetchuserlastban")
 	public ResponseEntity<?> fetchUserLastBan(@RequestBody UserNoRelationsDto user){
 		
-		System.out.println("user : " + user);
 		return ResponseEntity.ok(adminUserService.fetchUserLastBan(user));
-	}
-	
-	@PostMapping("/unbanuser")
-	public ResponseEntity<?> unbanUser(@RequestBody UserNoRelationsDto user){
-		
-		adminUserService.unBanUser(user);
-		return ResponseEntity.ok(Map.of("message", "User " + user.getUsername() + " was unbanned successfully"));
-	}
-	
-	@PostMapping("/banuser")
-	public ResponseEntity<?> banUser(@RequestBody BanDto newBan){
-		
-		Ban ban = adminUserService.banUser(newBan);
-		return ResponseEntity.ok(Map.of("message", "User was banned successfully "));
 	}
 	
 }

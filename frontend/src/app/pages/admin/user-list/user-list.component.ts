@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { API_ENDPOINTS } from '../../../config/api-endpoints';
 import { HttpClient } from '@angular/common/http';
 import { MatRow, MatTableModule } from '@angular/material/table';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { UserNoRelations } from '../../../models/UserNoRelations';
 import { concatMap, forkJoin, map, Observable, of, pipe, tap } from 'rxjs';
 import { UsersResponse } from '../../../models/UsersResponse';
@@ -60,9 +60,10 @@ export class UserListComponent {
   selectedUser: UserNoRelations | null = null;
   selectedRole: RoleWithoutPermissions | null = null;
   arrayRoles: RoleWithoutPermissions[] = [];
-  BanForUser: Ban | null = null;
+  banForUser: Ban | null = null;
   newBanDuration: number = 0;
   newBanReason: string = '';
+  isBanLayoutDisplayed: boolean = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('inputDate') inputDate!: ElementRef;
@@ -91,25 +92,39 @@ export class UserListComponent {
   selectUser(user: UserNoRelations) {
     this.fetchBanObservable(user).subscribe({
       next: (ban) => {
-        this.BanForUser = ban;
-        console.log(ban);
+        this.banForUser = ban;
+        this.updateFullForm(user);
       }
-    })
+    });
     this.selectedUser = user;
+    if (this.isBanLayoutDisplayed) {
+      this.toggleBanDisplay();
+    }
   }
 
-  form = new FormGroup({
-    id: new FormControl<number | null>(-1),
-    username: new FormControl<string>(''),
-    role: new FormControl<RoleWithoutPermissions>(
-      {
-        id: -1,
-        name: '',
-        adminRole: false,
-        defaultRole: false,
-      }),
-    deleteDate: new FormControl<Date | null>(null),
-    email: new FormControl<string>(''),
+  form: FormGroup = new FormGroup({
+    user: new FormGroup({
+      id: new FormControl<number | null>(-1),
+      username: new FormControl<string>(''),
+      role: new FormControl<RoleWithoutPermissions>(
+        {
+          id: -1,
+          name: '',
+          adminRole: false,
+          defaultRole: false,
+        }),
+      deleteDate: new FormControl<Date | null>(null),
+      email: new FormControl<string>('')
+    }),
+
+    ban: new FormGroup({
+      id: new FormControl<number | null>(null),
+      user: new FormControl<UserNoRelations | null>(null),
+      moderator: new FormControl<UserNoRelations | null>(null),
+      startDate: new FormControl<Date>(new Date()),
+      endDate: new FormControl<Date>(new Date()),
+      reason: new FormControl<string>(''),
+    })
   });
 
 
@@ -138,7 +153,6 @@ export class UserListComponent {
         if (usersResponse.users.length > 0 && this.selectedUser === null) {
           const firstUser = usersResponse.users[0];
           this.selectUser(firstUser);
-          this.updateFullForm(firstUser);
         }
       })
     );
@@ -148,18 +162,15 @@ export class UserListComponent {
     return this.http.get<RoleWithoutPermissions[]>(API_ENDPOINTS.admin.fetchAllRolesNoPermissionField, { withCredentials: true });
   }
 
-  //useful for Search by Username for future selves <3
   userSearch(pagenumber: number) {
     this.searchUsersByUsernameObservable(pagenumber, this.currentPageSize).subscribe({
       next: (response) => {
-        console.log(response);
         this.arrayUsers = response.users;
         this.totalUsers = response.totalElements;
         this.totalPages = response.totalPages;
         this.updatePages(response.totalPages);
         if (this.arrayUsers.length > 0) {
           this.selectUser(this.arrayUsers[0]);
-          this.updateFullForm(this.arrayUsers[0]);
         }
       },
     });
@@ -229,7 +240,6 @@ export class UserListComponent {
           this.totalPages = response.totalPages;
           if (this.arrayUsers.length > 0) {
             this.selectUser(this.arrayUsers[0]);
-            this.updateFullForm(this.arrayUsers[0]);
           }
         },
         error: error => console.error(error)
@@ -252,7 +262,6 @@ export class UserListComponent {
   onSelectionChange(row: UserNoRelations) {
     if (!this.checkUnsavedModificationsOnUser()) {
       this.selectUser(row);
-      this.updateFullForm(row);
     } else {
       this.openUnsavedDialog(row);
     }
@@ -268,11 +277,22 @@ export class UserListComponent {
 
   updateFullForm(selected: UserNoRelations) {
     this.form.patchValue({
-      id: selected.id,
-      username: selected.username,
-      role: selected.role,
-      deleteDate: selected.deleteDate,
-      email: selected.email,
+      user: {
+        id: selected.id,
+        username: selected.username,
+        role: selected.role,
+        deleteDate: selected.deleteDate,
+        email: selected.email
+      },
+
+      ban: {
+        id: this.banForUser?.id ?? -1,
+        user: this.selectedUser,
+        moderator: this.authStateService.user(),
+        startDate: this.banForUser?.startDate ?? null,
+        endDate: this.banForUser?.endDate ?? null,
+        reason: this.banForUser?.reason ?? '',
+      }
     });
     this.inputDate.nativeElement.value = this.deleteDateFormatter(selected.deleteDate);
   }
@@ -299,8 +319,7 @@ export class UserListComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
         //user confirms he wants to leave
-        this.updateFullForm(selected);
-        this.selectedUser = selected;
+        this.selectUser(selected);
         this.form.markAsPristine();
       }
     });
@@ -308,6 +327,14 @@ export class UserListComponent {
 
   hasUnsavedChanges() {
     return this.form.dirty;
+  }
+
+  toggleBanDisplay(): void {
+    this.isBanLayoutDisplayed = !this.isBanLayoutDisplayed;
+    if (!this.isBanLayoutDisplayed) {
+      this.clearBanInputs();
+      this.form.get('ban')?.markAsPristine();
+    }
   }
 
   canLeavePage(): Observable<boolean> {
@@ -340,16 +367,32 @@ export class UserListComponent {
   setDeleteDate() {
     let deletionDate: Date = new Date(Date.now());
     deletionDate.setDate(deletionDate.getDate() + 7);
-    this.form.patchValue({ deleteDate: deletionDate });
+    this.form.patchValue({
+      user: {
+        deleteDate: deletionDate
+      }
+    });
     this.inputDate.nativeElement.value = this.deleteDateFormatter(deletionDate);
   }
 
   cancelDeletion() {
-    this.form.patchValue({ deleteDate: null });
+    this.form.patchValue({
+      user: {
+        deleteDate: null
+      }
+    });
     this.inputDate.nativeElement.value = this.deleteDateFormatter(null);
   }
 
   completeProcedure() {
+    if (this.form.get('ban')?.value.id === -1) {
+      let endDate = new Date(Date.now());
+      endDate.setDate(endDate.getDate() + this.newBanDuration); 
+      this.form.get('ban')?.patchValue({
+        startDate: new Date(Date.now()),
+        endDate: endDate,
+      });
+    } 
     let pageNumber: number = 0;
     of(null).pipe(
       concatMap(() => this.saveChangesObservable()),
@@ -364,7 +407,7 @@ export class UserListComponent {
         this.totalPages = response.totalPages;
         this.updatePages(response.totalPages);
         this.snackBarService.showSuccessMessageSnackBar('User update successfull');
-        this.selectedUser = this.arrayUsers.filter((usr) => usr.id === this.form.value.id)[0];
+        this.selectUser(this.arrayUsers.filter((usr) => usr.id === this.form.get('user')?.value.id)[0]);
         this.form.markAsPristine();
       },
       error: (error) => {
@@ -375,7 +418,13 @@ export class UserListComponent {
   }
 
   saveChangesObservable(): Observable<any> {
-    return this.http.patch(API_ENDPOINTS.admin.updateUser, { "user": this.form.value, "pageNumber": 3 }, { withCredentials: true });
+    const isFormContainingBan: boolean | undefined = this.form.get('ban')?.dirty;
+    if (isFormContainingBan) {
+      return this.http.patch(API_ENDPOINTS.admin.updateUser, { "user": this.form.value.user, "ban": this.form.value.ban, "pageNumber": this.currentPageSize }, { withCredentials: true });
+    } else {
+      return this.http.patch(API_ENDPOINTS.admin.updateUser, { "user": this.form.value.user, "pageNumber": this.currentPageSize }, { withCredentials: true });
+    }
+
   }
 
   cancelChanges(): void {
@@ -464,4 +513,8 @@ export class UserListComponent {
     }
   }
 
+  clearBanInputs(): void {
+    this.form.get('ban')?.reset();
+    this.newBanDuration = 0;
+  }
 }

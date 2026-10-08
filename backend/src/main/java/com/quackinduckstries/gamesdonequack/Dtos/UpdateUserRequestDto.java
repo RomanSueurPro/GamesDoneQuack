@@ -7,5 +7,7 @@ public class UpdateUserRequestDto {
 
 	private UserNoRelationsDto user;
 	
+	private BanDto ban;
+	
 	private int pageNumber;
 }

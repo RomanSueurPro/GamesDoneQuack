@@ -31,6 +31,7 @@ import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameExceptio
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidEmailFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidPasswordFormatException;
+import com.quackinduckstries.gamesdonequack.exceptions.UserNotFoundException;
 import com.quackinduckstries.gamesdonequack.mappers.UserMapper;
 import com.quackinduckstries.gamesdonequack.repositories.BanRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
@@ -209,5 +210,10 @@ public class UserService {
 	    }
 
 	    return bans.get(0).getEndDate();
+	}
+
+
+	public User findById(Long id) {
+		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
 	}
 }

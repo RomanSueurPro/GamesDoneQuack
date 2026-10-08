@@ -117,20 +117,4 @@ public class AdminUserService {
 		return null;
 	}
 	
-	@Transactional
-	public void unBanUser(UserNoRelationsDto user) {
-		
-		Ban referencedBan = banRepository.lastBanForUser(user.getId()).orElseThrow(() -> new BanNotFoundException("Actual ban for user " + user.getUsername() + " not found"));
-
-		referencedBan.setEndDate(LocalDate.now());	
-	}
-	
-	@Transactional
-	public Ban banUser(BanDto ban) {
-		Ban newBan = banMapper.banDtoToBan(ban);
-		newBan.setId(null);
-		banRepository.save(newBan);
-		return newBan;
-	}
-	
 }

@@ -14,7 +14,6 @@ import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyPermissionNameException;
-import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.PermissionMapper;

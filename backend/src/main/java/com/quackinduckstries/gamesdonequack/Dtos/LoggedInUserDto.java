@@ -11,7 +11,7 @@ public class LoggedInUserDto {
 
 	private String username;
 	
-	private String roleName;
+	private RoleNoRelationsDto role;
 	
 	private boolean isBanned;
 	

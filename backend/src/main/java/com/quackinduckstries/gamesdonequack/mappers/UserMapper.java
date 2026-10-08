@@ -19,7 +19,6 @@ public interface UserMapper {
 	
     UserNoRoleDto userToUserNoRoleDto(User user); 
 
-    @Mapping(target = "roleName", source = "role.name")
     LoggedInUserDto userToLoggedInUserDto(User user);
     
     User registerRequestDtoToUser(RegisterRequestDto dto);

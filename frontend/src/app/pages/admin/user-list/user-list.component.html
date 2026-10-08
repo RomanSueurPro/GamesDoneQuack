@@ -56,52 +56,65 @@
                 </div>
             </div>
             <div id="user-update-form">
-                <label for="user-id">Id</label>
-                <input type="text" readonly formControlName="id" id="user-id">
-                <label for="username">Username</label>
-                <input type="text" formControlName="username" id="username">
-                <label for="email">Email</label>
-                <input type="text" formControlName="email" id="email">
-                <label for="role-select">Role</label>
-                <mat-select [value]="selectedRole" #roleSelect id="role-select" formControlName="role"
-                    [compareWith]="compareRoles">
-                    @for (role of arrayRoles; track role) {
-                    <mat-option [value]="role">
-                        {{ role.name }}
-                    </mat-option>
+                <div formGroupName="user">
+                    <label for="user-id">Id</label>
+                    <input type="text" readonly formControlName="id" id="user-id">
+                    <label for="username">Username</label>
+                    <input type="text" formControlName="username" id="username">
+                    <label for="email">Email</label>
+                    <input type="text" formControlName="email" id="email">
+                    <label for="role-select">Role</label>
+                    <mat-select [value]="selectedRole" #roleSelect id="role-select" formControlName="role"
+                        [compareWith]="compareRoles">
+                        @for (role of arrayRoles; track role) {
+                        <mat-option [value]="role">
+                            {{ role.name }}
+                        </mat-option>
+                        }
+                    </mat-select>
+                    <div class="deletion-div">
+                        <div class="deletion-date">
+                            <label for="deleteDate">deletion Date</label>
+                            <input type="text" id="deleteDate" readonly #inputDate>
+                        </div>
+                        <div class="deletion-buttons">
+                            @if (form.value.deleteDate !== null) {
+                            <input type="button" value="Cancel deletion" (click)="cancelDeletion()" class="text-button">
+                            }@else {
+                            <input type="button" (click)="setDeleteDate()" value="Delete in 7 days" class="text-button">
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div formGroupName="ban">
+                    <label for="">ban status : </label>
+                    <input type="text" [value]="this.banForUser !== null? 'banned' : 'not banned'" readonly>
+                    @if(this.banForUser !== null){
+
+                    <label for="">Ban start date : </label>
+                    <input type="date" formControlName="startDate">
+                    <label for="">Ban end date : </label>
+                    <input type="date" formControlName="endDate">
+                    <label for="">Ban reason</label>
+                    <input type="text" formControlName="reason">
+                    <input type="button" value="Unban now" (click)="unbanSelectedUser()">
+                    
+                    }@else if(isBanLayoutDisplayed){
+
+                    <label for="">Ban duration in days</label>
+                    <input type="number" [(ngModel)]="newBanDuration" [ngModelOptions]="{standalone: true}">
+                    <label for="">Ban reason</label>
+                    <input type="text" formControlName="reason">
+                    <input type="button" value="Cancel" (click)="toggleBanDisplay()">
+
+                    }@else {
+
+                    <input type="button" value="Ban this user" (click)="toggleBanDisplay()">
                     }
-                </mat-select>
-                <div class="deletion-div">
-                    <div class="deletion-date">
-                        <label for="deleteDate">deletion Date</label>
-                        <input type="text" id="deleteDate" readonly #inputDate>
-                    </div>
-                    <div class="deletion-buttons">
-                        @if (form.value.deleteDate !== null) {
-                        <input type="button" value="Cancel deletion" (click)="cancelDeletion()" class="text-button">
-                        }@else {
-                        <input type="button" (click)="setDeleteDate()" value="Delete in 7 days" class="text-button">
-                        }
-                    </div>
-                    <div>
-                        <label for="">ban status : </label>
-                        <input type="text" [value]="this.BanForUser !== null? 'banned' : 'not banned'" readonly>
-                        @if(this.BanForUser !== null){
-                        <label for="">Ban start date : </label>
-                        <input type="date" [value]="this.BanForUser.startDate">
-                        <label for="">Ban end date : </label>
-                        <input type="date" [value]="this.BanForUser.endDate">
-                        <input type="button" value="Unban now" (click)="unbanSelectedUser()">
-                        }@else {
-                        <label for="">Ban duration in days</label>
-                        <input type="number" [(ngModel)]="newBanDuration" [ngModelOptions]="{standalone: true}">
-                        <input type="button" value="Ban this user" (click)="banSelectedUser()">
-                        }
-                        <label for="">Ban reason</label>
-                        <input type="text" [(ngModel)]="newBanReason" [ngModelOptions]="{standalone: true}">
-                    </div>
 
                 </div>
+
+
                 <div id="confirm-buttons">
                     @if(form.valid){
                     <input type="button" value="Save" (click)="completeProcedure()" class="text-button">

@@ -1,7 +1,9 @@
+import { RoleWithoutPermissions } from "./RoleWithoutPermissions";
+
 export interface LoggedInUser {
     username: string;
-    userId: number;
-    roleName: string;
+    id: number;
+    role: RoleWithoutPermissions;
     banned: boolean;
     unbanDate: Date;
 }

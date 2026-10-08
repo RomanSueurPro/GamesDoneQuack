@@ -11,13 +11,13 @@ export class AuthStateService {
 
   user = signal<LoggedInUser | null>(null);
   readonly isLoggedIn = computed(() => this.user() !== null);
-  readonly isAdmin = computed(() => this.user()?.roleName === this.adminRoleNameService.getRoleName());
+  readonly isAdmin = computed(() => this.user()?.role.name === this.adminRoleNameService.getRoleName());
 
   hasRole(role:string):boolean{
     if(!this.user()){
       return false;
     }
-    if(this.user()?.roleName !== role){
+    if(this.user()?.role.name !== role){
       return false;
     }
     return true;
