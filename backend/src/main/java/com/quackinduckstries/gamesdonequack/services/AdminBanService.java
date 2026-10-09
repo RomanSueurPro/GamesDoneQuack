@@ -21,7 +21,11 @@ public class AdminBanService {
 	
 	@Transactional
 	public void updateBan(BanDto dto) {
-		banRepository.save(banMapper.banDtoToBan(dto));
+		if(dto.getEndDate().isBefore(dto.getStartDate())) {
+			throw new IllegalStateException("Ban endDate cannot be anterior to startDate");
+		}else {
+			banRepository.save(banMapper.banDtoToBan(dto));
+		}
 	}
 	
 	@Transactional

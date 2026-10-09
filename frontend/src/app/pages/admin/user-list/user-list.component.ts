@@ -20,6 +20,7 @@ import { Ban } from '../../../models/Ban';
 import { AuthService } from '../../../services/auth.service';
 import { AuthStateService } from '../../../services/auth-state.service';
 import { LoggedInUser } from '../../../models/LoggedInUser';
+import { Temporal } from '@js-temporal/polyfill';
 
 
 @Component({
@@ -372,6 +373,7 @@ export class UserListComponent {
         deleteDate: deletionDate
       }
     });
+    this.form.get('user')?.markAsDirty();
     this.inputDate.nativeElement.value = this.deleteDateFormatter(deletionDate);
   }
 
@@ -381,18 +383,25 @@ export class UserListComponent {
         deleteDate: null
       }
     });
+
     this.inputDate.nativeElement.value = this.deleteDateFormatter(null);
   }
 
   completeProcedure() {
     if (this.form.get('ban')?.value.id === -1) {
       let endDate = new Date(Date.now());
-      endDate.setDate(endDate.getDate() + this.newBanDuration); 
+      endDate.setDate(endDate.getDate() + this.newBanDuration);
+      const parisNow = Temporal.Now.zonedDateTimeISO('Europe/Paris');
+
+      const startDate = new Date(
+        parisNow.startOfDay().epochMilliseconds
+      );
+      console.log(startDate);
       this.form.get('ban')?.patchValue({
-        startDate: new Date(Date.now()),
+        startDate: startDate,
         endDate: endDate,
       });
-    } 
+    }
     let pageNumber: number = 0;
     of(null).pipe(
       concatMap(() => this.saveChangesObservable()),
@@ -429,14 +438,17 @@ export class UserListComponent {
 
   cancelChanges(): void {
     let user = undefined;
-    if (this.form.value.id) {
-      user = this.arrayUsers.find((u) => u.id === this.form.value.id);
+    if (this.form.get('user')?.value.id) {
+      user = this.arrayUsers.find((u) => u.id === this.form.get('user')?.value.id);
     }
 
     if (user) {
       this.updateFullForm(user);
       this.form.markAsPristine();
     }
+
+    this.isBanLayoutDisplayed = false;
+    this.newBanDuration = 0;
   }
 
   openPageChangeDialog(futurePageIndex: number, previousIndex: number): void {
@@ -483,35 +495,6 @@ export class UserListComponent {
 
   }
 
-  banUserObservable(ban: Ban): Observable<any> {
-    return this.http.post(API_ENDPOINTS.admin.banUser, ban, { withCredentials: true });
-  }
-
-  banSelectedUser(): void {
-    const user: LoggedInUser | null = this.authStateService.user();
-    const startDate = new Date(Date.now());
-    const endDate = new Date(Date.now());
-    endDate.setDate(endDate.getDate() + this.newBanDuration);
-
-    //Plus 2 hours to adjust for GMT
-    //TODO : handle GMT properly
-    startDate.setHours(2, 0, 0, 0);
-    if (this.selectedUser !== null && user !== null) {
-      const ban: Ban = {
-        id: -1,
-        user: this.selectedUser,
-        moderator: user,
-        startDate: startDate,
-        endDate: endDate,
-        reason: this.newBanReason,
-      }
-
-      this.banUserObservable(ban).subscribe({
-        next: () => { },
-        error: (error) => console.log(error)
-      })
-    }
-  }
 
   clearBanInputs(): void {
     this.form.get('ban')?.reset();

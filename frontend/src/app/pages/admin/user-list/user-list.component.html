@@ -78,7 +78,7 @@
                             <input type="text" id="deleteDate" readonly #inputDate>
                         </div>
                         <div class="deletion-buttons">
-                            @if (form.value.deleteDate !== null) {
+                            @if (this.selectedUser?.deleteDate !== null) {
                             <input type="button" value="Cancel deletion" (click)="cancelDeletion()" class="text-button">
                             }@else {
                             <input type="button" (click)="setDeleteDate()" value="Delete in 7 days" class="text-button">
@@ -105,7 +105,7 @@
                     <input type="number" [(ngModel)]="newBanDuration" [ngModelOptions]="{standalone: true}">
                     <label for="">Ban reason</label>
                     <input type="text" formControlName="reason">
-                    <input type="button" value="Cancel" (click)="toggleBanDisplay()">
+                    <input type="button" value="Cancel ban" (click)="toggleBanDisplay()">
 
                     }@else {
 
