@@ -6,6 +6,17 @@
                     <label for="input-research">Search by username :</label>
                     <input type="text" id="input-research" [(ngModel)]="searchInput"
                         [ngModelOptions]="{ standalone: true }" (input)="userSearch(defaultPageNumber)">
+                    <label for="search-role-select">Search by role :</label>
+                    <mat-select [(value)]="searchedRole" id="search-role-select"                    [compareWith]="compareRoles" (selectionChange)="userSearch(defaultPageNumber)">
+                        <mat-option [value]="-1">
+                            ALL ROLES
+                        </mat-option>
+                        @for (role of arrayRoles; track role) {
+                        <mat-option [value]="role">
+                            {{ role.name }}
+                        </mat-option>
+                        }
+                    </mat-select>
                 </div>
 
                 <div class="user-list">
@@ -97,8 +108,8 @@
                     <input type="date" formControlName="endDate">
                     <label for="">Ban reason</label>
                     <input type="text" formControlName="reason">
-                    <input type="button" value="Unban now" (click)="unbanSelectedUser()">
-                    
+                    <!-- <input type="button" value="Unban now" (click)="unbanSelectedUser()"> -->
+
                     }@else if(isBanLayoutDisplayed){
 
                     <label for="">Ban duration in days</label>

@@ -27,7 +27,6 @@ import com.quackinduckstries.gamesdonequack.Dtos.SearchUserAdminInputDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UpdateUserRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
-import com.quackinduckstries.gamesdonequack.entities.Ban;
 import com.quackinduckstries.gamesdonequack.services.AdminBanService;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
@@ -205,10 +204,10 @@ public class AdminController {
 		return ResponseEntity.ok(Map.of("message", "Update of user " + requestDto.getUser().getUsername() + " went fine", "page", pageNumber));
 	}
 	
-	@PostMapping("/searchusersbyusername")
+	@PostMapping("/searchusers")
 	public ResponseEntity<?> searchUsersByUsername(@RequestBody SearchUserAdminInputDto searchInput){
 		
-		 return ResponseEntity.ok(adminUserService.searchUsersByUsername(searchInput.getInput(), searchInput.getPageable()));
+		 return ResponseEntity.ok(adminUserService.searchUsers(searchInput.getInput(), searchInput.getPageableDto(), searchInput.getRoleDto()));
 	}
 	
 	@PostMapping("/fetchuserlastban")

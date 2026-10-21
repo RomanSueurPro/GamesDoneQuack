@@ -1,10 +1,8 @@
 package com.quackinduckstries.gamesdonequack.repositories;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,11 +27,11 @@ public interface BanRepository extends JpaRepository<Ban, Long>{
 			  AND b.startDate <= :now
 		      AND b.endDate >= :now
 		    ORDER BY b.endDate DESC
+		    LIMIT 1
 		""")
-	List<Ban> findActiveBansForUser(
+	Optional<Ban> findActiveBanForUser(
 		    @Param("userId") Long userId,
-		    @Param("now") LocalDate now,
-		    Pageable pageable
+		    @Param("now") LocalDate now
 		);
 	
 	@Query("""

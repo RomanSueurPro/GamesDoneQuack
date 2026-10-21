@@ -198,18 +198,14 @@ public class UserService {
 	}
 	
 	public LocalDate getUnbanDateForUser(long userId) {
-		Pageable firstResult = PageRequest.of(
-			    0,
-			    1,
-			    Sort.by("endDate").descending()
-			);
-		List<Ban> bans = banRepository.findActiveBansForUser(userId, LocalDate.now(), firstResult);
 		
-		if (bans.isEmpty()) {
+		Optional<Ban> ban = banRepository.findActiveBanForUser(userId, LocalDate.now());
+		
+		if (ban.isEmpty()) {
 	        return null;
 	    }
 
-	    return bans.get(0).getEndDate();
+	    return ban.get().getEndDate();
 	}
 
 

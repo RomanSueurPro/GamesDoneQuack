@@ -60,11 +60,13 @@ export class UserListComponent {
 
   selectedUser: UserNoRelations | null = null;
   selectedRole: RoleWithoutPermissions | null = null;
+  searchedRole: RoleWithoutPermissions | number = -1;
   arrayRoles: RoleWithoutPermissions[] = [];
   banForUser: Ban | null = null;
   newBanDuration: number = 0;
   newBanReason: string = '';
   isBanLayoutDisplayed: boolean = false;
+  
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('inputDate') inputDate!: ElementRef;
@@ -164,7 +166,7 @@ export class UserListComponent {
   }
 
   userSearch(pagenumber: number) {
-    this.searchUsersByUsernameObservable(pagenumber, this.currentPageSize).subscribe({
+    this.searchUsersObservable(pagenumber, this.currentPageSize).subscribe({
       next: (response) => {
         this.arrayUsers = response.users;
         this.totalUsers = response.totalElements;
@@ -178,15 +180,17 @@ export class UserListComponent {
 
   }
 
-  searchUsersByUsernameObservable(pageNumber: number, pageSize: number) {
+  searchUsersObservable(pageNumber: number, pageSize: number) {
+    console.log("");
     return this.http.post<UsersResponse>(
       API_ENDPOINTS.admin.searchUserAdmin,
       {
         input: this.searchInput,
-        pageable: {
+        pageableDto: {
           pageNumber: pageNumber,
           pageSize: pageSize,
-        }
+        },
+        roleDto: this.searchedRole === -1? null : this.searchedRole,
       },
       {
         withCredentials: true
@@ -230,7 +234,7 @@ export class UserListComponent {
     this.currentPageIndex = page;
     this.currentPageSize = pageSize;
 
-    if (this.searchInput === '') {
+    if (this.searchInput === '' && this.searchedRole === -1) {
       this.fetchUsersObservable(
         page,
         this.currentPageSize
@@ -482,22 +486,10 @@ export class UserListComponent {
     return this.http.post<Ban>(API_ENDPOINTS.admin.fetchUserLastBan, user, { withCredentials: true });
   }
 
-  unbanUserObservable(user: UserNoRelations): Observable<any> {
-    return this.http.post(API_ENDPOINTS.admin.unbanUser, user, { withCredentials: true });
-  }
-
-  unbanSelectedUser(): void {
-    if (this.selectedUser !== null) {
-      this.unbanUserObservable(this.selectedUser).subscribe({
-
-      });
-    }
-
-  }
-
 
   clearBanInputs(): void {
     this.form.get('ban')?.reset();
     this.newBanDuration = 0;
   }
+
 }

@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.quackinduckstries.gamesdonequack.entities.User;
 
@@ -29,4 +31,19 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	List<User> findByDeleteDateLessThanEqual(Date date);
 	
 	Page<User> findByUsernameContainingIgnoreCase(String search, Pageable pageable);
+	
+	Page<User> findByRoleId(long roleId, Pageable pageable);
+	
+	@Query("""
+		    SELECT u
+		    FROM User u
+		    WHERE u.username LIKE %:search%
+			  AND u.role.id = :roleId
+		    ORDER BY u.username DESC
+		""")
+	Page<User> findByUsernameAndRoleId(
+		    @Param("search") String search,
+		    @Param("roleId") long roleId,
+		    Pageable pageable
+		);
 }
