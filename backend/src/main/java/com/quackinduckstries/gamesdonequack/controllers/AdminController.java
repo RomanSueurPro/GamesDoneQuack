@@ -15,16 +15,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.quackinduckstries.gamesdonequack.Dtos.BanDto;
+import com.quackinduckstries.gamesdonequack.Dtos.PageableDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionDto;
 import com.quackinduckstries.gamesdonequack.Dtos.PermissionWithoutRoleDto;
 
 import com.quackinduckstries.gamesdonequack.Dtos.RoleCompleteDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoUserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.SearchUserAdminInputDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UpdateUserRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
+import com.quackinduckstries.gamesdonequack.services.AdminBanService;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
 import com.quackinduckstries.gamesdonequack.services.AdminRoleService;
+import com.quackinduckstries.gamesdonequack.services.AdminUserService;
 import com.quackinduckstries.gamesdonequack.services.UserService;
 
 
@@ -34,16 +40,19 @@ import com.quackinduckstries.gamesdonequack.services.UserService;
 @RestController
 public class AdminController {
 
-	private final AdminRoleService adminRoleService;
 	private final UserService userService;
+	private final AdminRoleService adminRoleService;
 	private final AdminPermissionService adminPermissionService;
-	
+	private final AdminUserService adminUserService;
+	private final AdminBanService adminBanService;
 
 	
-	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService) {
+	public AdminController(AdminRoleService adminRoleService, UserService userService, AdminPermissionService adminPermissionService, AdminUserService adminUserService, AdminBanService adminBanService) {
 		this.userService = userService;
 		this.adminRoleService = adminRoleService;
 		this.adminPermissionService = adminPermissionService;
+		this.adminUserService = adminUserService;
+		this.adminBanService = adminBanService;
 	}
 	
 	
@@ -76,6 +85,7 @@ public class AdminController {
 	public ResponseEntity<?> createRole(@RequestBody RoleNoUserDto roleToCreate) {
 		
 		RoleCompleteDto role = adminRoleService.createRole(roleToCreate);
+		
 		return ResponseEntity.ok(Map.of("message", "Role " + role.getName() + " was successfully created", "id", role.getId()));
 	}
 	
@@ -101,9 +111,9 @@ public class AdminController {
 	@PatchMapping("/updatepermission")
 	public ResponseEntity<?> updatePermission(@RequestBody PermissionDto permissionToUpdate) {
 		
-		PermissionDto permission = adminPermissionService.updatePermission(permissionToUpdate);
+		adminPermissionService.updatePermission(permissionToUpdate);
 		
-		return ResponseEntity.ok(Map.of("message", "Update of permission " + permission.getName() + " went fine"));
+		return ResponseEntity.ok(Map.of("message", "Update of permission " + permissionToUpdate.getName() + " went fine"));
 	}
 	
 	
@@ -155,11 +165,55 @@ public class AdminController {
 		return ResponseEntity.ok(roles);
 	}
 	
-	
 	@DeleteMapping("/deleterole")
 	public ResponseEntity<?> deleteRole(@RequestBody RoleCompleteDto roleToDelete){
 		
 		String roleName = adminRoleService.deleteRole(roleToDelete.getId());
 		return ResponseEntity.ok(Map.of("message", "Role " + roleName + " was deleted successfully"));
 	}
+	
+	@GetMapping("/fetchallusersnorelations")
+	public ResponseEntity<?> fetchAllUsersNoRelations(){
+		
+		 List<UserNoRelationsDto> users = userService.fetchAllUsersNoRelations();
+		
+		return ResponseEntity.ok(users);
+	}
+	
+	@PostMapping("/fetchpaginatedusers")
+	public ResponseEntity<?> fetchPaginatedUsers(@RequestBody PageableDto pageableDto){
+		
+		 return ResponseEntity.ok(userService.fetchPaginatedUsers(pageableDto));
+	}
+	
+	@PatchMapping("/updateuser")
+	public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequestDto requestDto) {
+
+		adminUserService.updateUser(requestDto.getUser());
+		BanDto ban = requestDto.getBan();
+		if(ban != null) {
+			if(ban.getId() == -1) {
+				adminBanService.createBan(ban);
+			}else {
+				adminBanService.updateBan(ban);	
+			}
+			
+		}
+		int pageNumber = userService.getPageForUser(requestDto.getUser().getUsername(), requestDto.getPageNumber());
+		
+		return ResponseEntity.ok(Map.of("message", "Update of user " + requestDto.getUser().getUsername() + " went fine", "page", pageNumber));
+	}
+	
+	@PostMapping("/searchusers")
+	public ResponseEntity<?> searchUsersByUsername(@RequestBody SearchUserAdminInputDto searchInput){
+		
+		 return ResponseEntity.ok(adminUserService.searchUsers(searchInput.getInput(), searchInput.getPageableDto(), searchInput.getRoleDto()));
+	}
+	
+	@PostMapping("/fetchuserlastban")
+	public ResponseEntity<?> fetchUserLastBan(@RequestBody UserNoRelationsDto user){
+		
+		return ResponseEntity.ok(adminUserService.fetchUserLastBan(user));
+	}
+	
 }

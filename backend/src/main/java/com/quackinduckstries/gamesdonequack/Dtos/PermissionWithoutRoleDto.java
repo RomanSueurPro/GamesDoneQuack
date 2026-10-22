@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class PermissionWithoutRoleDto {
+	
 	private Long id;
+	
 	private String name;
 }

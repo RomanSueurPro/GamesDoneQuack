@@ -9,10 +9,14 @@ import lombok.Data;
 public class RoleCompleteDto {
 	
 	private long id;
+	
 	private String name;
+	
 	private boolean isDefaultRole;
+	
 	private boolean isAdminRole;
 	
 	private Collection<UserNoRoleDto> users;
+	
 	private List<PermissionWithoutRoleDto> permissions;
 }

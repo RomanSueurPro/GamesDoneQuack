@@ -11,12 +11,19 @@ export const API_ENDPOINTS = {
         fetchAllRolesNoPermissionField: `${BASE}/${ADMIN_BASE}/fetchallrolesnopermissionfield`,
         fetchAllPermissions: `${BASE}/${ADMIN_BASE}/fetchallpermissions`,
         fetchAllPermissionsNoRoleField: `${BASE}/${ADMIN_BASE}/fetchallpermissionsnorolefield`,
+        fetchAllUsers: `${BASE}/${ADMIN_BASE}/fetchallusersnorelations`,
+        fetchPaginatedUsers: `${BASE}/${ADMIN_BASE}/fetchpaginatedusers`,
         updateRole: `${BASE}/${ADMIN_BASE}/updaterole`,
         createRole: `${BASE}/${ADMIN_BASE}/createrole`,
         deleteRole: `${BASE}/${ADMIN_BASE}/deleterole`,
         updatePermission: `${BASE}/${ADMIN_BASE}/updatepermission`,
         createPermission: `${BASE}/${ADMIN_BASE}/createpermission`,
         deletePermission: `${BASE}/${ADMIN_BASE}/deletepermission`,
+        updateUser: `${BASE}/${ADMIN_BASE}/updateuser`,
+        searchUserAdmin: `${BASE}/${ADMIN_BASE}/searchusers`,
+        fetchUserLastBan: `${BASE}/${ADMIN_BASE}/fetchuserlastban`,
+        unbanUser: `${BASE}/${ADMIN_BASE}/unbanuser`,
+        banUser: `${BASE}/${ADMIN_BASE}/banuser`,
     },
 
     homePage: {
@@ -32,6 +39,7 @@ export const API_ENDPOINTS = {
         login: `${BASE}/login`,
         csrf: `${BASE}/csrf`,
         checkusername: `${BASE}/api/check-username-availability`,
+        checkemail: `${BASE}/api/check-email-availability`,
     },
 
     kaamelott:{

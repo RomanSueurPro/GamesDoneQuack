@@ -1,5 +1,8 @@
 package com.quackinduckstries.gamesdonequack.entities;
 
+
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -32,6 +35,14 @@ public class User {
     @JoinColumn(
     	name = "id_role", nullable = false, referencedColumnName = "id")
     private Role role;
+    
+    @Column(nullable = true)
+    private Date deleteDate = null;
+    
+    @Column(nullable = false, unique = true)
+    private String email;
+    
+    
 
 }
 

@@ -1,24 +1,39 @@
 package com.quackinduckstries.gamesdonequack.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.quackinduckstries.gamesdonequack.Dtos.PageableDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserPageResponseDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
+import com.quackinduckstries.gamesdonequack.entities.Ban;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.entities.User;
 import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameException;
+import com.quackinduckstries.gamesdonequack.exceptions.InvalidEmailFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidPasswordFormatException;
+import com.quackinduckstries.gamesdonequack.exceptions.UserNotFoundException;
 import com.quackinduckstries.gamesdonequack.mappers.UserMapper;
+import com.quackinduckstries.gamesdonequack.repositories.BanRepository;
 import com.quackinduckstries.gamesdonequack.repositories.RoleRepository;
 import com.quackinduckstries.gamesdonequack.repositories.UserRepository;
 
@@ -32,14 +47,16 @@ public class UserService {
 	private final RoleConfig roleConfig;
 	private final UserMapper userMapper;
 	private final AdminPermissionService adminPermissionService;
+	private final BanRepository banRepository;
 	
-	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RoleConfig roleConfig, UserMapper userMapper, AdminPermissionService adminPermissionService) {
+	public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository, RoleConfig roleConfig, UserMapper userMapper, AdminPermissionService adminPermissionService, BanRepository banRepository) {
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.roleConfig = roleConfig;
 		this.userMapper = userMapper;
 		this.adminPermissionService = adminPermissionService;
+		this.banRepository = banRepository;
 	}
 	
 	
@@ -47,9 +64,9 @@ public class UserService {
 	public void registerNewUser(RegisterRequestDto request) throws IllegalStateException, DuplicateUsernameException {
 		usernameValidation(request.getUsername());
 		passwordValidation(request.getPassword());
+		emailValidation(request.getEmail());
 			
-		User newUser = new User();
-		newUser.setUsername(request.getUsername());
+		User newUser = userMapper.registerRequestDtoToUser(request);
 		newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 		
 		if(userRepository.existsByUsername(newUser.getUsername())) {
@@ -124,5 +141,75 @@ public class UserService {
 		if(!pattern.matcher(password).matches()) {
 			throw new InvalidPasswordFormatException("Attempted account password did not meet format requirements. Password must contain at least one of each of the following : lower case letter, upper case letter, number, special character. Length must be between 8 and 64 characters.");
 		}
+	}
+
+	public boolean checkEmailExistence(String email) {
+		return userRepository.existsByEmail(email);
+	}
+	
+	public void emailValidation(String email) {
+		Pattern pattern = Pattern.compile(
+			    "^(?=.{1,64}$)((?!\\.)[\\w\\-_.]*[^.])(@\\w+)(\\.\\w+(\\.\\w+)?[^.\\W])$"
+			);
+		if(!pattern.matcher(email).matches()) {
+			throw new InvalidEmailFormatException("You must enter a valid email address. Length must be below 64 characters.");
+		}
+	}
+	
+	public List<UserNoRelationsDto>fetchAllUsersNoRelations(){
+		return userRepository.findAll()
+				.stream()
+				.map((user)-> userMapper.userToUserNoRelationsDto(user))
+				.toList();
+	}
+	
+	
+	public UserPageResponseDto fetchPaginatedUsers(PageableDto dto){
+		
+		Pageable pageable = PageRequest.of(
+				dto.getPageNumber(),
+				dto.getPageSize(),
+				Sort.by("username").ascending()
+		    );
+		
+		Page<UserNoRelationsDto> page = userRepository.findAll(pageable).map(userMapper::userToUserNoRelationsDto);
+		
+		UserPageResponseDto userPageResponseDto = new UserPageResponseDto();
+		userPageResponseDto.setUsers(page.getContent());
+		userPageResponseDto.setPageNumber(page.getNumber());
+		userPageResponseDto.setPageSize(page.getSize());
+		userPageResponseDto.setTotalElements(page.getTotalElements());
+		userPageResponseDto.setTotalPages(page.getTotalPages());
+		
+		return userPageResponseDto;
+	}
+	
+	public int getPageForUser(String username, int pageSize) {
+
+	    long usersBefore = userRepository.countByUsernameLessThan(username);
+
+	    return (int) (usersBefore / pageSize);
+	}
+	
+	@Transactional
+	public void ScheduledUserDelete() {
+		List<User> usersToDelete = userRepository.findByDeleteDateLessThanEqual(new Date());
+		usersToDelete.forEach(u -> userRepository.delete(u));
+	}
+	
+	public LocalDate getUnbanDateForUser(long userId) {
+		
+		Optional<Ban> ban = banRepository.findActiveBanForUser(userId, LocalDate.now());
+		
+		if (ban.isEmpty()) {
+	        return null;
+	    }
+
+	    return ban.get().getEndDate();
+	}
+
+
+	public User findById(Long id) {
+		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
 	}
 }

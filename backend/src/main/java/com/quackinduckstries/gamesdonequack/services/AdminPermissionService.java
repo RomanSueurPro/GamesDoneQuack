@@ -14,7 +14,6 @@ import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
 import com.quackinduckstries.gamesdonequack.entities.Role;
 import com.quackinduckstries.gamesdonequack.exceptions.EmptyPermissionNameException;
-import com.quackinduckstries.gamesdonequack.exceptions.EmptyRoleNameException;
 import com.quackinduckstries.gamesdonequack.exceptions.InvalidNameFormatException;
 import com.quackinduckstries.gamesdonequack.exceptions.NewPermissionAlreadyExistsException;
 import com.quackinduckstries.gamesdonequack.mappers.PermissionMapper;
@@ -127,7 +126,7 @@ public class AdminPermissionService {
 
 
 	@Transactional
-	public PermissionDto updatePermission(PermissionDto permissionToUpdate) {
+	public void updatePermission(PermissionDto permissionToUpdate) {
 		
 		String name = permissionNameValidator(permissionToUpdate.getName());
 		permissionToUpdate.setName(name);
@@ -162,7 +161,6 @@ public class AdminPermissionService {
 			);
 		roleConfig.setDefaultPermissionNames(newDefaultRolePermissionList);
 		addPermissionToAdminRole(toUpdate);
-		return permissionMapper.permissionToPermissionDto(toUpdate);
 	}
 	
 	public List<PermissionDto> fetchAllPermissions() {

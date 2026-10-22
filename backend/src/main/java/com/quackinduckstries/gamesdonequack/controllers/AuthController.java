@@ -3,6 +3,7 @@ package com.quackinduckstries.gamesdonequack.controllers;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +23,9 @@ import com.quackinduckstries.gamesdonequack.Dtos.LoggedInUserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.LoginRequestDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
 import com.quackinduckstries.gamesdonequack.config.CustomUserDetails;
+import com.quackinduckstries.gamesdonequack.entities.User;
 import com.quackinduckstries.gamesdonequack.exceptions.DuplicateUsernameException;
+import com.quackinduckstries.gamesdonequack.mappers.RoleMapper;
 import com.quackinduckstries.gamesdonequack.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,11 +38,13 @@ public class AuthController {
 	private final UserService userService;
 	private final AuthenticationManager authManager;
 	private final SessionRegistry sessionRegistry;
+	private final RoleMapper roleMapper;
 	
-	public AuthController(PasswordEncoder passwordEncoder, UserService userService, AuthenticationManager authManager, SessionRegistry sessionRegistry) {
+	public AuthController(PasswordEncoder passwordEncoder, UserService userService, AuthenticationManager authManager, SessionRegistry sessionRegistry, RoleMapper roleMapper) {
 		this.userService = userService;
 		this.authManager = authManager;
 		this.sessionRegistry = sessionRegistry;
+		this.roleMapper = roleMapper;
 	}
 	
 	@GetMapping("/api/me")
@@ -50,13 +55,18 @@ public class AuthController {
 
         // build response object
 		LoggedInUserDto returnedUser = new LoggedInUserDto();
-		
+
+		User user = userService.findById(userDetails.getId());
+
+		returnedUser.setRole(roleMapper.roleToRoleNorelationDto(user.getRole()));
 		returnedUser.setId(userDetails.getId());
 		returnedUser.setUsername(userDetails.getUsername());
-		returnedUser.setRoleName(userDetails.getAuthorities()
-				.stream().findFirst()
-				.orElseThrow(() -> new IllegalStateException("User did not have a role"))
-				.getAuthority());
+		returnedUser.setBanned(userDetails.isBanned());
+		
+		
+		if(userDetails.getUnbanDate() != null) {
+			returnedUser.setUnbanDate(userDetails.getUnbanDate());
+		}
 		
         return ResponseEntity.ok(returnedUser);
 	}
@@ -73,9 +83,12 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request){
 		
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword());
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getIdentifier(), loginRequestDto.getPassword());
 		
 			Authentication authentication = authManager.authenticate(authToken);
+			
+			CustomUserDetails  userDetails = (CustomUserDetails) authentication.getPrincipal();
+			
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			securityContext.setAuthentication(authentication);
 			
@@ -87,6 +100,9 @@ public class AuthController {
 		        authentication.getPrincipal()
 		    );
 			
+		if(userDetails.isBanned()) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ACCOUNT_BANNED", "message", "Your account has been banned."));
+		}
 		return ResponseEntity.ok(Map.of("message", "login successful"));
 	}
 }

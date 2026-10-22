@@ -1,19 +1,19 @@
 package com.quackinduckstries.gamesdonequack.Dtos;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDate;
 
-@RequiredArgsConstructor
-@NoArgsConstructor
+import lombok.Data;
+
 @Data
 public class LoggedInUserDto {
 	
 	private Long id;
-	
-	@NonNull
+
 	private String username;
 	
-	private String roleName;
+	private RoleNoRelationsDto role;
+	
+	private boolean isBanned;
+	
+	private LocalDate unbanDate;
 }

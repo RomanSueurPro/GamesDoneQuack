@@ -1,5 +1,6 @@
 package com.quackinduckstries.gamesdonequack.config;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,14 +19,18 @@ public class CustomUserDetails implements UserDetails{
 	private Long id;
 	private String userName;
 	private String userPassword;
+	private boolean isBanned;
 	private Collection<? extends GrantedAuthority> authorities;
+	private LocalDate unbanDate;
 	
 	
-	public CustomUserDetails(User user){
+	public CustomUserDetails(User user, boolean isBanned, LocalDate unbanDate){
 		this.id = user.getId();
 		this.userName = user.getUsername();
 		this.userPassword = user.getPassword();
+		this.isBanned = isBanned;
 		this.authorities = List.of(new SimpleGrantedAuthority(user.getRole().getName()));
+		this.unbanDate = unbanDate;
 	}
 	
 	public Long getId() {
@@ -46,8 +51,12 @@ public class CustomUserDetails implements UserDetails{
 	public String getUsername() {
 		return userName;
 	}
-
 	
+	public boolean isBanned() {
+		return isBanned;
+	}
 	
-	
+	public LocalDate getUnbanDate() {
+		return this.unbanDate;
+	}
 }

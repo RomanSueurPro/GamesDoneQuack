@@ -16,6 +16,7 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -73,6 +74,7 @@ public class SecurityConfig {
                 authorizeHttp.requestMatchers("/api/me").permitAll();
                 authorizeHttp.requestMatchers("/adminrolename").permitAll();
                 authorizeHttp.requestMatchers("/api/check-username-availability").permitAll();
+                authorizeHttp.requestMatchers("/api/check-email-availability").permitAll();
                 
                 if(enableSuperLogin) {
         				authorizeHttp.requestMatchers("/dev-login").permitAll();
@@ -99,7 +101,8 @@ public class SecurityConfig {
         	    })
         		.deleteCookies("JSESSIONID"));
 
-        
+        http.addFilterAfter(
+                new BanSecurityFilter(), BasicAuthenticationFilter.class);
         return http.build();              
     }
     

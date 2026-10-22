@@ -1,6 +1,6 @@
 <div class="role-list-component">
     <form [formGroup]="form">
-        <div id="update-container">
+        <div class="update-container">
             <div>
                 <mat-selection-list #roleList name="roles" [multiple]="false" class="role-list" [hideSingleSelectionIndicator]="true" (selectionChange)="onSelectionChange($event)" id="admin-role-list">
                     @for (role of arrayRoles; track role) {
