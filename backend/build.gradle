@@ -34,8 +34,8 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.7.3'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
     // MapStruct
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
