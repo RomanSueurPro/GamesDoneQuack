@@ -48,6 +48,10 @@ export const API_ENDPOINTS = {
 
     steam:{
         allData: `${BASE}/api/steam/`,
+    },
+
+    user:{
+        userInfo: `${BASE}/profile`, 
     }
 
 }

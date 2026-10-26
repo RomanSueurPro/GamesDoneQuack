@@ -67,6 +67,7 @@ export class HomeComponent {
     }
 
     goProfilePage(){
-      console.log("profile page");
+      
+      this.router.navigate(['profile']);
     }
 }

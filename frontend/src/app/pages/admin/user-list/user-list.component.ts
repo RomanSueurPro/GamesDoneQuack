@@ -181,7 +181,6 @@ export class UserListComponent {
   }
 
   searchUsersObservable(pageNumber: number, pageSize: number) {
-    console.log("");
     return this.http.post<UsersResponse>(
       API_ENDPOINTS.admin.searchUserAdmin,
       {
@@ -400,7 +399,6 @@ export class UserListComponent {
       const startDate = new Date(
         parisNow.startOfDay().epochMilliseconds
       );
-      console.log(startDate);
       this.form.get('ban')?.patchValue({
         startDate: startDate,
         endDate: endDate,
