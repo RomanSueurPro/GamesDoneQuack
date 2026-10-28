@@ -7,6 +7,8 @@ import lombok.Data;
 public class SearchUserAdminInputDto {
 
 	private String input;
+	
 	private RoleNoRelationsDto roleDto;
+	
 	private PageableDto pageableDto;
 }

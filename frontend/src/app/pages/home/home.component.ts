@@ -66,8 +66,8 @@ export class HomeComponent {
       this.router.navigate(['admin']);
     }
 
-    goProfilePage(){
-      
-      this.router.navigate(['profile']);
+    goMyProfilePage(){
+      let user = this.authState.user();
+      this.router.navigate(['users', user?.username], {state: {userId: user?.id}});
     }
 }

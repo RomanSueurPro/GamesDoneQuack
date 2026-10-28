@@ -112,7 +112,6 @@ export class ConnectionPopUpComponent {
 
 
   registerNewAndApprovedUser() {
-    console.log(this.formRegister.value);
     return this.backendService.sendRegisterRequestFromAuth(this.formRegister);
   }
 
@@ -135,8 +134,7 @@ export class ConnectionPopUpComponent {
       tap(() => this.setLoading(false)),
       concatMap(() => this.backendService.checkLoginBackendObservable())
     ).subscribe({
-      next: (response) => {
-        console.log('Login success', response);
+      next: () => {
         this.backendService.fetchCsrf();
         this.onNoClick();
       },
@@ -160,8 +158,7 @@ export class ConnectionPopUpComponent {
       concatMap(() => this.registerNewAndApprovedUser()),
       tap(() => this.setLoading(false))
     ).subscribe({
-      next: (response) => {
-        console.log('Successfully registered', response);
+      next: () => {
         this.backendService.fetchCsrf();
         this.onNoClick();
       },

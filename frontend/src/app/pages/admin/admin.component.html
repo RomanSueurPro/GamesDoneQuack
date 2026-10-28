@@ -2,14 +2,14 @@
     <app-header></app-header>
 
     <mat-tab-group mat-stretch-tabs="true" mat-align-tabs="center" id="admin-tabs" (selectedTabChange)="onTabChanged($event)"  [(selectedIndex)]="selectedTab">
-        <mat-tab label="Permissions">
-            <app-permission-list [active]="(selectedTab === 0) && tabTransitionAuthorized"></app-permission-list>
+        <mat-tab label="Users">
+            <app-user-list [active]="(selectedTab === 0) && tabTransitionAuthorized"></app-user-list>
         </mat-tab>
         <mat-tab label="Roles">
             <app-role-list [active]="(selectedTab === 1) && tabTransitionAuthorized"></app-role-list>
         </mat-tab>
-        <mat-tab label="Users">
-            <app-user-list [active]="(selectedTab === 2) && tabTransitionAuthorized"></app-user-list>
+        <mat-tab label="Permissions">
+            <app-permission-list [active]="(selectedTab === 2) && tabTransitionAuthorized"></app-permission-list>
         </mat-tab>
     </mat-tab-group>
 </div>

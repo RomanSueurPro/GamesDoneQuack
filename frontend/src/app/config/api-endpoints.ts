@@ -51,7 +51,8 @@ export const API_ENDPOINTS = {
     },
 
     user:{
-        userInfo: `${BASE}/profile`, 
+        userInfoById: `${BASE}/getuserprofilebyid`, 
+        userInfoByusername: `${BASE}/getuserprofilebyusername`, 
     }
 
 }

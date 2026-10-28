@@ -13,13 +13,10 @@ import { MatSelect, MatOption } from '@angular/material/select';
 import { RoleWithoutPermissions } from '../../../models/RoleWithoutPermissions';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { MatTab } from '@angular/material/tabs';
 import { DatePipe } from '@angular/common';
 import { SnackbarService } from '../../../services/snackbar.service';
 import { Ban } from '../../../models/Ban';
-import { AuthService } from '../../../services/auth.service';
 import { AuthStateService } from '../../../services/auth-state.service';
-import { LoggedInUser } from '../../../models/LoggedInUser';
 import { Temporal } from '@js-temporal/polyfill';
 
 

@@ -25,7 +25,7 @@ import com.quackinduckstries.gamesdonequack.Dtos.RoleNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RoleNoUserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.SearchUserAdminInputDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UpdateUserRequestDto;
-import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserRoleOnlyDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.services.AdminBanService;
 import com.quackinduckstries.gamesdonequack.services.AdminPermissionService;
@@ -66,7 +66,7 @@ public class AdminController {
 	@PostMapping("/deleteuser")
 	public ResponseEntity<?> deleteUser(@RequestParam("id")long id) {
 		
-		UserDto userToBeDeleted = userService.deleteUserById(id);
+		UserRoleOnlyDto userToBeDeleted = userService.deleteUserById(id);
 		
 		return ResponseEntity.ok(Map.of("message", "User " + userToBeDeleted.getUsername() + " was succeffully deleted"));
 	}
@@ -75,7 +75,7 @@ public class AdminController {
 	@PatchMapping("/updateuserrole")
 	public ResponseEntity<?> updateUserRole(@RequestParam("idUser") long idUser, @RequestParam("idRole")long idRole) {
 		
-		UserDto userToUpdate = userService.updateUserRole(idUser, idRole);
+		UserRoleOnlyDto userToUpdate = userService.updateUserRole(idUser, idRole);
 		
 		return ResponseEntity.ok(Map.of("message", "User " + userToUpdate.getUsername() + " was successfully granted " + userToUpdate.getRole().getName() + " role."));
 	}
@@ -175,7 +175,7 @@ public class AdminController {
 	@GetMapping("/fetchallusersnorelations")
 	public ResponseEntity<?> fetchAllUsersNoRelations(){
 		
-		 List<UserNoRelationsDto> users = userService.fetchAllUsersNoRelations();
+		 List<UserNoRelationsDto> users = adminUserService.fetchAllUsersNoRelations();
 		
 		return ResponseEntity.ok(users);
 	}
@@ -183,7 +183,7 @@ public class AdminController {
 	@PostMapping("/fetchpaginatedusers")
 	public ResponseEntity<?> fetchPaginatedUsers(@RequestBody PageableDto pageableDto){
 		
-		 return ResponseEntity.ok(userService.fetchPaginatedUsers(pageableDto));
+		 return ResponseEntity.ok(adminUserService.fetchPaginatedUsers(pageableDto));
 	}
 	
 	@PatchMapping("/updateuser")
@@ -199,7 +199,7 @@ public class AdminController {
 			}
 			
 		}
-		int pageNumber = userService.getPageForUser(requestDto.getUser().getUsername(), requestDto.getPageNumber());
+		int pageNumber = adminUserService.getPageForUser(requestDto.getUser().getUsername(), requestDto.getPageNumber());
 		
 		return ResponseEntity.ok(Map.of("message", "Update of user " + requestDto.getUser().getUsername() + " went fine", "page", pageNumber));
 	}

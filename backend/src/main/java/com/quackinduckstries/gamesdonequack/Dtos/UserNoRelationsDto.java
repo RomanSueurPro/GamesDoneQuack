@@ -1,6 +1,6 @@
 package com.quackinduckstries.gamesdonequack.Dtos;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import lombok.Data;
 
@@ -15,5 +15,5 @@ public class UserNoRelationsDto {
 	
 	private RoleNoRelationsDto role;
 	
-	private Date deleteDate;
+	private LocalDate deleteDate;
 }

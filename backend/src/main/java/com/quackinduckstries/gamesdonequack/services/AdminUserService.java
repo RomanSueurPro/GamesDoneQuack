@@ -76,7 +76,6 @@ public class AdminUserService {
 		}
 	}
 	
-	
 	public UserPageResponseDto searchUsers(String searchInput, PageableDto pageableDto, RoleNoRelationsDto roleDto){
 		
 		Pageable pageable = PageRequest.of(
@@ -117,6 +116,40 @@ public class AdminUserService {
 	public List<BanDto> fetchAllBansForUser(UserNoRelationsDto user){
 		//TODO
 		return null;
+	}
+	
+	public List<UserNoRelationsDto>fetchAllUsersNoRelations(){
+		return userRepository.findAll()
+				.stream()
+				.map((user)-> userMapper.userToUserNoRelationsDto(user))
+				.toList();
+	}
+	
+	public UserPageResponseDto fetchPaginatedUsers(PageableDto dto){
+		
+		Pageable pageable = PageRequest.of(
+				dto.getPageNumber(),
+				dto.getPageSize(),
+				Sort.by("username").ascending()
+		    );
+		
+		Page<UserNoRelationsDto> page = userRepository.findAll(pageable).map(userMapper::userToUserNoRelationsDto);
+		
+		UserPageResponseDto userPageResponseDto = new UserPageResponseDto();
+		userPageResponseDto.setUsers(page.getContent());
+		userPageResponseDto.setPageNumber(page.getNumber());
+		userPageResponseDto.setPageSize(page.getSize());
+		userPageResponseDto.setTotalElements(page.getTotalElements());
+		userPageResponseDto.setTotalPages(page.getTotalPages());
+		
+		return userPageResponseDto;
+	}
+	
+	public int getPageForUser(String username, int pageSize) {
+
+	    long usersBefore = userRepository.countByUsernameLessThan(username);
+
+	    return (int) (usersBefore / pageSize);
 	}
 	
 }

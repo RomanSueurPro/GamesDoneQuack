@@ -5,9 +5,10 @@ import org.mapstruct.Mapping;
 
 import com.quackinduckstries.gamesdonequack.Dtos.LoggedInUserDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
-import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserRoleOnlyDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRoleDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserProfileDto;
 import com.quackinduckstries.gamesdonequack.entities.User;
 
 
@@ -15,7 +16,7 @@ import com.quackinduckstries.gamesdonequack.entities.User;
 public interface UserMapper {
 
 	@Mapping(target = "role", ignore = true)
-    UserDto userToUserDto(User user);
+    UserRoleOnlyDto userToUserDto(User user);
 	
     UserNoRoleDto userToUserNoRoleDto(User user); 
 
@@ -24,4 +25,6 @@ public interface UserMapper {
     User registerRequestDtoToUser(RegisterRequestDto dto);
     
     UserNoRelationsDto userToUserNoRelationsDto(User user);
+    
+    UserProfileDto userToUserProfileDto(User user);
 }

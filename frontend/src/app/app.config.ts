@@ -2,7 +2,6 @@ import { ApplicationConfig, importProvidersFrom, APP_INITIALIZER, inject } from 
 import { provideRouter } from '@angular/router';
 import { HttpClientModule, HttpClientXsrfModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
-import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { appInitializer } from './initializers/appInitializer';
@@ -21,7 +20,7 @@ export const appConfig: ApplicationConfig = {
         Ban_Interceptor
       ])
     ),
-    provideClientHydration(), provideAnimationsAsync(),
+    provideAnimationsAsync(),
     {
       provide: APP_INITIALIZER,
       useFactory: appInitializer,

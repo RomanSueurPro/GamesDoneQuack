@@ -24,8 +24,8 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class AdminComponent {
   //reload logic so tabs are up to date with database
-  selectedTab = 2;
-  previousTab = 2;
+  selectedTab = 0;
+  previousTab = 0;
   tabTransitionAuthorized = true;
   weJustCanceled = false;
 

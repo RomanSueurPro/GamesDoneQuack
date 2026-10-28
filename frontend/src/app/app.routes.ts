@@ -5,8 +5,8 @@ import { AdminComponent } from './pages/admin/admin.component';
 import { adminGuard } from './guards/admin.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 import { BannedPageComponent } from './pages/banned-page/banned-page.component';
-import { ProfileComponent } from './pages/profile/profile.component';
 import { authGuard } from './guards/auth.guard';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 export const routes: Routes = [
 
@@ -27,6 +27,9 @@ export const routes: Routes = [
                         .then(m => m.ProfileComponent)
             },
         ]
+    },
+    {
+        path: 'users/:username', component: ProfileComponent
     },
 
     { path: 'login', component: LoginRouteComponent },

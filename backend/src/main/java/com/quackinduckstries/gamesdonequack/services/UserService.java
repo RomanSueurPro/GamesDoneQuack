@@ -19,9 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.quackinduckstries.gamesdonequack.Dtos.PageableDto;
 import com.quackinduckstries.gamesdonequack.Dtos.RegisterRequestDto;
-import com.quackinduckstries.gamesdonequack.Dtos.UserDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserRoleOnlyDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserNoRelationsDto;
 import com.quackinduckstries.gamesdonequack.Dtos.UserPageResponseDto;
+import com.quackinduckstries.gamesdonequack.Dtos.UserProfileDto;
 import com.quackinduckstries.gamesdonequack.config.RoleConfig;
 import com.quackinduckstries.gamesdonequack.entities.Ban;
 import com.quackinduckstries.gamesdonequack.entities.Permission;
@@ -106,21 +107,21 @@ public class UserService {
 	}
 	
 	@Transactional
-	public UserDto deleteUserById(long id) throws IllegalArgumentException{
+	public UserRoleOnlyDto deleteUserById(long id) throws IllegalArgumentException{
 		User userToBeDeleted = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not delete user : user with id=" + id + " not found."));
 		userRepository.deleteById(id);
 		return userMapper.userToUserDto(userToBeDeleted);
 	}
 	
 	@Transactional
-	public UserDto updateUserRole(long idUser, long idRole) throws IllegalArgumentException {
+	public UserRoleOnlyDto updateUserRole(long idUser, long idRole) throws IllegalArgumentException {
 		User userToUpdate = userRepository.findById(idUser).orElseThrow(() -> new IllegalArgumentException("Could not update role of user : user with id=" + idUser + " not found."));
 		Role role = roleRepository.findById(idRole).orElseThrow(() -> new IllegalArgumentException("Could not update role of user : role with id=" + idRole + " not found."));
 		
 		userToUpdate.setRole(role);
 		userRepository.flush();
 		
-		UserDto dto = userMapper.userToUserDto(userToUpdate);
+		UserRoleOnlyDto dto = userMapper.userToUserDto(userToUpdate);
 		
 		return dto;
 	}
@@ -156,41 +157,6 @@ public class UserService {
 		}
 	}
 	
-	public List<UserNoRelationsDto>fetchAllUsersNoRelations(){
-		return userRepository.findAll()
-				.stream()
-				.map((user)-> userMapper.userToUserNoRelationsDto(user))
-				.toList();
-	}
-	
-	
-	public UserPageResponseDto fetchPaginatedUsers(PageableDto dto){
-		
-		Pageable pageable = PageRequest.of(
-				dto.getPageNumber(),
-				dto.getPageSize(),
-				Sort.by("username").ascending()
-		    );
-		
-		Page<UserNoRelationsDto> page = userRepository.findAll(pageable).map(userMapper::userToUserNoRelationsDto);
-		
-		UserPageResponseDto userPageResponseDto = new UserPageResponseDto();
-		userPageResponseDto.setUsers(page.getContent());
-		userPageResponseDto.setPageNumber(page.getNumber());
-		userPageResponseDto.setPageSize(page.getSize());
-		userPageResponseDto.setTotalElements(page.getTotalElements());
-		userPageResponseDto.setTotalPages(page.getTotalPages());
-		
-		return userPageResponseDto;
-	}
-	
-	public int getPageForUser(String username, int pageSize) {
-
-	    long usersBefore = userRepository.countByUsernameLessThan(username);
-
-	    return (int) (usersBefore / pageSize);
-	}
-	
 	@Transactional
 	public void ScheduledUserDelete() {
 		List<User> usersToDelete = userRepository.findByDeleteDateLessThanEqual(new Date());
@@ -208,8 +174,19 @@ public class UserService {
 	    return ban.get().getEndDate();
 	}
 
+	public User findById(long id) {
 
-	public User findById(Long id) {
 		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+	}
+	
+	public UserProfileDto getUserProfile(long id) {
+		
+		return userMapper.userToUserProfileDto(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found")));
+	}
+
+
+	public Object getUserProfile(String username) {
+
+		return userMapper.userToUserProfileDto(userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found")));
 	}
 }

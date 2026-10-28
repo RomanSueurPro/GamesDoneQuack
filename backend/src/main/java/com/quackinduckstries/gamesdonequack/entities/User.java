@@ -1,7 +1,7 @@
 package com.quackinduckstries.gamesdonequack.entities;
 
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -37,12 +37,19 @@ public class User {
     private Role role;
     
     @Column(nullable = true)
-    private Date deleteDate = null;
+    private LocalDate deleteDate = null;
     
     @Column(nullable = false, unique = true)
     private String email;
     
+    @Column(nullable = true)
+    private String bio;
     
+    @Column(nullable = false)
+    private LocalDate creationDate = LocalDate.now();
+    
+    @Column(nullable = true)
+    private String avatarPath;
 
 }
 

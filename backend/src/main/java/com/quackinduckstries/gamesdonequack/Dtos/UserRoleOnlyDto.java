@@ -3,7 +3,7 @@ package com.quackinduckstries.gamesdonequack.Dtos;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class UserRoleOnlyDto {
 
 	private Long id;
 	

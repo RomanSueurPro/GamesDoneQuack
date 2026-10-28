@@ -7,7 +7,8 @@
                     <input type="text" id="input-research" [(ngModel)]="searchInput"
                         [ngModelOptions]="{ standalone: true }" (input)="userSearch(defaultPageNumber)">
                     <label for="search-role-select">Search by role :</label>
-                    <mat-select [(value)]="searchedRole" id="search-role-select"                    [compareWith]="compareRoles" (selectionChange)="userSearch(defaultPageNumber)">
+                    <mat-select [(value)]="searchedRole" id="search-role-select" [compareWith]="compareRoles"
+                        (selectionChange)="userSearch(defaultPageNumber)">
                         <mat-option [value]="-1">
                             ALL ROLES
                         </mat-option>
@@ -68,8 +69,6 @@
             </div>
             <div id="user-update-form">
                 <div formGroupName="user">
-                    <label for="user-id">Id</label>
-                    <input type="text" readonly formControlName="id" id="user-id">
                     <label for="username">Username</label>
                     <input type="text" formControlName="username" id="username">
                     <label for="email">Email</label>
