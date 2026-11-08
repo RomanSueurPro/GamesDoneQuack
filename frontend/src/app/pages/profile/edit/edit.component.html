@@ -1,0 +1,33 @@
+<p>edit works!</p>
+
+
+
+<div class="file-upload">
+
+  {{fileName || "No file uploaded yet."}}
+
+  <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">
+    <mat-icon>attach_file</mat-icon>
+  </button>
+
+  @if (userProfile != null && userProfile.avatarFileName != null) {
+  <p>{{ userProfile.avatarFileName }}</p>
+
+  <img [src]="'/api/users/avatars/' + userProfile.avatarFileName" alt="User avatar" id="user-avatar">
+  }
+
+  <form [formGroup]="form">
+    <label for="username-field">Username : </label>
+    <input type="text" formControlName="username" id="username-field">
+    <br>
+    <label for="bio-field">Your presentation : </label>
+    <textarea formControlName="bio" id="bio-field" rows="5" cols="40">
+</textarea>
+    <br>
+    <label for="email-field">Email : </label>
+    <input type="text" formControlName="email" id="email-field">
+
+    <input type="button" value="Save" (click)="saveChanges()">
+    <input type="file" accept="image/*" class="" (change)="onAvatarSelected($event)"#fileUpload formControlName="avatar">
+  </form>
+</div>

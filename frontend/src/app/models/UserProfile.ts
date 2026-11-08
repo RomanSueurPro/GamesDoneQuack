@@ -1,13 +1,13 @@
 export interface UserProfile{
     id: number;
 	
-	username: String;
+	username: string;
 	
-	email: String;
+	email: string;
 	
-	bio: String;
+	bio: string;
 	
 	creationDate: Date;
 	
-	avatarPath: String;
+	avatarFileName: string;
 }

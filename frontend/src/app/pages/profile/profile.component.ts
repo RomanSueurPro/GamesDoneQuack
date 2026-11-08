@@ -1,54 +1,73 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Component } from '@angular/core';
+import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
+import { map, Observable, switchMap } from 'rxjs';
 import { API_ENDPOINTS } from '../../config/api-endpoints';
 import { AuthStateService } from '../../services/auth-state.service';
 import { UserProfile } from '../../models/UserProfile';
+import { HeaderComponent } from '../../header/header.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    HeaderComponent,
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent {
 
-  constructor(private http: HttpClient, private authStateService: AuthStateService) { }
+  constructor(private http: HttpClient, private authStateService: AuthStateService, private route: ActivatedRoute, private router: Router) { }
 
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  id = 0;
 
-  ngOnInit() {
-    let username: String = "";
-    this.route.params.subscribe(params => {
-      username = params['username'];
-      let id = history.state.userId;
-      if (id !== null && id !== undefined) {
-        this.fetchUserInfoObservableById(history.state.userId).subscribe({
-          error: (error) => console.log(error)
-        });
+  userProfile: UserProfile | null = null;
+  isLoading = true;
+  readonly currentUser = this.authStateService.user;
 
-      } else {
-        this.fetchUserInfoObservableByUsername(username).subscribe({
-          error: (error) => console.log(error)
-        });
 
+  ngOnInit(): void {
+    this.route.paramMap.pipe(
+      map(params => params.get('username')!),
+      switchMap(username => {
+        const userId = history.state.userId;
+        this.isLoading = true;
+        this.userProfile = null;
+
+        return userId != null
+          ? this.fetchUserInfoObservableById(userId)
+          : this.fetchUserInfoObservableByUsername(username);
+      })
+    ).subscribe({
+      next: profile => {
+        this.userProfile = profile;
+        this.isLoading = false;
+      },
+      error: error => {
+        console.error(error);
+        this.userProfile = null;
+        this.isLoading = false;
       }
     });
-
   }
+
+
 
   fetchUserInfoObservableById(id: number): Observable<any> {
     return this.http.post<UserProfile>(
       API_ENDPOINTS.user.userInfoById, id, { withCredentials: true });
   }
 
-  fetchUserInfoObservableByUsername(username: String): Observable<any> {
+  fetchUserInfoObservableByUsername(username: string): Observable<any> {
     return this.http.post<UserProfile>(
       API_ENDPOINTS.user.userInfoByusername, username, { withCredentials: true });
+  }
+
+  navigateToEdit() {
+    this.router.navigate(['editprofile']);
   }
 
 }

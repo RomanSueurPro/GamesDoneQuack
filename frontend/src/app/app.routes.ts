@@ -7,6 +7,7 @@ import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 import { BannedPageComponent } from './pages/banned-page/banned-page.component';
 import { authGuard } from './guards/auth.guard';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { EditComponent } from './pages/profile/edit/edit.component';
 
 export const routes: Routes = [
 
@@ -17,22 +18,26 @@ export const routes: Routes = [
         title: 'home'
     },
     {
-        path: "",
-        canActivateChild: [authGuard],
+        path: "users",
+        // canActivateChild: [authGuard],
         children: [
             {
-                path: "profile",
-                loadComponent: () =>
-                    import('./pages/profile/profile.component')
-                        .then(m => m.ProfileComponent)
+                path: ":username",
+                component: ProfileComponent,
             },
+
         ]
     },
     {
-        path: 'users/:username', component: ProfileComponent
+        path: "editprofile",
+        component: EditComponent,
+        canActivate: [authGuard],
     },
 
-    { path: 'login', component: LoginRouteComponent },
+    {
+        path: 'login',
+        component: LoginRouteComponent
+    },
 
     {
         path: 'admin',
@@ -41,5 +46,9 @@ export const routes: Routes = [
         canActivate: [adminGuard],
         canDeactivate: [unsavedChangesGuard]
     },
-    { path: 'banned', component: BannedPageComponent },
+    {
+        path: 'banned',
+        component: BannedPageComponent
+    },
+
 ];

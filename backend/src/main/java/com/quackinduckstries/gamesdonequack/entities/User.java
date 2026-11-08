@@ -49,7 +49,7 @@ public class User {
     private LocalDate creationDate = LocalDate.now();
     
     @Column(nullable = true)
-    private String avatarPath;
+    private String avatarFileName = null;
 
 }
 

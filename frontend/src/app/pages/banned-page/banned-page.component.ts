@@ -28,8 +28,8 @@ export class BannedPageComponent {
 
   private dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-  unbanDateFormatter(deleteDate: Date | null): String {
-    let dateString: String = '';
+  unbanDateFormatter(deleteDate: Date | null): string {
+    let dateString: string = '';
     if (deleteDate === null) {
       dateString = "forever";
     } else {

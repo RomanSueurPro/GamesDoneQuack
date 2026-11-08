@@ -3,6 +3,8 @@ import { environment } from "../../environments/environment";
 const BASE = environment.apiBaseUrl;
 
 const ADMIN_BASE = `admin`;
+const AUTH_BASE = `auth`;
+const USERS_BASE = `users`;
 
 export const API_ENDPOINTS = {
 
@@ -30,16 +32,14 @@ export const API_ENDPOINTS = {
         home: `${BASE}/home`,
         adminrolename: `${BASE}/adminrolename`,
         superadmin : `${BASE}/dev-login`,
+        csrf: `${BASE}/csrf`,
     },
 
     auth:{
-        me: `${BASE}/api/me`,
-        logout: `${BASE}/logout`,
-        register: `${BASE}/register`,
-        login: `${BASE}/login`,
-        csrf: `${BASE}/csrf`,
-        checkusername: `${BASE}/api/check-username-availability`,
-        checkemail: `${BASE}/api/check-email-availability`,
+        me: `${BASE}/${AUTH_BASE}/me`,
+        logout: `${BASE}/${AUTH_BASE}/logout`,
+        register: `${BASE}/${AUTH_BASE}/register`,
+        login: `${BASE}/${AUTH_BASE}/login`,
     },
 
     kaamelott:{
@@ -51,8 +51,12 @@ export const API_ENDPOINTS = {
     },
 
     user:{
-        userInfoById: `${BASE}/getuserprofilebyid`, 
-        userInfoByusername: `${BASE}/getuserprofilebyusername`, 
+        userInfoById: `${BASE}/${USERS_BASE}/getuserprofilebyid`, 
+        userInfoByusername: `${BASE}/${USERS_BASE}/getuserprofilebyusername`,
+        checkusername: `${BASE}/${USERS_BASE}/check-username-availability`,
+        checkemail: `${BASE}/${USERS_BASE}/check-email-availability`,
+        avatarUpload: `${BASE}/${USERS_BASE}/uploadAvatar`,
+        editProfile: `${BASE}/${USERS_BASE}/editprofile`,
     }
 
 }

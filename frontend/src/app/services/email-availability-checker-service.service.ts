@@ -10,6 +10,6 @@ export class EmailAvailabilityCheckerServiceService {
   constructor(private http : HttpClient) { }
   
     checkEmailAvailability(name: string){  
-      return this.http.post(API_ENDPOINTS.auth.checkemail, name, {withCredentials: true});
+      return this.http.post(API_ENDPOINTS.user.checkemail, name, {withCredentials: true});
     }
 }

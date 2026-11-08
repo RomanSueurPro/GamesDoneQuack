@@ -10,6 +10,6 @@ export class UsernameAvailabilityCheckerService {
   constructor(private http : HttpClient) { }
 
   checkUserNameAvailability(name: string){  
-    return this.http.post(API_ENDPOINTS.auth.checkusername, name, {withCredentials: true});
+    return this.http.post(API_ENDPOINTS.user.checkusername, name, {withCredentials: true});
   }
 }

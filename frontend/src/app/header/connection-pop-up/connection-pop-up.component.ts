@@ -187,7 +187,7 @@ export class ConnectionPopUpComponent {
     });
   }
 
-  public passwordClass: String = "show-pass-icon";
+  public passwordClass: string = "show-pass-icon";
   public visiblePass: boolean = false;
 
   togglePasswordVisibility() {

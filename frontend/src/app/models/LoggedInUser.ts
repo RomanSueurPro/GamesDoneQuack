@@ -6,4 +6,5 @@ export interface LoggedInUser {
     role: RoleWithoutPermissions;
     banned: boolean;
     unbanDate: Date;
+    avatarFileName: String;
 }

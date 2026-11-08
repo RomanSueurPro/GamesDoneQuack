@@ -185,8 +185,20 @@ public class UserService {
 	}
 
 
-	public Object getUserProfile(String username) {
+	public UserProfileDto getUserProfile(String username) {
 
 		return userMapper.userToUserProfileDto(userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found")));
+	}
+	
+	@Transactional
+	public void updateProfile(UserProfileDto userProfileDto) {
+		User user = userRepository.findById(userProfileDto.getId()).orElseThrow(() -> new UserNotFoundException("User not found") );
+		UserProfileDto previousProfile = userMapper.userToUserProfileDto(user);
+		if(previousProfile.getBio() == null || !previousProfile.getBio().equals(userProfileDto.getBio())) {
+			user.setBio(userProfileDto.getBio());
+		}
+		
+		
+		userRepository.flush();
 	}
 }

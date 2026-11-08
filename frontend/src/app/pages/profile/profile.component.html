@@ -1,2 +1,26 @@
-<p>profile works!</p>
 <a routerLink="" routerLinkActive="active">Retour</a>
+<app-header></app-header>
+
+@if (userProfile; as profile) {
+
+    @if(profile.avatarFileName != null){
+        <img [src]="'/api/users/avatars/' + profile.avatarFileName" alt="{{profile.username}}'s avatar" id="user-avatar">
+    }@else {
+        <img src="../../../assets/session-assets/default-pic-facing.png" alt="default avatar" id="defaultAvatar">
+    }
+    
+    <h1>{{ profile.username }}</h1>
+    @if(profile.id === this.currentUser()?.id){
+        <button (click)="navigateToEdit()">Edit</button>
+    }
+
+
+    <p>{{profile.email}}</p>
+    <p>About {{profile.username}} : {{profile.bio}}</p>
+    <p>Account created on {{profile.creationDate}}</p>
+
+} @else if(isLoading){
+    <h1>LOADING</h1>
+}@else {
+    <h1>ERROR</h1>
+}

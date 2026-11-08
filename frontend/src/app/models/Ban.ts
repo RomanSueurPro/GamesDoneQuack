@@ -7,5 +7,5 @@ export interface Ban{
     moderator: LoggedInUser;
     startDate: Date;
     endDate: Date;
-    reason: String;
+    reason: string;
 }

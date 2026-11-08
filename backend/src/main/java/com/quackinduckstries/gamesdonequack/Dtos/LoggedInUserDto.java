@@ -16,4 +16,6 @@ public class LoggedInUserDto {
 	private boolean isBanned;
 	
 	private LocalDate unbanDate;
+	
+	private String avatarFileName;
 }

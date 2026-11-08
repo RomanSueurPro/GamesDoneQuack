@@ -64,17 +64,15 @@ public class SecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(
             authorizeHttp -> {
-                	authorizeHttp.requestMatchers("/admin").hasRole("ADMIN");
+                	authorizeHttp.requestMatchers("/admin/**").hasRole("ADMIN");
                 authorizeHttp.requestMatchers("/home").permitAll();
-                authorizeHttp.requestMatchers("/login").permitAll();
-                authorizeHttp.requestMatchers("/register").permitAll();
+                authorizeHttp.requestMatchers("/auth/**").permitAll();
                 authorizeHttp.requestMatchers("/csrf").permitAll();
                 authorizeHttp.requestMatchers("/favicon.svg").permitAll();
                 authorizeHttp.requestMatchers("/error").permitAll();
-                authorizeHttp.requestMatchers("/api/me").permitAll();
                 authorizeHttp.requestMatchers("/adminrolename").permitAll();
-                authorizeHttp.requestMatchers("/api/check-username-availability").permitAll();
-                authorizeHttp.requestMatchers("/api/check-email-availability").permitAll();
+                authorizeHttp.requestMatchers("/users/editprofile").authenticated();
+                authorizeHttp.requestMatchers("/users/**").permitAll();
                 
                 if(enableSuperLogin) {
         				authorizeHttp.requestMatchers("/dev-login").permitAll();
@@ -95,7 +93,7 @@ public class SecurityConfig {
 		}
 		
         http.logout(logout -> logout
-        	    .logoutUrl("/logout")
+        	    .logoutUrl("/auth/logout")
         	    .logoutSuccessHandler((request, response, authentication) -> {
         	        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         	    })

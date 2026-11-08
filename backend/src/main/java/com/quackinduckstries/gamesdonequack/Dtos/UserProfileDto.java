@@ -17,5 +17,5 @@ public class UserProfileDto {
 	
 	private LocalDate creationDate;
 	
-	private String avatarPath;
+	private String avatarFileName;
 }

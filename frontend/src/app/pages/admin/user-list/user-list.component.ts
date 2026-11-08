@@ -53,7 +53,7 @@ export class UserListComponent {
   displayedColumns: string[] = ['username', 'role', 'deleteDate'];
   totalUsers: number = 0;
 
-  searchInput: String = "";
+  searchInput: string = "";
 
   selectedUser: UserNoRelations | null = null;
   selectedRole: RoleWithoutPermissions | null = null;
@@ -74,8 +74,8 @@ export class UserListComponent {
     private snackBarService: SnackbarService, private authStateService: AuthStateService
   ) { }
 
-  deleteDateFormatter(deleteDate: Date | null): String {
-    let dateString: String = '';
+  deleteDateFormatter(deleteDate: Date | null): string {
+    let dateString: string = '';
     if (deleteDate === null) {
       dateString = "No date for deletion";
     } else {

@@ -14,7 +14,7 @@ export class CsrfService {
 
 
   loadUp(){
-    this.http.get(API_ENDPOINTS.auth.csrf, {withCredentials: true}).subscribe({      
+    this.http.get(API_ENDPOINTS.homePage.csrf, {withCredentials: true}).subscribe({      
         error: (error) => console.log(error)  
     });
   }
@@ -22,6 +22,6 @@ export class CsrfService {
 
   loadUpObservable(): Observable<any> {
     // Return the observable instead of subscribing here
-    return this.http.get(API_ENDPOINTS.auth.csrf, { withCredentials: true });
+    return this.http.get(API_ENDPOINTS.homePage.csrf, { withCredentials: true });
   }
 }

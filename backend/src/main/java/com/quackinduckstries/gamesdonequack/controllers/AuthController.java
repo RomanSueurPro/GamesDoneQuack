@@ -17,6 +17,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quackinduckstries.gamesdonequack.Dtos.LoggedInUserDto;
@@ -31,6 +32,7 @@ import com.quackinduckstries.gamesdonequack.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+@RequestMapping("/auth")
 @RestController
 public class AuthController {
 	
@@ -47,8 +49,9 @@ public class AuthController {
 		this.roleMapper = roleMapper;
 	}
 	
-	@GetMapping("/api/me")
+	@GetMapping("/me")
 	public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal CustomUserDetails  userDetails) {
+		//TODO This is unacceptable code for the controller layer, this should all be moved to a service
 		if (userDetails == null) {
             return ResponseEntity.ok(null); // Used to be unauthorized but too noisy in console.
         }
@@ -62,6 +65,7 @@ public class AuthController {
 		returnedUser.setId(userDetails.getId());
 		returnedUser.setUsername(userDetails.getUsername());
 		returnedUser.setBanned(userDetails.isBanned());
+		returnedUser.setAvatarFileName(user.getAvatarFileName());
 		
 		
 		if(userDetails.getUnbanDate() != null) {
